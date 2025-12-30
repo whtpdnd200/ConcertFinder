@@ -25,17 +25,29 @@ repositories {
 }
 
 dependencies {
+    // JPA 의존성
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    // 타임리프 의존성
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    // mysql 커넥터 의존성
     runtimeOnly 'com.mysql:mysql-connector-j'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    // 롬북 의존성
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // 타임리프 레이아웃 의존성
     implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
+
+    // OpenAPI 연동용 웹 플럭스 의존성
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    // 맥북 DNS 오류 해결 의존성
+    runtimeOnly 'io.netty:netty-resolver-dns-native-macos:4.1.104.Final:osx-aarch_64'
 }
 
 tasks.named('test') {
