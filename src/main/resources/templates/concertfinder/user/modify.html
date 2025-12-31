@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{concertfinder/layouts/main_layout}">
+<head>
+    <title>회원정보 수정</title>
+    <link layout:fragment="css" rel="stylesheet" th:href="@{/css/user/modify_style.css}">
+</head>
+<body>
+    <section layout:fragment="contents">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+
+                    <div class="mb-4 text-center">
+                        <h3 class="font-weight-bold">회원정보 수정</h3>
+                        <p class="text-muted small">안전한 서비스 이용을 위해 정보를 관리해 주세요.</p>
+                    </div>
+
+                    <div class="card shadow-sm border-0 p-4 p-md-5 bg-white">
+                        <form id="modifyForm" class="modify-form-container">
+
+                            <div class="form-group mb-4">
+                                <label class="form-label"><i class="bi bi-person mr-1"></i> 아이디</label>
+                                <div th:text="${session.userInfo.userId}" class="form-control-plaintext">jamini_user</div>
+                                <p class="helper-text">아이디는 변경할 수 없습니다.</p>
+                            </div>
+
+                            <div class="form-group mb-4">
+                                <label class="form-label" for="frontEmailInput"><i class="bi bi-envelope mr-1"></i> 이메일 주소</label>
+                                <div class="d-flex align-items-center">
+                                    <input type="text" id="frontEmailInput" class="form-control col-6 modify-input" th:value="${session.userInfo.email.split('@')[0]}" placeholder="이메일을 입력하세요">
+                                    <span class="col-1">@</span>
+                                    <select th:with="val = ${session.userInfo.email.split('@')[1]}" id="emailSelect" class="form-control modify-input col-5">
+                                        <option value="self">직접 입력</option>
+                                        <option th:value="${val}" th:utext="${val}" selected></option>
+                                        <option th:if="${val != 'naver.com'}">naver.com</option>
+                                        <option th:if="${val != 'gmail.com'}">gmail.com</option>
+                                        <option th:if="${val != 'daum.net'}">daum.net</option>
+                                    </select>
+                                    <input type="text" id="backEmailInput" class="form-control modify-input col-5 d-none">
+                                </div>
+
+                            </div>
+
+                            <div class="form-group mb-4">
+                                <label class="form-label" for="nicknameInput"><i class="bi bi-tag mr-1"></i> 닉네임</label>
+                                <input type="text" id="nicknameInput" class="form-control modify-input" th:value="${session.userInfo.nickname}" placeholder="닉네임을 입력하세요">
+                                <div id="nicknameLengthOver" class="text-danger small d-none">닉네임은 16글자 이하로만 가능합니다!</div>
+                            </div>
+
+                            <div class="form-group mb-4">
+                                <label class="form-label" for="areaSelect"><i class="bi bi-geo-alt mr-1"></i> 관심 지역</label>
+                                <select id="areaSelect" class="form-control modify-input">
+                                    <option th:value="${session.userInfo.attentionAreaCode}" th:utext="${session.userInfo.attentionAreaName}" selected></option>
+                                    <option th:if="${session.userInfo.attentionAreaCode != sido.sidoCode}" th:each="sido : ${sidoList}" th:value="${sido.sidoCode}" th:utext="${sido.sidoName}">서울특별시</option>
+                                </select>
+                            </div>
+
+                            <hr class="my-4">
+
+                            <div class="mb-3">
+                                <h6 class="font-weight-bold mb-2">비밀번호 변경</h6>
+                                <p class="helper-text">비밀번호를 변경하려면 아래 정보를 입력하세요. 변경하지 않으려면 비워두세요.</p>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label class="form-label" for="passwordInput">새 비밀번호</label>
+                                <input type="password" id="passwordInput" class="form-control modify-input" placeholder="새 비밀번호 입력">
+                            </div>
+
+                            <div class="form-group mb-4">
+                                <label class="form-label" for="passwordConfirmInput">새 비밀번호 확인</label>
+                                <input type="password" id="passwordConfirmInput" class="form-control modify-input" placeholder="새 비밀번호 확인">
+                                <div id="passwordUnChecked" class="text-danger small d-none">비밀번호가 일치하지 않습니다!</div>
+                                <div id="passwordChecked" class="text-success small d-none">비밀번호가 일치 합니다</div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button id="cancelBtn" type="button" class="btn btn-light btn-cancel rounded-pill">취소</button>
+                                <button type="submit" class="btn btn-primary btn-save rounded-pill font-weight-bold">정보 수정 완료</button>
+                            </div>
+
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+    <script layout:fragment="script">
+
+        var isLengthOver = false;
+
+        var id = $("#dataValue").data("id");
+
+        $("#emailSelect").on("change", function() {
+
+            let value = $("#emailSelect").val();
+
+            if(value == 'self') {
+                $(this).addClass("d-none");
+                $("#backEmailInput").removeClass("d-none");
+            }
+        });
+
+        $("#nicknameInput").on("input", function() {
+            let nickname = $(this).val();
+
+            if(nickname.length > 16) {
+                isLengthOver = true;
+                $("#nicknameLengthOver").removeClass("d-none");
+
+            } else {
+                $("#nicknameLengthOver").addClass("d-none");
+                isLengthOver = false;
+            }
+        });
+
+        $("#modifyForm").on("submit", function(e) {
+            e.preventDefault();
+
+            let password = $("#passwordInput").val();
+            let passwordConfirm = $("#passwordConfirmInput").val();
+            let nickname = $("#nicknameInput").val();
+            let attentionAreaCode = $("#areaSelect").val();
+            let frontEmail = $("#frontEmailInput").val();
+            let backEmail;
+
+            if($("#emailSelect").hasClass("d-none")) {
+                backEmail = $("#backEmailInput").val();
+            } else {
+                backEmail = $("#emailSelect").val();
+            }
+
+
+            if(password != passwordConfirm) {
+                alert("비밀번호가 일치하지 않습니다");
+                $("#passwordConfirmInput").focus();
+                return;
+            }
+
+            if(nickname == "") {
+                alert("닉네임을 입력하세요");
+                $("#nicknameInput").focus();
+                return;
+            }
+
+            if(frontEmail == '') {
+                alert("이메일을 입력 해주세요!");
+                $("#frontEmailInput").focus();
+                return;
+            }
+
+            if(backEmail == '') {
+                alert("이메일을 입력 해주세요!");
+                $("#backEmailInput").focus();
+                return;
+            }
+
+            if(backEmail == 'self') {
+                alert("이메일을 선택 해주세요!");
+                return;
+            }
+
+            if(isLengthOver) {
+                alert("닉네임은 16글자 이하로 작성 해주세요!");
+                $("#nicknameInput").focus();
+                return;
+            }
+
+            let email = frontEmail + '@' + backEmail;
+
+            let data = {
+                "id" : id
+                , "nickname" : nickname
+                , "email" : email
+                , "password" : password
+                , "attentionAreaCode" : attentionAreaCode
+            }
+
+            $.ajax({
+                type : "put"
+                , url : `/user/${id}`
+                , contentType: 'application/json'
+                , data : JSON.stringify(data)
+                , success : function(response) {
+                    if(response.result = 'success') {
+                        location.href = "/user/mypage";
+                    } else {
+                        alert("회원 정보 수정 실패!");
+                    }
+                }
+                , error : function() {
+                    alert("회원 정보 수정 에러!");
+                }
+            });
+        });
+
+        $("#cancelBtn").on("click", function() {
+            location.href = "/user/mypage";
+        });
+
+        $("#newPasswordConfirmInput").on("input", function() {
+            let password = $("#newPasswordInput").val();
+            let passwordConfirm = $("#newPasswordConfirmInput").val();
+
+            if(password != passwordConfirm) {
+                $("#passwordUnChecked").removeClass("d-none");
+                $("#passwordChecked").addClass("d-none");
+            } else {
+                $("#passwordUnChecked").addClass("d-none");
+                $("#passwordChecked").removeClass("d-none");
+            }
+        });
+    </script>
+</body>
+</html>

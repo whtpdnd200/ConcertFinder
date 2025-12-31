@@ -2,6 +2,7 @@ package com.concertfinder.concertfinder.user;
 
 import com.concertfinder.concertfinder.user.DTO.JoinUserDTO;
 import com.concertfinder.concertfinder.user.DTO.LoginUserDTO;
+import com.concertfinder.concertfinder.user.DTO.ModifyUserDTO;
 import com.concertfinder.concertfinder.user.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -59,5 +60,19 @@ public class UserRestController {
         return resultMap;
     }
 
+    @PutMapping("/{id}")
+    public Map<String, String> modify(@PathVariable long id
+                                     , @RequestBody ModifyUserDTO modifyUserDTO
+                                     , HttpSession session) {
 
+        Map<String, String> resultMap = new HashMap<>();
+        if(userService.userModify(id, modifyUserDTO)) {
+            session.setAttribute("userInfo", userService.getUser(id));
+            resultMap.put("result", "success");
+            return resultMap;
+        }
+
+        resultMap.put("result", "fail");
+        return resultMap;
+    }
 }

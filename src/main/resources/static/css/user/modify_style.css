@@ -1,0 +1,64 @@
+/* 폼 컨테이너 보정 */
+.modify-form-container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* 입력창 라벨 스타일 */
+.form-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+/* 읽기 전용(아이디) 필드 스타일 */
+.form-control-plaintext {
+    padding: 0.75rem 1rem;
+    background-color: #e9ecef;
+    border-radius: 8px;
+    font-weight: 500;
+    color: #6c757d;
+}
+
+/* 입력 필드 공통 */
+.modify-input {
+    border-radius: 8px;
+    padding: 10px 15px;
+    border: 1px solid #dee2e6;
+    height: 48px;
+}
+
+.modify-input:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
+}
+
+/* 안내 문구 */
+.helper-text {
+    font-size: 0.8rem;
+    color: #868e96;
+    margin-top: 0.25rem;
+}
+
+/* 버튼 영역 */
+.form-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 2rem;
+}
+
+.btn-save {
+    background-color: #667eea;
+    border: none;
+    flex: 2;
+}
+
+.btn-save:hover {
+    background-color: #5a6fd6;
+}
+
+.btn-cancel {
+    flex: 1;
+}

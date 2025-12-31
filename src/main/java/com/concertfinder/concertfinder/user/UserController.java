@@ -2,6 +2,7 @@ package com.concertfinder.concertfinder.user;
 
 import com.concertfinder.concertfinder.SidoCode.DTO.SidoDTO;
 import com.concertfinder.concertfinder.SidoCode.service.SidoCodeService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -39,5 +40,21 @@ public class UserController {
     public String myPage() {
 
         return "concertfinder/user/mypage";
+    }
+
+    // 로그아웃 기능
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate();
+
+        return "redirect:/user/login";
+    }
+
+    // 회원정보 수정 페이지
+    @GetMapping("/modify")
+    public String modify(Model model) {
+
+        model.addAttribute("sidoList", sidoCodeService.getAllCode());
+        return "concertfinder/user/modify";
     }
 }

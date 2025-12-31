@@ -4,6 +4,7 @@ import com.concertfinder.concertfinder.SidoCode.service.SidoCodeService;
 import com.concertfinder.concertfinder.common.SHA256HashingEncoder;
 import com.concertfinder.concertfinder.user.DTO.JoinUserDTO;
 import com.concertfinder.concertfinder.user.DTO.LoginUserDTO;
+import com.concertfinder.concertfinder.user.DTO.ModifyUserDTO;
 import com.concertfinder.concertfinder.user.domain.User;
 import com.concertfinder.concertfinder.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -84,6 +85,62 @@ public class UserService {
             return user.getSalt();
         }
 
+        return null;
+    }
+
+    // 회원 정보 수정 메서드
+    public boolean userModify(long id, ModifyUserDTO modifyUserDTO) {
+
+        Optional<User> optionalUser = userRepository.findById(id);
+
+        String password = null;
+        String salt = null;
+
+        if(optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            password = user.getPassword();
+            salt = user.getSalt();
+
+            if(modifyUserDTO.getPassword() != null && !modifyUserDTO.getPassword().equals("")) {
+                salt = SHA256HashingEncoder.getSalt();
+                password = SHA256HashingEncoder.encode(modifyUserDTO.getPassword(), salt);
+
+            }
+            user = user.toBuilder()
+                    .nickname(modifyUserDTO.getNickname())
+                    .email(modifyUserDTO.getEmail())
+                    .attentionAreaCode(modifyUserDTO.getAttentionAreaCode())
+                    .password(password)
+                    .salt(salt)
+                    .build();
+
+            try {
+                userRepository.save(user);
+            } catch(DataAccessException e) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // 회원 정보를 얻어오는 메서드
+    public LoginUserDTO getUser(long id) {
+        Optional<User> optionalUser = userRepository.findById(id);
+
+        if(optionalUser.isPresent()) {
+            User user = optionalUser.get();
+
+            LoginUserDTO loginUserDTO = LoginUserDTO.builder()
+                    .id(user.getId())
+                    .userId(user.getUserId())
+                    .nickname(user.getNickname())
+                    .email(user.getEmail())
+                    .attentionAreaCode(user.getAttentionAreaCode())
+                    .attentionAreaName(sidoCodeService.getSidoName(user.getAttentionAreaCode()))
+                    .build();
+
+            return loginUserDTO;
+        }
         return null;
     }
 }

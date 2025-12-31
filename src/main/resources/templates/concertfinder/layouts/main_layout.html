@@ -12,7 +12,7 @@
     <th:block layout:fragment="css"></th:block>
 </head>
 <body>
-    <header class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+    <header id="dataValue" th:data-id="${session.userInfo.id}" class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
         <div class="container">
             <a class="navbar-brand font-weight-bold text-primary" th:href="@{/concert/list}">
                 <i class="fas fa-ticket-alt"></i> ConcertFinder
@@ -28,8 +28,11 @@
             </div>
         </div>
     </header>
+    <div id="wrap">
+        <th:block layout:fragment="contents">
 
-    <th:block layout:fragment="contents"></th:block>
+        </th:block>
+    </div>
 
     <footer class="bg-dark text-white py-4 mt-5">
         <div class="container text-center">
