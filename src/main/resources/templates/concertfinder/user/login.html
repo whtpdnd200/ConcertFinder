@@ -71,7 +71,7 @@
                 , data : {"userId" : userId, "password" : password}
                 , success : function(response) {
                     if(response.result == 'success') {
-                        location.href = "/concert/list";
+                        location.href = "/user/mypage";
                     } else {
                         alert("로그인 실패! 아이디 혹은 비밀번호를 확인 해주세요!");
                     }
