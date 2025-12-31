@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{concertfinder/layouts/default}">
+
+    <section layout:fragment="contents">
+        <div class="signup-container">
+            <div class="row no-gutters h-100"> <div class="col-md-5 signup-info d-none d-md-flex flex-column justify-content-center text-white p-5">
+                <h2 class="font-weight-bold mb-4">공연의 설렘을<br>함께 나누세요</h2>
+                <p>KOPIS API 기반의 스마트한 공연 커뮤니티</p>
+            </div>
+                <div class="col-md-7 bg-white p-5 d-flex flex-column justify-content-center">
+                    <div class="form-header mb-4">
+                        <h3 class="font-weight-bold">회원가입</h3>
+                        <p class="text-muted small">정보를 입력하여 계정을 생성하세요.</p>
+                    </div>
+
+                    <form id="signupForm">
+                        <div class="form-group">
+                            <div class="input-group id-group my-2 d-flex align-items-center">
+                                <input id="idInput" type="text" class="form-control" placeholder="아이디">
+                                <div class="input-group-append">
+                                    <button id="duplicateBtn" class="btn btn-outline-secondary" type="button">중복확인</button>
+                                </div>
+                            </div>
+                            <div id="idDuplicate" class="text-danger small d-none">중복된 아이디 입니다!</div>
+                            <div id="idNotDuplicate" class="text-success small d-none">사용 할 수 있는 아이디 입니다</div>
+                            <input id="passwordInput" type="password" class="form-control my-2" placeholder="비밀번호">
+                            <input id="passwordConfirmInput" type="password" class="form-control my-2" placeholder="비밀번호 확인">
+                            <div id="passwordUnChecked" class="text-danger small d-none">비밀번호가 일치하지 않습니다!</div>
+                            <div id="passwordChecked" class="text-success small d-none">비밀번호가 일치 합니다</div>
+                            <input id="nicknameInput" type="text" class="form-control my-2" placeholder="닉네임">
+                            <div id="nicknameLengthOver" class="text-danger small d-none">닉네임은 16글자 이하로만 가능합니다!</div>
+                            <div class="emailInput my-2 d-flex align-items-center">
+                                <input type="text" id="frontEmailInput" class="form-control col-6" placeholder="이메일">
+                                <span class="col-1">@</span>
+                                <select id="emailSelect" class="form-control col-5">
+                                    <option value="self">직접 입력</option>
+                                    <option>naver.com</option>
+                                    <option>gmail.com</option>
+                                    <option>daum.net</option>
+                                </select>
+                                <input type="text" id="backEmailInput" class="form-control col-5 d-none">
+                            </div>
+                            <label>선호 지역</label>
+                            <select id="areaSelect" class="form-control">
+                                <option th:each="sido : ${sidoList}" th:value="${sido.sidoCode}" th:utext="${sido.sidoName}"></option>
+                            </select>
+                        </div>
+                        <button id="joinBtn" type="submit" class="btn btn-primary btn-block py-2 font-weight-bold mt-4">가입 완료하기</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script layout:fragment="script">
+        var isDuplicate = true;
+
+        var isDuplicateChecked = false;
+
+        var isLengthOver = false;
+
+        $("#nicknameInput").on("input", function() {
+            let nickname = $(this).val();
+
+            if(nickname.length > 16) {
+                isLengthOver = true;
+                $("#nicknameLengthOver").removeClass("d-none");
+
+            } else {
+                $("#nicknameLengthOver").addClass("d-none");
+                isLengthOver = false;
+            }
+        });
+
+        $("#signupForm").on("submit", function(e) {
+            e.preventDefault();
+
+            let userId = $("#idInput").val();
+            let password = $("#passwordInput").val();
+            let passwordConfirm = $("#passwordConfirmInput").val();
+            let nickname = $("#nicknameInput").val();
+            let attentionAreaCode = $("#areaSelect").val();
+            let frontEmail = $("#frontEmailInput").val();
+            let backEmail;
+
+
+            if($("#emailSelect").hasClass("d-none")) {
+                backEmail = $("#backEmailInput").val();
+            } else {
+                backEmail = $("#emailSelect").val();
+            }
+
+
+            if(userId == "") {
+                alert("아이디를 입력하세요");
+                $("#idInput").focus();
+                return;
+            }
+
+            if(!isDuplicateChecked) {
+                alert("아이디 중복 검사를 진행 해주세요!");
+                return;
+            }
+
+            if(isDuplicate) {
+                alert("아이디가 중복 되었습니다! 다시 입력해주세요!");
+                $("#idInput").focus();
+                return;
+            }
+
+            if(password == "") {
+                alert("비밀번호를 입력하세요");
+                $("#passwordInput").focus();
+                return;
+            }
+
+            if(password != passwordConfirm) {
+                alert("비밀번호가 일치하지 않습니다");
+                $("#passwordConfirmInput").focus();
+                return;
+            }
+
+            if(nickname == "") {
+                alert("닉네임을 입력하세요");
+                $("#nicknameInput").focus();
+                return;
+            }
+
+            if(frontEmail == '') {
+                alert("이메일을 입력 해주세요!");
+                $("#frontEmailInput").focus();
+                return;
+            }
+
+            if(backEmail == '') {
+                alert("이메일을 입력 해주세요!");
+                $("#backEmailInput").focus();
+                return;
+            }
+
+            if(backEmail == 'self') {
+                alert("이메일을 선택 해주세요!");
+                return;
+            }
+
+            if(isLengthOver) {
+                alert("닉네임은 16글자 이하로 작성 해주세요!");
+                $("#nicknameInput").focus();
+                return;
+            }
+
+            let email = frontEmail + '@' + backEmail;
+
+            $.ajax({
+                type : "post"
+                , url : "/user"
+                , data : {
+                            "userId" : userId
+                            , "password" : password
+                            , "nickname" : nickname
+                            , "email" : email
+                            , "attentionAreaCode" : attentionAreaCode
+                         }
+                , success : function(response) {
+                    if(response.result == "success") {
+                        location.href = "/user/login";
+                    } else {
+                        alert("회원가입 실패!");
+                    }
+                }
+                , error : function() {
+                    alert("회원가입 에러!");
+                }
+            });
+        });
+
+        $("#emailSelect").on("change", function() {
+
+            let value = $("#emailSelect").val();
+
+            if(value == 'self') {
+                $(this).addClass("d-none");
+                $("#backEmailInput").removeClass("d-none");
+            }
+        });
+
+        $("#idInput").on("input", function() {
+            isDuplicate = true;
+            isDuplicateChecked = false;
+            $("#idDuplicate").addClass("d-none");
+            $("#idNotDuplicate").addClass("d-none");
+        });
+
+
+
+        $("#passwordConfirmInput").on("input", function() {
+            let password = $("#passwordInput").val();
+            let passwordConfirm = $("#passwordConfirmInput").val();
+
+            if(password != passwordConfirm) {
+                $("#passwordUnChecked").removeClass("d-none");
+                $("#passwordChecked").addClass("d-none");
+            } else {
+                $("#passwordUnChecked").addClass("d-none");
+                $("#passwordChecked").removeClass("d-none");
+            }
+        });
+
+        $("#duplicateBtn").on("click", function() {
+
+            let userId = $("#idInput").val();
+            if(userId == "") {
+                alert("아이디를 입력하세요");
+                $("#idInput").focus();
+                return;
+            }
+
+            $.ajax({
+                type : "get"
+                , url : "/user/id-check"
+                , data : {"userId" : userId}
+                , success : function(response) {
+                    isDuplicateChecked = true;
+                    isDuplicate = response.isDuplicate;
+
+                    if(response.isDuplicate) {
+                        $("#idDuplicate").removeClass("d-none");
+                        $("#idNotDuplicate").addClass("d-none");
+                    } else {
+                        $("#idDuplicate").addClass("d-none");
+                        $("#idNotDuplicate").removeClass("d-none");
+                    }
+                }
+                , error : function() {
+                    alert("중복검사 에러!");
+                }
+            });
+        });
+
+    </script>
+</html>
