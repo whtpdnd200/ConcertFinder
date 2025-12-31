@@ -1,4 +1,4 @@
-/* 기본 배경 설정 */
+/* 기본 배경 및 wrap 설정은 이전과 동일 */
 body {
     background-color: #f4f7f9;
     height: 100vh;
@@ -8,66 +8,66 @@ body {
     margin: 0;
 }
 
-/* 1200x800 고정 영역 및 중앙 정렬 */
 #wrap {
     width: 1200px;
-    height: 800px;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-/* 회원가입 컨테이너 스타일 */
-.signup-container {
-    width: 900px; /* 내부 실제 폼 너비 조정 */
-    height: 650px;
+/* 회원가입/로그인 공통 컨테이너 */
+.signup-container, .login-container {
+    width: 900px;
+    min-height: 600px; /* 로그인 페이지는 입력창이 적어 높이를 약간 줄여도 예쁩니다 */
     background-color: white;
     border-radius: 20px;
     overflow: hidden;
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
 }
 
-/* 왼쪽 정보 영역 (배경색 및 그라데이션) */
+.no-gutters {
+    min-height: 600px;
+}
+
+/* 왼쪽 정보 영역 (보라색 그라데이션 포인트 유지) */
 .signup-info {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    position: relative;
 }
 
-/* 인풋창 영역 */
+/* 폼 스타일 미세 조정 */
 .form-control {
-    height: 40px;
-}
-
-/* 중복확인 버튼 */
-#duplicateBtn {
-    height: 40px;
-}
-
-/* 폼 컨트롤 미세 조정 */
-.form-control, .form-select {
     border-radius: 8px;
-    padding: 10px 15px;
+    padding: 0 15px;
     border: 1px solid #e1e1e1;
+    font-size: 0.95rem;
+    height: 45px;
+    line-height: 45px;
 }
 
+/* focus 시 스타일 유지 */
 .form-control:focus {
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
     border-color: #667eea;
+    outline: none;
 }
 
 .btn-primary {
     background-color: #667eea;
     border: none;
     border-radius: 8px;
+    transition: all 0.3s ease;
 }
 
 .btn-primary:hover {
     background-color: #5a6fd6;
+    transform: translateY(-1px);
 }
 
-/* 라벨 스타일 */
-.form-label {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: #444;
+.text-primary {
+    color: #667eea !important;
+}
+
+/* 중복확인 버튼 */
+#duplicateBtn {
+    height: 45px;
 }

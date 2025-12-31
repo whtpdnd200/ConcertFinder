@@ -10,4 +10,6 @@ import java.util.List;
 public interface SidoCodeRepository extends JpaRepository<SidoCode, Byte> {
 
     public List<SidoCode> findAll();
+
+    public SidoCode findBySidoCode(byte sidoCode);
 }

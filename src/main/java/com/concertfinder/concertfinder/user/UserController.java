@@ -18,17 +18,26 @@ public class UserController {
 
     private final SidoCodeService sidoCodeService;
 
-    @GetMapping("/test")
-    @ResponseBody
-    public List<SidoDTO> test() {
 
-        return sidoCodeService.getAllCode();
-    }
-
+    // 회원가입 페이지
     @GetMapping("/join")
     public String join(Model model) {
 
         model.addAttribute("sidoList", sidoCodeService.getAllCode());
         return "concertfinder/user/join";
+    }
+
+    // 로그인 페이지
+    @GetMapping("/login")
+    public String login() {
+
+        return "concertfinder/user/login";
+    }
+
+    // 마이 페이지
+    @GetMapping("/mypage")
+    public String myPage() {
+
+        return "concertfinder/user/mypage";
     }
 }

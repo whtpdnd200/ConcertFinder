@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{concertfinder/layouts/default}">
+
+    <section layout:fragment="contents">
+        <div class="login-container">
+            <div class="row no-gutters h-100">
+                <div class="col-md-5 signup-info d-none d-md-flex flex-column justify-content-center text-white p-5">
+                    <h2 class="font-weight-bold mb-4">다시 만나서<br>반가워요!</h2>
+                    <p>오늘의 인기 공연과<br>새로운 동행들을 확인해보세요.</p>
+                </div>
+
+                <div class="col-md-7 bg-white p-5 d-flex flex-column justify-content-center">
+                    <div class="form-header mb-5 text-center">
+                        <h3 class="font-weight-bold">로그인</h3>
+                        <p class="text-muted small">서비스 이용을 위해 아이디와 비밀번호를 입력하세요.</p>
+                    </div>
+
+                    <form id="loginForm">
+                        <div class="form-group mb-4">
+                            <input id="idInput" type="text" class="form-control" name="loginId" placeholder="아이디를 입력하세요">
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <input id="passwordInput" type="password" class="form-control" name="password" placeholder="비밀번호를 입력하세요">
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="rememberMe">
+                                <label class="custom-control-label small text-muted" for="rememberMe">아이디 저장</label>
+                            </div>
+                            <a href="#" class="small text-primary text-decoration-none">비밀번호를 잊으셨나요?</a>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-block py-2 font-weight-bold mt-2">로그인</button>
+
+                        <div class="text-center mt-5">
+                            <span class="text-muted small">아직 회원이 아니신가요?</span>
+                            <a href="/user/join" class="text-primary small font-weight-bold text-decoration-none ms-2">회원가입</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+    <script layout:fragment="script">
+        $("#loginForm").on("submit", function(e) {
+            e.preventDefault();
+
+            let userId = $("#idInput").val();
+            let password = $("#passwordInput").val();
+
+            if(userId == '') {
+                alert("아이디를 입력 해주세요!");
+                $("#idInput").focus();
+                return;
+            }
+
+            if(password == '') {
+                alert("비밀번호를 입력 해주세요!");
+                $("#passwordInput").focus();
+                return;
+            }
+
+            $.ajax({
+                type : "post"
+                , url : "/user/login"
+                , data : {"userId" : userId, "password" : password}
+                , success : function(response) {
+                    if(response.result == 'success') {
+                        location.href = "/concert/list";
+                    } else {
+                        alert("로그인 실패! 아이디 혹은 비밀번호를 확인 해주세요!");
+                    }
+                }
+                , error : function() {
+                    alert("로그인 에러!");
+                }
+            });
+        });
+    </script>
+</html>

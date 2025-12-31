@@ -33,4 +33,10 @@ public class SidoCodeService {
 
         return sidoDTOList;
     }
+
+    // 시 도 이름 반환 메서드
+    public String getSidoName(byte sidoCode) {
+
+        return sidoCodeRepository.findBySidoCode(sidoCode).getSidoName();
+    }
 }
