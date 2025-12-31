@@ -1,0 +1,73 @@
+/* 기본 배경 설정 */
+body {
+    background-color: #f4f7f9;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+}
+
+/* 1200x800 고정 영역 및 중앙 정렬 */
+#wrap {
+    width: 1200px;
+    height: 800px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 회원가입 컨테이너 스타일 */
+.signup-container {
+    width: 900px; /* 내부 실제 폼 너비 조정 */
+    height: 650px;
+    background-color: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+}
+
+/* 왼쪽 정보 영역 (배경색 및 그라데이션) */
+.signup-info {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    position: relative;
+}
+
+/* 인풋창 영역 */
+.form-control {
+    height: 40px;
+}
+
+/* 중복확인 버튼 */
+#duplicateBtn {
+    height: 40px;
+}
+
+/* 폼 컨트롤 미세 조정 */
+.form-control, .form-select {
+    border-radius: 8px;
+    padding: 10px 15px;
+    border: 1px solid #e1e1e1;
+}
+
+.form-control:focus {
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+    border-color: #667eea;
+}
+
+.btn-primary {
+    background-color: #667eea;
+    border: none;
+    border-radius: 8px;
+}
+
+.btn-primary:hover {
+    background-color: #5a6fd6;
+}
+
+/* 라벨 스타일 */
+.form-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #444;
+}
