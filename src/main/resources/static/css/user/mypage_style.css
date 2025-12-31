@@ -1,0 +1,51 @@
+/* 프로필 이미지 아이콘 크기 조정 */
+.profile-avatar-icon {
+    font-size: 4rem;
+}
+
+/* 닉네임 배지(인증 아이콘) 크기 */
+.nickname-badge {
+    font-size: 1.2rem;
+}
+
+/* 공연 썸네일 박스 */
+.concert-thumb {
+    width: 50px;
+    height: 65px;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 공연 썸네일 내 기본 아이콘 색상 */
+.concert-thumb i {
+    color: #adb5bd;
+}
+
+/* 리스트 제목 말줄임 처리 (공간 확보) */
+.text-truncate-custom {
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 입장하기 버튼 미세 조정 */
+.btn-enter-chat {
+    font-size: 0.8rem;
+    border: 1px solid #ddd;
+    background-color: #ffffff;
+}
+
+.btn-enter-chat:hover {
+    background-color: #f8f9fa;
+    border-color: #ccc;
+}
+
+/* 활동 박스 내 하단 전체보기 버튼 영역 */
+.activity-footer {
+    text-align: center;
+    margin-top: 1rem;
+}

@@ -1,0 +1,64 @@
+/* user_style.css */
+
+body {
+    background-color: #f8f9fa;
+    color: #333;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+}
+
+#user-wrap {
+    min-height: 100vh;
+}
+
+/* 카드 공통 스타일 */
+.profile-card, .activity-box {
+    border-radius: 15px;
+    border: none;
+    transition: transform 0.2s ease;
+}
+
+/* 프로필 이미지 보정 */
+.profile-avatar i {
+    color: #667eea;
+}
+
+/* 텍스트 및 강조 색상 */
+.text-primary {
+    color: #667eea !important;
+}
+
+.btn-primary {
+    background-color: #667eea;
+    border-color: #667eea;
+}
+
+.btn-outline-primary {
+    color: #667eea;
+    border-color: #667eea;
+}
+
+.btn-outline-primary:hover {
+    background-color: #667eea;
+    border-color: #667eea;
+    color: white;
+}
+
+/* 콘서트 썸네일 플레이스홀더 */
+.concert-thumb {
+    width: 50px;
+    height: 70px;
+    background-color: #eee;
+    border-radius: 5px;
+}
+
+/* 뱃지 스타일 */
+.badge-primary {
+    background-color: #764ba2;
+    font-weight: 500;
+    padding: 5px 10px;
+}
+
+/* 섹션 타이틀 */
+.border-bottom {
+    border-bottom: 2px solid #f1f1f1 !important;
+}
