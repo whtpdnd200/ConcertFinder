@@ -10,6 +10,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Configuration
 @EnableConfigurationProperties({KopisProperties.class})
 @RequiredArgsConstructor
+// 웹 클라이언트 객체를 스프링 빈으로 등록하고 사용하기 위해 만드는 클래스
 public class PropertiesConfiguration {
 
     private final KopisProperties kopisProperties;
