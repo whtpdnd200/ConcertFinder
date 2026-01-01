@@ -1,0 +1,126 @@
+/* 검색 섹션: 상태 필터 제거 후 레이아웃 조정 */
+.search-section {
+    background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+    border-radius: 15px;
+}
+
+.filter-select {
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    height: 50px;
+    font-weight: 500;
+}
+
+.search-input {
+    border-radius: 10px 0 0 10px;
+    border: 1px solid #ddd;
+    height: 50px;
+}
+
+.btn-search {
+    border-radius: 0 10px 10px 0;
+    background-color: #667eea;
+    color: white;
+    width: 70px;
+    font-size: 1.2rem;
+}
+
+/* 공연 카드: 콘서트 전문 사이트답게 포스터 강조 */
+.concert-card {
+    border: none;
+    border-radius: 15px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    background: #fff;
+}
+
+.concert-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(102, 126, 234, 0.15) !important;
+}
+
+.card-img-wrapper {
+    position: relative;
+    height: 350px; /* 포스터 세로 비율 강조 */
+    overflow: hidden;
+}
+
+.card-img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* 공연 상태 태그 (API 데이터 기반) */
+.status-badge {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    padding: 5px 12px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    z-index: 10;
+}
+
+.badge-performing { background-color: #28a745; color: white; } /* 공연중 */
+.badge-upcoming { background-color: #ffc107; color: #333; }    /* 공연예정 */
+.badge-end { background-color: #6c757d; color: white; }         /* 공연종료 */
+
+/* 찜 버튼 */
+.like-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(255,255,255,0.9);
+    border: none;
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ff4d4d;
+    transition: all 0.2s;
+}
+
+/* 단순화된 페이지네이션 스타일 */
+.pagination-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-top: 50px;
+}
+
+.btn-page {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 1px solid #667eea;
+    background-color: white;
+    color: #667eea;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    font-size: 1.2rem;
+}
+
+.btn-page:hover:not(:disabled) {
+    background-color: #667eea;
+    color: white;
+    transform: scale(1.1);
+}
+
+.btn-page:disabled {
+    border-color: #dee2e6;
+    color: #dee2e6;
+    cursor: not-allowed;
+}
+
+.page-indicator {
+    font-weight: 600;
+    color: #495057;
+    font-size: 1rem;
+}

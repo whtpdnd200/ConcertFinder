@@ -20,6 +20,22 @@ public class UserService {
     private final UserRepository userRepository;
     private final SidoCodeService sidoCodeService;
 
+    // LoginUserDTO에 User 정보 담아주는 함수
+    public LoginUserDTO addDTO(Optional<User> oUser) {
+        User user = oUser.get();
+
+        LoginUserDTO loginUserDTO = LoginUserDTO.builder()
+                .id(user.getId())
+                .userId(user.getUserId())
+                .nickname(user.getNickname())
+                .email(user.getEmail())
+                .attentionAreaCode(user.getAttentionAreaCode())
+                .attentionAreaName(sidoCodeService.getSidoName(user.getAttentionAreaCode()))
+                .build();
+
+        return loginUserDTO;
+    }
+
     // 회원가입 : 아이디 중복검사 메서드
     public boolean isDuplicate(String userId) {
 
@@ -56,18 +72,8 @@ public class UserService {
 
             Optional<User> optionalUser = userRepository.findByUserIdAndPassword(userId, SHA256HashingEncoder.encode(password, salt));
             if(optionalUser.isPresent()) {
-                User user = optionalUser.get();
 
-                LoginUserDTO loginUserDTO = LoginUserDTO.builder()
-                        .id(user.getId())
-                        .userId(user.getUserId())
-                        .nickname(user.getNickname())
-                        .email(user.getEmail())
-                        .attentionAreaCode(user.getAttentionAreaCode())
-                        .attentionAreaName(sidoCodeService.getSidoName(user.getAttentionAreaCode()))
-                        .build();
-
-                return loginUserDTO;
+                return addDTO(optionalUser);
             }
         }
 
@@ -128,18 +134,8 @@ public class UserService {
         Optional<User> optionalUser = userRepository.findById(id);
 
         if(optionalUser.isPresent()) {
-            User user = optionalUser.get();
 
-            LoginUserDTO loginUserDTO = LoginUserDTO.builder()
-                    .id(user.getId())
-                    .userId(user.getUserId())
-                    .nickname(user.getNickname())
-                    .email(user.getEmail())
-                    .attentionAreaCode(user.getAttentionAreaCode())
-                    .attentionAreaName(sidoCodeService.getSidoName(user.getAttentionAreaCode()))
-                    .build();
-
-            return loginUserDTO;
+            return addDTO(optionalUser);
         }
         return null;
     }
