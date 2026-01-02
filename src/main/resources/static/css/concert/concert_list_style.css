@@ -124,3 +124,49 @@
     color: #495057;
     font-size: 1rem;
 }
+
+/* 선호 지역 표시 섹션 스타일 */
+.preference-info-section {
+    padding: 20px 0;
+    margin-bottom: 30px;
+    border-bottom: 1px solid #eee; /* 리스트와 구분감을 줍니다 */
+}
+
+.preference-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.preference-title i {
+    color: #ff4d4d; /* 핀 아이콘 색상 (원하는 색으로 변경) */
+}
+
+/* 지역명 강조 (Highlight) */
+.highlight-area {
+    color: #ff4d4d; /* 브랜드 포인트 컬러 */
+    position: relative;
+    padding: 0 4px;
+}
+
+/* 지역명 아래에 살짝 형광펜 효과 (선택사항) */
+.highlight-area::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    left: 0;
+    width: 100%;
+    height: 8px;
+    background-color: rgba(255, 77, 77, 0.15);
+    z-index: -1;
+}
+
+.preference-subtitle {
+    font-size: 0.95rem;
+    color: #666;
+    margin-left: 32px; /* 아이콘 두께만큼 띄워서 정렬 */
+}
