@@ -16,16 +16,16 @@
             <section class="search-section p-4 mb-5 shadow-sm">
                 <form id="searchForm" class="row no-gutters justify-content-center">
                     <div class="col-md-3 px-1">
-                        <select class="form-control filter-select">
+                        <select id="areaSelect" class="form-control filter-select">
                             <option value="">모든 지역</option>
                             <option th:each="sido : ${sidoList}" th:value="${sido.sidoCode}" th:utext="${sido.sidoName}"></option>
                         </select>
                     </div>
                     <div class="col-md-7 px-1">
                         <div class="input-group">
-                            <input type="text" class="form-control search-input" placeholder="아티스트명 또는 콘서트 제목으로 검색">
+                            <input id="keywordInput" type="text" class="form-control search-input" placeholder="아티스트명 또는 콘서트 제목으로 검색">
                             <div class="input-group-append">
-                                <button class="btn btn-search" type="button">
+                                <button id="searchBtn" class="btn btn-search" type="submit">
                                     <i class="bi bi-search"></i>
                                 </button>
                             </div>
@@ -123,6 +123,14 @@
                 }
                 page++;
                 location.href = "/concert/list?page=" + page;
+            });
+
+            $("#searchForm").on("submit", function(e) {
+                e.preventDefault();
+                let areaCode = $("#areaSelect").val();
+                let keyword = $("#keywordInput").val();
+
+                location.href = "/concert/search?code=" + areaCode + "&keyword=" + keyword;
             });
         }
     </script>

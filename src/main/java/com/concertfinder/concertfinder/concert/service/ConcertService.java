@@ -1,6 +1,7 @@
 package com.concertfinder.concertfinder.concert.service;
 
-import com.concertfinder.concertfinder.concert.DTO.ResponsesDTO;
+import com.concertfinder.concertfinder.SidoCode.service.SidoCodeService;
+import com.concertfinder.concertfinder.concert.DTO.ParentsResponsesDTO;
 import com.concertfinder.concertfinder.configuration.properties.KopisProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,12 +16,12 @@ public class ConcertService {
 
     private final WebClient kopisWebClient;
     private final KopisProperties kopisProperties;
+    private final SidoCodeService sidoCodeService;
 
-    public ResponsesDTO getResponseDTO(ResponsesDTO responsesDTO, int rows) {
-
-        int size = responsesDTO.getLists().size();
+    public ParentsResponsesDTO getResponseDTO(ParentsResponsesDTO responsesDTO, int rows) {
 
         if(responsesDTO != null && responsesDTO.getLists() != null) {
+            int size = responsesDTO.getLists().size();
             if(size > rows) {
                 responsesDTO.setHasNext(true);
                 responsesDTO.getLists().remove(size - 1);
@@ -33,7 +34,7 @@ public class ConcertService {
     }
 
     // 기본 화면의 콘서트 목록 출력 메서드
-    public ResponsesDTO getList(byte code, Integer page) {
+    public ParentsResponsesDTO getList(byte code, Integer page) {
 
         if(page == null) {
             page = 1;
@@ -43,7 +44,7 @@ public class ConcertService {
 
         final int rows = 8;
 
-        ResponsesDTO responsesDTO = kopisWebClient.get()
+        ParentsResponsesDTO responsesDTO = kopisWebClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/pblprfr")
                         .queryParam("service", kopisProperties.getKey())
@@ -55,9 +56,12 @@ public class ConcertService {
                         .queryParam("signgucode", code)
                         .build())
                 .retrieve()
-                .bodyToMono(ResponsesDTO.class)
+                .bodyToMono(ParentsResponsesDTO.class)
                 .block();
 
         return getResponseDTO(responsesDTO, rows);
     }
+
+    // 검색 키워드와 지역에 일치하는 콘서트 목록 출력
+
 }

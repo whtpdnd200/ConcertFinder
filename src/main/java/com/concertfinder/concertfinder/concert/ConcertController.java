@@ -5,6 +5,7 @@ import com.concertfinder.concertfinder.concert.DTO.ResponsesDTO;
 import com.concertfinder.concertfinder.concert.service.ConcertService;
 import com.concertfinder.concertfinder.user.DTO.LoginUserDTO;
 import jakarta.servlet.http.HttpSession;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -31,5 +32,6 @@ public class ConcertController {
         model.addAttribute("concertList", concertService.getList(loginUserDTO.getAttentionAreaCode(), page));
         return "concertfinder/concert/list";
     }
+
 
 }
