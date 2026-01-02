@@ -35,8 +35,11 @@ public class SidoCodeService {
     }
 
     // 시 도 이름 반환 메서드
-    public String getSidoName(byte sidoCode) {
+    public String getSidoName(String sidoCode) {
 
+        if(sidoCode == null || sidoCode.equals("") ||  sidoCode.equals("00")) {
+            return "모든 지역";
+        }
         return sidoCodeRepository.findBySidoCode(sidoCode).getSidoName();
     }
 }

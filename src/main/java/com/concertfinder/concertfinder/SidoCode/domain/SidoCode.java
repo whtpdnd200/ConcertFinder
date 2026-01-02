@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 public class SidoCode {
 
     @Id
-    private byte sidoCode;
+    private String sidoCode;
 
     private String sidoName;
 
