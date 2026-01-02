@@ -38,5 +38,8 @@ public class ConcertController {
         return "concertfinder/concert/list";
     }
 
-
+    @GetMapping("/detail")
+    public String detail() {
+        return "concertfinder/concert/detail";
+    }
 }
