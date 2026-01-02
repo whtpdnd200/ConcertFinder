@@ -2,6 +2,7 @@ package com.concertfinder.concertfinder.concert;
 
 import com.concertfinder.concertfinder.concert.service.ConcertService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,7 +21,7 @@ public class ConcertController {
         return "concertfinder/concert/list";
     }
 
-    @GetMapping("/test")
+    @GetMapping(value = "/test", produces = MediaType.APPLICATION_XML_VALUE)
     @ResponseBody
     public String test() {
 

@@ -2,6 +2,7 @@ package com.concertfinder.concertfinder.concert.service;
 
 import com.concertfinder.concertfinder.configuration.properties.KopisProperties;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -25,8 +26,10 @@ public class ConcertService {
                         .queryParam("cpage", 1)
                         .queryParam("rows", 5)
                         .build())
+                .accept(MediaType.valueOf(MediaType.APPLICATION_XML_VALUE))
                 .retrieve()
-                .bodyToMono(String.class).block();
+                .bodyToMono(String.class)
+                .block();
 
     }
 }

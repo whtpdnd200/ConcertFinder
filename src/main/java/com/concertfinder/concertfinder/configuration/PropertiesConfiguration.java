@@ -5,6 +5,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.codec.xml.Jaxb2XmlDecoder;
+import org.springframework.http.codec.xml.Jaxb2XmlEncoder;
+import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
@@ -21,10 +24,14 @@ public class PropertiesConfiguration {
 
         return WebClient.builder()
                 .baseUrl(kopisProperties.getBaseUrl())
-                .defaultHeaders(headers -> {
-                    headers.add("Accept", "application/xml");
-                    headers.add("Content-Type", "application/xml");
-                })
+                .exchangeStrategies(ExchangeStrategies.builder()
+                        .codecs(clientCodecConfigurer ->
+                                clientCodecConfigurer
+                                        .defaultCodecs().jaxb2Encoder(new Jaxb2XmlEncoder()))
+                        .codecs(clientCodecConfigurer ->
+                                clientCodecConfigurer
+                                        .defaultCodecs().jaxb2Decoder(new Jaxb2XmlDecoder()))
+                        .build())
                 .build();
     }
 }
