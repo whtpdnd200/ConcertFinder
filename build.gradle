@@ -53,6 +53,10 @@ dependencies {
 
     // 쿼리 결과 확인 의존성
     implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0'
+
+    // xml과 객체 매핑 도움 의존성
+    implementation 'org.glassfish.jaxb:jaxb-runtime:4.0.4'
+    implementation 'jakarta.xml-bind:jakarta.xml.bind-api:4.0.1'
 }
 
 tasks.named('test') {
