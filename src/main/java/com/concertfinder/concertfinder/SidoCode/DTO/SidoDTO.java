@@ -7,6 +7,6 @@ import lombok.Getter;
 @Builder(toBuilder = true)
 public class SidoDTO {
 
-    private byte sidoCode;
+    private String sidoCode;
     private String sidoName;
 }

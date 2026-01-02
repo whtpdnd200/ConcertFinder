@@ -11,5 +11,5 @@ public class JoinUserDTO {
     private String password;
     private String nickname;
     private String email;
-    private byte attentionAreaCode;
+    private String attentionAreaCode;
 }

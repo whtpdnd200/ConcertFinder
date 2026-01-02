@@ -26,7 +26,7 @@ public class User {
     private String salt;
     private String nickname;
     private String email;
-    private byte attentionAreaCode;
+    private String attentionAreaCode;
 
     @CreationTimestamp
     private LocalDateTime createdAt;

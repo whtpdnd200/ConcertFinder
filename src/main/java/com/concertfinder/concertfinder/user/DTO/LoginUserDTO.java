@@ -11,7 +11,7 @@ public class LoginUserDTO {
     private String userId;
     private String nickname;
     private String email;
-    private byte attentionAreaCode;
+    private String attentionAreaCode;
     private String attentionAreaName;
 
 }

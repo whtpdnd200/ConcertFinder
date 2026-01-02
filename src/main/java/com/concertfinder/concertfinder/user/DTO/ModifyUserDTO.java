@@ -11,6 +11,6 @@ public class ModifyUserDTO {
     private String nickname;
     private String password;
     private String email;
-    private byte attentionAreaCode;
+    private String attentionAreaCode;
 
 }

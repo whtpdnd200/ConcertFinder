@@ -16,16 +16,17 @@
             <section class="search-section p-4 mb-5 shadow-sm">
                 <form id="searchForm" class="row no-gutters justify-content-center">
                     <div class="col-md-3 px-1">
-                        <select class="form-control filter-select">
-                            <option value="">모든 지역</option>
-                            <option th:each="sido : ${sidoList}" th:value="${sido.sidoCode}" th:utext="${sido.sidoName}"></option>
+                        <select id="areaSelect" class="form-control filter-select">
+                            <option th:if="${areaCode != null}" th:value="${areaCode}" th:text="${areaName}" selected>모든 지역</option>
+                            <option th:unless="${areaCode != null}" value="00">모든 지역</option>
+                            <option th:if="${areaCode != sido.sidoCode}" th:each="sido : ${sidoList}" th:value="${sido.sidoCode}" th:utext="${sido.sidoName}"></option>
                         </select>
                     </div>
                     <div class="col-md-7 px-1">
                         <div class="input-group">
-                            <input type="text" class="form-control search-input" placeholder="아티스트명 또는 콘서트 제목으로 검색">
+                            <input th:value="${keyword}" id="keywordInput" type="text" class="form-control search-input" placeholder="아티스트명 또는 콘서트 제목으로 검색">
                             <div class="input-group-append">
-                                <button class="btn btn-search" type="button">
+                                <button id="searchBtn" class="btn btn-search" type="submit">
                                     <i class="bi bi-search"></i>
                                 </button>
                             </div>
@@ -36,7 +37,12 @@
             <div class="preference-info-section">
                 <div class="container">
                     <h2 class="preference-title">
-                        <i class="fas fa-map-marker-alt"></i> 선호 지역 <span th:text="${session.userInfo.getAttentionAreaName()}" class="highlight-area">서울</span>의 콘서트 목록
+                        <div th:if="${areaCode == '' || areaCode == null}" >
+                            <i class="fas fa-map-marker-alt"></i> 선호 지역 <span th:text="${session.userInfo.getAttentionAreaName()}" class="highlight-area">서울</span>의 콘서트 목록
+                        </div>
+                        <div th:if="${areaCode != '' && areaCode != null}">
+                            <i class="fas fa-map-marker-alt"></i> 검색 지역 <span th:text="${areaName}" class="highlight-area">서울</span>의 콘서트 목록
+                        </div>
                     </h2>
                     <p class="preference-subtitle">현재 해당 지역에서 진행 중이거나 예정된 공연입니다.</p>
                 </div>
@@ -68,8 +74,11 @@
             <div th:unless="${concertList.lists != null}" class="empty-concert-section">
                 <div class="empty-icon">
                     <i class="fas fa-calendar-times"></i> </div>
-                <h3 class="empty-message">
+                <h3 th:if="${areaCode == '' || areaCode == null}" class="empty-message">
                     현재 <span class="target-area" th:text="${session.userInfo.getAttentionAreaName()}">서울</span> 지역에 등록된 공연이 없습니다.
+                </h3>
+                <h3 th:if="${areaCode != '' && areaCode != null}" class="empty-message">
+                    현재 <span class="target-area" th:text="${areaName}">서울</span> 지역에 등록된 공연이 없습니다.
                 </h3>
                 <p class="empty-hint">다른 지역을 검색하거나, 나중에 다시 확인해 주세요!</p>
             </div>
@@ -99,10 +108,24 @@
 
             if(!url.has("page")) {
                 url.append("page", "1");
-
             }
 
             var page = url.get("page");
+
+            var areaCode = url.get("code");
+
+            if(areaCode == null) {
+                areaCode = '';
+            }
+
+            var keyword = url.get("keyword");
+
+            if(keyword == null) {
+                keyword = '';
+            }
+
+            console.log(areaCode);
+            console.log(keyword);
 
             $("#currentPage").text(page);
 
@@ -112,17 +135,27 @@
                     return;
                 }
                 page--;
-                location.href = "/concert/list?page=" + page;
+                location.href = "/concert/list?code=" + areaCode + "&keyword=" + keyword + "&page=" + page;
             });
 
             $("#nextPage").on("click", function() {
                 let hasNext = $("#contentsHeader").data("next");
+
                 if(!hasNext) {
                     alert("다음 페이지가 없습니다!");
                     return;
                 }
                 page++;
-                location.href = "/concert/list?page=" + page;
+                location.href = "/concert/list?code=" + areaCode + "&keyword=" + keyword + "&page=" + page;
+            });
+
+            $("#searchForm").on("submit", function(e) {
+                e.preventDefault();
+                let areaCode = $("#areaSelect").val();
+                let keyword = $("#keywordInput").val();
+
+
+                location.href = "/concert/list?code=" + areaCode + "&keyword=" + keyword;
             });
         }
     </script>
