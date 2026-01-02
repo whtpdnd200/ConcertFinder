@@ -15,4 +15,6 @@ public class ResponsesDTO {
 
     @XmlElement(name = "db")
     private List<ConcertInfoDTO> lists;
+
+    private boolean hasNext;
 }

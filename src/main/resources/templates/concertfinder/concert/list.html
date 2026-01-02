@@ -7,9 +7,8 @@
     <title>콘서트 목록 탐색</title>
     <link layout:fragment="css" rel="stylesheet" th:href="@{/css/concert/concert_list_style.css}">
 </head>
-    <section layout:fragment="contents">
+    <section th:data-next="${concertList.hasNext}" id="contentsHeader" layout:fragment="contents">
         <div class="container py-5">
-
             <div class="mb-5 text-center">
                 <h2 class="font-weight-bold">놓치지 말아야 할 <span class="text-primary">콘서트</span></h2>
                 <p class="text-muted">전국의 모든 대중음악 공연 정보를 한눈에 확인하세요.</p>
@@ -73,8 +72,6 @@
                     현재 <span class="target-area" th:text="${session.userInfo.getAttentionAreaName()}">서울</span> 지역에 등록된 공연이 없습니다.
                 </h3>
                 <p class="empty-hint">다른 지역을 검색하거나, 나중에 다시 확인해 주세요!</p>
-
-                <a href="/concert/list" class="btn-back-home">다른 공연 보러가기</a>
             </div>
 
             <nav class="mt-5">
@@ -95,17 +92,38 @@
     </section>
     <script layout:fragment="script">
 
-        var url = new URL(location.href).searchParams;
+        window.onload = function() {
 
-        var page = url.get("page");
+            var url = new URL(location.href).searchParams;
 
-        console.log(url);
-        console.log(page);
 
-        $("#nextPage").on("click", function() {
-            page++;
-            console.log(page);
-            location.href = "/concert/list?page=" + page;
-        });
+            if(!url.has("page")) {
+                url.append("page", "1");
+
+            }
+
+            var page = url.get("page");
+
+            $("#currentPage").text(page);
+
+            $("#prevPage").on("click", function() {
+                if(page <= 1) {
+                    alert("첫 페이지 입니다!");
+                    return;
+                }
+                page--;
+                location.href = "/concert/list?page=" + page;
+            });
+
+            $("#nextPage").on("click", function() {
+                let hasNext = $("#contentsHeader").data("next");
+                if(!hasNext) {
+                    alert("다음 페이지가 없습니다!");
+                    return;
+                }
+                page++;
+                location.href = "/concert/list?page=" + page;
+            });
+        }
     </script>
 </html>
