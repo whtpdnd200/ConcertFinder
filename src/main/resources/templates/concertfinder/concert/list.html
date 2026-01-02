@@ -17,9 +17,8 @@
                 <form id="searchForm" class="row no-gutters justify-content-center">
                     <div class="col-md-3 px-1">
                         <select id="areaSelect" class="form-control filter-select">
-                            <option th:if="${areaCode != null}" th:value="${areaCode}" th:text="${areaName}" selected>모든 지역</option>
-                            <option th:unless="${areaCode != null}" value="00">모든 지역</option>
-                            <option th:if="${areaCode != sido.sidoCode}" th:each="sido : ${sidoList}" th:value="${sido.sidoCode}" th:utext="${sido.sidoName}"></option>
+                            <option th:selected="${areaCode == null || areaCode == '00'}" value="00">모든 지역</option>
+                            <option th:selected="${areaCode == sido.sidoCode}" th:each="sido : ${sidoList}" th:value="${sido.sidoCode}" th:text="${sido.sidoName}"></option>
                         </select>
                     </div>
                     <div class="col-md-7 px-1">
