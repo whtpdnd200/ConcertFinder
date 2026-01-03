@@ -48,26 +48,30 @@
             </div>
             <div th:if="${concertList.lists != null}" class="row">
                 <div th:each="info : ${concertList.lists}" class="info col-lg-3 col-md-6 mb-4">
-                    <div class="card concert-card shadow-sm h-100">
-                        <div th:switch="${info.state}" class="card-img-wrapper">
-                            <span th:case="공연중" class="status-badge badge-performing shadow-sm">공연중</span>
-                            <span th:case="공연예정" class="status-badge badge-upcoming shadow-sm">공연예정</span>
-                            <button class="like-btn shadow-sm"><i class="bi bi-heart"></i></button>
-                            <img th:src="${info.posterPath}" alt="콘서트 포스터">
-                        </div>
-                        <div class="card-body p-3">
-                            <h6 th:text="${info.concertName}" class="card-title font-weight-bold mb-2 text-truncate">2025 임영웅 콘서트 [IM HERO]</h6>
-                            <div class="small text-muted">
-                                <p class="mb-1"><i class="bi bi-geo-alt-fill mr-1"></i><span th:text="${info.area}">서울월드컵경기장</span></p>
-                                <div class="d-flex">
-                                    <p class="mb-0"><i class="bi bi-calendar-event mr-1"></i><span th:text="${info.sDate}" >2025.05.24</span></p>
-                                    <span>&nbsp;~&nbsp;</span>
-                                    <p class="mb-0"><span th:text="${#strings.substring(info.eDate, 5)}">2025.05.24</span></p>
-                                </div>
+                    <a th:href="@{/concert/{id}(id = ${info.concertId})}">
+                        <div class="card concert-card shadow-sm h-100">
+                            <div th:switch="${info.state}" class="card-img-wrapper">
+                                <span th:case="공연중" class="status-badge badge-performing shadow-sm">공연중</span>
+                                <span th:case="공연예정" class="status-badge badge-upcoming shadow-sm">공연예정</span>
+                                <button class="like-btn shadow-sm"><i class="bi bi-heart"></i></button>
 
+                                <img th:src="${info.posterPath}" alt="콘서트 포스터">
+                            </div>
+                            <div class="card-body p-3">
+                                <h6 th:text="${info.concertName}" class="card-title font-weight-bold mb-2 text-truncate">2025 임영웅 콘서트 [IM HERO]</h6>
+                                <div class="small text-muted">
+                                    <p class="mb-1"><i class="bi bi-geo-alt-fill mr-1"></i><span th:text="${info.area}">서울월드컵경기장</span></p>
+                                    <div class="d-flex">
+                                        <p class="mb-0"><i class="bi bi-calendar-event mr-1"></i><span th:text="${info.sDate}" >2025.05.24</span></p>
+                                        <span>&nbsp;~&nbsp;</span>
+                                        <p class="mb-0"><span th:text="${#strings.substring(info.eDate, 5)}">2025.05.24</span></p>
+                                    </div>
+
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </a>
+
                 </div>
             </div>
             <div th:unless="${concertList.lists != null}" class="empty-concert-section">

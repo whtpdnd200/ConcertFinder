@@ -8,206 +8,206 @@
     <title>상세 페이지</title>
     <link layout:fragment="css" rel="stylesheet" th:href="@{/css/concert/concert_detail_style.css}">
 </head>
-<section layout:fragment="contents" class="detail-page-wrapper">
-    <div class="container py-5">
-        <div class="row concert-main-info mb-5">
-            <div class="col-lg-4 mb-4 mb-lg-0 text-center">
-                <div class="detail-poster-wrapper shadow">
-                    <img src="https://kopis.or.kr/_next/image?url=%2Fupload%2FpfmPoster%2FPF_PF280805_251203_132359.gif&w=384&q=75" alt="공연 포스터" class="img-fluid rounded">
-                </div>
-            </div>
-
-            <div class="col-lg-8 px-lg-5">
-                <div class="d-flex align-items-center mb-2">
-                    <span class="badge-status mb-0 mr-2">공연중</span>
-                    <span class="text-muted small">대중음악</span>
-                </div>
-                <h2 class="display-5 font-weight-bold mb-4">공연 제목이 들어갑니다</h2>
-
-                <div class="info-list-container">
-                    <div class="info-item">
-                        <span class="info-label">공연기간</span>
-                        <span class="info-value">2026.01.01 ~ 2026.01.15</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">공연장소</span>
-                        <span class="info-value">서울월드컵경기장</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">관람등급</span>
-                        <span class="info-value">전체 관람가</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">티켓가격</span>
-                        <span class="info-value">무료 / 유료</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">공연시간</span>
-                        <span class="info-value">120분</span>
+    <section layout:fragment="contents" class="detail-page-wrapper">
+        <div class="container py-5">
+            <div class="row concert-main-info mb-5">
+                <div class="col-lg-4 mb-4 mb-lg-0 text-center">
+                    <div class="detail-poster-wrapper shadow">
+                        <img src="https://kopis.or.kr/_next/image?url=%2Fupload%2FpfmPoster%2FPF_PF280805_251203_132359.gif&w=384&q=75" alt="공연 포스터" class="img-fluid rounded">
                     </div>
                 </div>
 
-                <div class="action-buttons mt-5 d-flex">
-                    <button class="btn btn-like-large mr-3">
-                        <i class="bi bi-heart"></i> 관심공연
-                    </button>
-                    <a target="_blank" class="btn btn-reserve-large flex-grow-1">
-                        예매하기 <i class="bi bi-box-arrow-up-right ml-2"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <hr class="my-5">
-
-        <div class="concert-description">
-            <h4 class="font-weight-bold mb-4 border-left-primary pl-3">상세 정보</h4>
-            <div class="detail-content-images text-center">
-                <img src="" class="img-fluid mb-3" alt="상세정보">
-                <p class="text-muted py-5">상세 설명 이미지가 없습니다.</p>
-            </div>
-        </div>
-
-        <div class="concert-location-section my-5">
-            <h4 class="font-weight-bold mb-4 border-left-primary pl-3">찾아오시는 길</h4>
-            <div class="location-container shadow-sm p-4 rounded bg-white">
-                <p class="mb-3"><i class="bi bi-geo-alt-fill text-danger"></i> <span>공연장 이름</span> : <span >공연장 주소</span></p>
-                <div id="map" style="width:100%; height:400px;" class="rounded border">
-                    <div class="map-placeholder d-flex align-items-center justify-content-center h-100 bg-light">
-                        <p class="text-muted"><i class="bi bi-map mr-2"></i>지도 데이터를 로딩 중입니다...</p>
+                <div class="col-lg-8 px-lg-5">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="badge-status mb-0 mr-2">공연중</span>
+                        <span class="text-muted small">대중음악</span>
                     </div>
-                </div>
-            </div>
-        </div>
+                    <h2 class="display-5 font-weight-bold mb-4">공연 제목이 들어갑니다</h2>
 
-        <div class="concert-review-wrapper my-5">
-            <div class="d-flex justify-content-between align-items-end mb-4">
-                <div>
-                    <h4 class="font-weight-bold mb-1 border-left-primary pl-3">공연장 리뷰</h4>
-                    <p class="text-muted small ml-3 mb-0">공연장의 시야, 음향 등 생생한 후기를 확인하세요.</p>
-                </div>
-                <button class="btn btn-dark btn-sm shadow-sm" data-toggle="modal" data-target="#reviewModal">
-                    <i class="bi bi-pencil-square mr-1"></i> 리뷰 작성하기
-                </button>
-            </div>
-
-            <div class="review-summary-card shadow-sm rounded bg-white p-4 mb-4 border">
-                <div class="row align-items-center text-center">
-                    <div class="col-md-6 border-right">
-                        <div class="rating-label">평균 별점</div>
-                        <div class="rating-value">
-                            <span class="text-dark">4.8</span>
-                            <span class="rating-max">/ 5.0</span>
+                    <div class="info-list-container">
+                        <div class="info-item">
+                            <span class="info-label">공연기간</span>
+                            <span class="info-value">2026.01.01 ~ 2026.01.15</span>
                         </div>
-                        <div class="rating-stars-visual text-warning">
-                            <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i>
+                        <div class="info-item">
+                            <span class="info-label">공연장소</span>
+                            <span class="info-value">서울월드컵경기장</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">관람등급</span>
+                            <span class="info-value">전체 관람가</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">티켓가격</span>
+                            <span class="info-value">무료 / 유료</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">공연시간</span>
+                            <span class="info-value">120분</span>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="rating-label">전체 리뷰</div>
-                        <div class="review-count-display">
-                            <span class="count-num">0</span><span class="count-unit">건</span>
-                        </div>
-                        <p class="small text-muted mb-0">최근 1개월간 등록된 후기 기준</p>
-                    </div>
-                </div>
-            </div>
 
-            <div class="review-list-container shadow-sm rounded bg-white border">
-                <div class="review-post p-4 border-bottom">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <div>
-                            <span class="review-author font-weight-bold mr-2">사용자</span>
-                            <span class="review-stars text-warning small">
-                        <i class="bi bi-star-fill"></i>
-                    </span>
-                        </div>
-                        <span class="text-muted small">2026-01-03</span>
-                    </div>
-                    <p class="review-body text-secondary mb-0">정말 만족스러운 공연장이었습니다!</p>
-                </div>
-
-                <div class="empty-review text-center py-5">
-                    <i class="bi bi-chat-dots d-block mb-3 text-muted" style="font-size: 2.5rem;"></i>
-                    <p class="text-muted">아직 작성된 리뷰가 없습니다.<br>첫 번째 후기의 주인공이 되어보세요!</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="modal fade" id="reviewModal" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content border-0 shadow">
-                    <div class="modal-header bg-dark text-white">
-                        <h5 class="modal-title font-weight-bold">공연장 리뷰 작성</h5>
-                        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
+                    <div class="action-buttons mt-5 d-flex">
+                        <button class="btn btn-like-large mr-3">
+                            <i class="bi bi-heart"></i> 관심공연
                         </button>
+                        <a target="_blank" class="btn btn-reserve-large flex-grow-1">
+                            예매하기 <i class="bi bi-box-arrow-up-right ml-2"></i>
+                        </a>
                     </div>
-                    <form id="reviewForm">
-                        <div class="modal-body p-4">
-                            <div class="form-group text-center mb-4">
-                                <label class="d-block font-weight-bold">이 공연장은 어떠셨나요?</label>
-                                <div class="star-rating-input text-warning" style="font-size: 1.8rem; cursor: pointer;">
-                                    <i class="bi bi-star" data-value="1"></i>
-                                    <i class="bi bi-star" data-value="2"></i>
-                                    <i class="bi bi-star" data-value="3"></i>
-                                    <i class="bi bi-star" data-value="4"></i>
-                                    <i class="bi bi-star" data-value="5"></i>
-                                    <input type="hidden" name="rating" id="ratingValue" value="5">
+                </div>
+            </div>
+
+            <hr class="my-5">
+
+            <div class="concert-description">
+                <h4 class="font-weight-bold mb-4 border-left-primary pl-3">상세 정보</h4>
+                <div class="detail-content-images text-center">
+                    <img src="" class="img-fluid mb-3" alt="상세정보">
+                    <p class="text-muted py-5">상세 설명 이미지가 없습니다.</p>
+                </div>
+            </div>
+
+            <div class="concert-location-section my-5">
+                <h4 class="font-weight-bold mb-4 border-left-primary pl-3">찾아오시는 길</h4>
+                <div class="location-container shadow-sm p-4 rounded bg-white">
+                    <p class="mb-3"><i class="bi bi-geo-alt-fill text-danger"></i> <span>공연장 이름</span> : <span >공연장 주소</span></p>
+                    <div id="map" style="width:100%; height:400px;" class="rounded border">
+                        <div class="map-placeholder d-flex align-items-center justify-content-center h-100 bg-light">
+                            <p class="text-muted"><i class="bi bi-map mr-2"></i>지도 데이터를 로딩 중입니다...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="concert-review-wrapper my-5">
+                <div class="d-flex justify-content-between align-items-end mb-4">
+                    <div>
+                        <h4 class="font-weight-bold mb-1 border-left-primary pl-3">공연장 리뷰</h4>
+                        <p class="text-muted small ml-3 mb-0">공연장의 시야, 음향 등 생생한 후기를 확인하세요.</p>
+                    </div>
+                    <button class="btn btn-dark btn-sm shadow-sm" data-toggle="modal" data-target="#reviewModal">
+                        <i class="bi bi-pencil-square mr-1"></i> 리뷰 작성하기
+                    </button>
+                </div>
+
+                <div class="review-summary-card shadow-sm rounded bg-white p-4 mb-4 border">
+                    <div class="row align-items-center text-center">
+                        <div class="col-md-6 border-right">
+                            <div class="rating-label">평균 별점</div>
+                            <div class="rating-value">
+                                <span class="text-dark">4.8</span>
+                                <span class="rating-max">/ 5.0</span>
+                            </div>
+                            <div class="rating-stars-visual text-warning">
+                                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="rating-label">전체 리뷰</div>
+                            <div class="review-count-display">
+                                <span class="count-num">0</span><span class="count-unit">건</span>
+                            </div>
+                            <p class="small text-muted mb-0">최근 1개월간 등록된 후기 기준</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="review-list-container shadow-sm rounded bg-white border">
+                    <div class="review-post p-4 border-bottom">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <span class="review-author font-weight-bold mr-2">사용자</span>
+                                <span class="review-stars text-warning small">
+                            <i class="bi bi-star-fill"></i>
+                        </span>
+                            </div>
+                            <span class="text-muted small">2026-01-03</span>
+                        </div>
+                        <p class="review-body text-secondary mb-0">정말 만족스러운 공연장이었습니다!</p>
+                    </div>
+
+                    <div class="empty-review text-center py-5">
+                        <i class="bi bi-chat-dots d-block mb-3 text-muted" style="font-size: 2.5rem;"></i>
+                        <p class="text-muted">아직 작성된 리뷰가 없습니다.<br>첫 번째 후기의 주인공이 되어보세요!</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="reviewModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content border-0 shadow">
+                        <div class="modal-header bg-dark text-white">
+                            <h5 class="modal-title font-weight-bold">공연장 리뷰 작성</h5>
+                            <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <form id="reviewForm">
+                            <div class="modal-body p-4">
+                                <div class="form-group text-center mb-4">
+                                    <label class="d-block font-weight-bold">이 공연장은 어떠셨나요?</label>
+                                    <div class="star-rating-input text-warning" style="font-size: 1.8rem; cursor: pointer;">
+                                        <i class="bi bi-star" data-value="1"></i>
+                                        <i class="bi bi-star" data-value="2"></i>
+                                        <i class="bi bi-star" data-value="3"></i>
+                                        <i class="bi bi-star" data-value="4"></i>
+                                        <i class="bi bi-star" data-value="5"></i>
+                                        <input type="hidden" name="rating" id="ratingValue" value="5">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <textarea class="form-control" name="content" rows="4" placeholder="시설의 청결도, 시야, 음향 등 상세한 후기를 남겨주세요." required></textarea>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <textarea class="form-control" name="content" rows="4" placeholder="시설의 청결도, 시야, 음향 등 상세한 후기를 남겨주세요." required></textarea>
+                            <div class="modal-footer border-0 p-4">
+                                <button type="button" class="btn btn-light" data-dismiss="modal">취소</button>
+                                <button type="submit" class="btn btn-danger px-4">등록하기</button>
                             </div>
-                        </div>
-                        <div class="modal-footer border-0 p-4">
-                            <button type="button" class="btn btn-light" data-dismiss="modal">취소</button>
-                            <button type="submit" class="btn btn-danger px-4">등록하기</button>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="concert-community-section my-5">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="font-weight-bold mb-0 border-left-primary pl-3">함께하는 커뮤니티</h4>
+                    <a href="/community/write" class="btn btn-dark btn-sm">글쓰기</a>
+                </div>
+                <div class="community-category-filter mb-3 d-flex flex-wrap shadow-sm p-2 rounded bg-light border">
+                    <button class="btn btn-category active" data-category="all">전체글</button>
+                    <button class="btn btn-category" data-category="free">자유글</button>
+                    <button class="btn btn-category" data-category="recruit">동행 모집</button>
+                    <button class="btn btn-category" data-category="ticket">티켓 양도</button>
+                </div>
+                <div class="table-responsive shadow-sm rounded">
+                    <table class="table table-hover bg-white mb-0">
+                        <thead class="thead-light">
+                        <tr>
+                            <th scope="col" style="width: 10%">번호</th>
+                            <th scope="col" style="width: 50%">제목</th>
+                            <th scope="col" style="width: 15%">작성자</th>
+                            <th scope="col" style="width: 15%">작성일</th>
+                            <th scope="col" style="width: 10%">조회</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td><a href="#" class="text-dark">이번 콘서트 가시는 분 계신가요?</a></td>
+                            <td>재미니</td>
+                            <td>2026-01-03</td>
+                            <td>125</td>
+                        </tr>
+                        <tr>
+                            <td colspan="5" class="text-center py-5 text-muted">작성된 게시글이 없습니다.</td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
-
-        <div class="concert-community-section my-5">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h4 class="font-weight-bold mb-0 border-left-primary pl-3">함께하는 커뮤니티</h4>
-                <a href="/community/write" class="btn btn-dark btn-sm">글쓰기</a>
-            </div>
-            <div class="community-category-filter mb-3 d-flex flex-wrap shadow-sm p-2 rounded bg-light border">
-                <button class="btn btn-category active" data-category="all">전체글</button>
-                <button class="btn btn-category" data-category="free">자유글</button>
-                <button class="btn btn-category" data-category="recruit">동행 모집</button>
-                <button class="btn btn-category" data-category="ticket">티켓 양도</button>
-            </div>
-            <div class="table-responsive shadow-sm rounded">
-                <table class="table table-hover bg-white mb-0">
-                    <thead class="thead-light">
-                    <tr>
-                        <th scope="col" style="width: 10%">번호</th>
-                        <th scope="col" style="width: 50%">제목</th>
-                        <th scope="col" style="width: 15%">작성자</th>
-                        <th scope="col" style="width: 15%">작성일</th>
-                        <th scope="col" style="width: 10%">조회</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td><a href="#" class="text-dark">이번 콘서트 가시는 분 계신가요?</a></td>
-                        <td>재미니</td>
-                        <td>2026-01-03</td>
-                        <td>125</td>
-                    </tr>
-                    <tr>
-                        <td colspan="5" class="text-center py-5 text-muted">작성된 게시글이 없습니다.</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</section>
+    </section>
 
     <script layout:fragment="script">
         $('.star-rating-input i').on('click', function() {
