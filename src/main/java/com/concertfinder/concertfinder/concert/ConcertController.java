@@ -20,6 +20,7 @@ public class ConcertController {
     private final ConcertService concertService;
     private final SidoCodeService sidoCodeService;
 
+    // 콘서트 목록 페이지
     @GetMapping("/list")
     public String list(Model model
                        , Integer page
@@ -39,6 +40,7 @@ public class ConcertController {
         return "concertfinder/concert/list";
     }
 
+    // 콘서트 상세 페이지
     @GetMapping("/{id}")
     public String detail(@PathVariable String id) {
         return "concertfinder/concert/detail";

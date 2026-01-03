@@ -16,8 +16,9 @@ public class ConcertService {
 
     private final WebClient kopisWebClient;
     private final KopisProperties kopisProperties;
-    private final SidoCodeService sidoCodeService;
 
+
+    // 다음 페이지가 있는지를 판단하는 hasNext값을 추가 해주는 메서드
     public ResponsesDTO getResponseDTO(ResponsesDTO responsesDTO, int rows) {
 
         if(responsesDTO != null && responsesDTO.getLists() != null) {
@@ -57,12 +58,13 @@ public class ConcertService {
 
         final int rows = 8;
 
+
         ResponsesDTO responsesDTO = kopisWebClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/pblprfr")
                         .queryParam("service", kopisProperties.getKey())
                         .queryParam("stdate", LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")))
-                        .queryParam("eddate", LocalDate.now().plusDays(7).format(DateTimeFormatter.ofPattern("yyyyMMdd")))
+                        .queryParam("eddate", LocalDate.now().plusYears(1).format(DateTimeFormatter.ofPattern("yyyyMMdd")))
                         .queryParam("cpage", cPage)
                         .queryParam("rows", rows + 1)
                         .queryParam("shcate", "CCCD")
@@ -75,6 +77,4 @@ public class ConcertService {
 
         return getResponseDTO(responsesDTO, rows);
     }
-
-
 }
