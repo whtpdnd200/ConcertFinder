@@ -7,7 +7,10 @@
     <meta charset="UTF-8">
     <title>상세 페이지</title>
     <link layout:fragment="css" rel="stylesheet" th:href="@{/css/concert/concert_detail_style.css}">
+    <script layout:fragment="kakaoLib" type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=a63cb198eeb8bf5e0801578ea8039e14&libraries=services,clusterer"></script>
+    <script layout:fragment="kakao" type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=a63cb198eeb8bf5e0801578ea8039e14"></script>
 </head>
+
     <section layout:fragment="contents" class="detail-page-wrapper">
         <div class="container py-5">
             <div class="row concert-main-info mb-5">
@@ -210,6 +213,15 @@
     </section>
 
     <script layout:fragment="script">
+
+        var container = document.getElementById('map');
+        var options = {
+            center: new kakao.maps.LatLng(33.450701, 126.570667),
+            level: 3
+        };
+
+        var map = new kakao.maps.Map(container, options);
+
         $('.star-rating-input i').on('click', function() {
             let val = $(this).data('value');
             $('#ratingValue').val(val);
