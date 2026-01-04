@@ -45,4 +45,6 @@ public class ConcertController {
     public String detail(@PathVariable String id) {
         return "concertfinder/concert/detail";
     }
+
+
 }

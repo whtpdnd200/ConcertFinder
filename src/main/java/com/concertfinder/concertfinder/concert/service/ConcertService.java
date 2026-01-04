@@ -1,7 +1,8 @@
 package com.concertfinder.concertfinder.concert.service;
 
-import com.concertfinder.concertfinder.SidoCode.service.SidoCodeService;
-import com.concertfinder.concertfinder.concert.DTO.ResponsesDTO;
+import com.concertfinder.concertfinder.concert.DTO.areaDTO.ResponsesAreaDTO;
+import com.concertfinder.concertfinder.concert.DTO.concertListDTO.ResponsesDTO;
+import com.concertfinder.concertfinder.concert.DTO.infoDTO.ResponsesInfoDTO;
 import com.concertfinder.concertfinder.configuration.properties.KopisProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -58,7 +59,6 @@ public class ConcertService {
 
         final int rows = 8;
 
-
         ResponsesDTO responsesDTO = kopisWebClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/pblprfr")
@@ -76,5 +76,33 @@ public class ConcertService {
                 .block();
 
         return getResponseDTO(responsesDTO, rows);
+    }
+
+    public ResponsesInfoDTO getConcertInfo(String concertId) {
+
+        ResponsesInfoDTO responsesInfoDTO = kopisWebClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/pblprfr/{concertId}")
+                        .queryParam("service", kopisProperties.getKey())
+                        .build(concertId))
+                .retrieve()
+                .bodyToMono(ResponsesInfoDTO.class)
+                .block();
+
+        String areaId = responsesInfoDTO.getInfoDTO().getAreaCode();
+        responsesInfoDTO.getInfoDTO().setAreaInfo(getAreaInfo(areaId).getAreaInfoDTO());
+        return responsesInfoDTO;
+    }
+
+    public ResponsesAreaDTO getAreaInfo(String areaCode) {
+
+        return kopisWebClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/prfplc/{areaId}")
+                        .queryParam("service", kopisProperties.getKey())
+                        .build(areaCode))
+                .retrieve()
+                .bodyToMono(ResponsesAreaDTO.class)
+                .block();
     }
 }
