@@ -1,7 +1,7 @@
 package com.concertfinder.concertfinder.concert.service;
 
 import com.concertfinder.concertfinder.concert.DTO.areaDTO.ResponsesAreaDTO;
-import com.concertfinder.concertfinder.concert.DTO.concertListDTO.ResponsesDTO;
+import com.concertfinder.concertfinder.concert.DTO.concertListDTO.ResponsesListDTO;
 import com.concertfinder.concertfinder.concert.DTO.infoDTO.ResponsesInfoDTO;
 import com.concertfinder.concertfinder.configuration.properties.KopisProperties;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ public class ConcertService {
 
 
     // 다음 페이지가 있는지를 판단하는 hasNext값을 추가 해주는 메서드
-    public ResponsesDTO getResponseDTO(ResponsesDTO responsesDTO, int rows) {
+    public ResponsesListDTO getResponseDTO(ResponsesListDTO responsesDTO, int rows) {
 
         if(responsesDTO != null && responsesDTO.getLists() != null) {
             int size = responsesDTO.getLists().size();
@@ -36,7 +36,7 @@ public class ConcertService {
     }
 
     // 기본 화면의 콘서트 목록 출력 메서드
-    public ResponsesDTO getList(String code
+    public ResponsesListDTO getList(String code
                                 , Integer page
                                 , String areaCode
                                 , String keyword) {
@@ -59,7 +59,7 @@ public class ConcertService {
 
         final int rows = 8;
 
-        ResponsesDTO responsesDTO = kopisWebClient.get()
+        ResponsesListDTO responsesDTO = kopisWebClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/pblprfr")
                         .queryParam("service", kopisProperties.getKey())
@@ -72,7 +72,7 @@ public class ConcertService {
                         .queryParam("shprfnm", keyword)
                         .build())
                 .retrieve()
-                .bodyToMono(ResponsesDTO.class)
+                .bodyToMono(ResponsesListDTO.class)
                 .block();
 
         return getResponseDTO(responsesDTO, rows);

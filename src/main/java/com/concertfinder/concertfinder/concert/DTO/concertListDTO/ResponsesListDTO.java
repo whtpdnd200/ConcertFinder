@@ -11,7 +11,7 @@ import java.util.List;
 @Data
 @XmlRootElement(name = "dbs")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ResponsesDTO {
+public class ResponsesListDTO {
 
     @XmlElement(name = "db")
     private List<ConcertInfoDTO> lists;

@@ -53,6 +53,7 @@
                             <div th:switch="${info.state}" class="card-img-wrapper">
                                 <span th:case="공연중" class="status-badge badge-performing shadow-sm">공연중</span>
                                 <span th:case="공연예정" class="status-badge badge-upcoming shadow-sm">공연예정</span>
+                                <span th:case="*" th:text="${info.state}" class="status-badge badge-upcoming shadow-sm">공연예정</span>
                                 <button class="like-btn shadow-sm"><i class="bi bi-heart"></i></button>
 
                                 <img th:src="${info.posterPath}" alt="콘서트 포스터">
