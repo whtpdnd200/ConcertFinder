@@ -282,8 +282,9 @@
 
 .overlay-header {
     background: #333;
-    padding: 8px 12px;
+    padding: 8px 35px 8px 12px;
     border-radius: 10px 10px 0 0;
+
 }
 
 .overlay-header .place-name {
@@ -319,4 +320,21 @@
 
 .btn-map-link:hover {
     background: #e63939;
+}
+
+.close {
+    position: absolute;
+    top: 6px;
+    right: 13px;
+    color: #888;
+    width: 17px;
+    height: 17px;
+}
+
+.close:hover {
+    cursor: pointer;
+}
+
+.closeIcon {
+    font-size: 28px;
 }

@@ -48,7 +48,8 @@
                         </div>
                         <div class="info-item">
                             <span class="info-label">공연시간</span>
-                            <span th:text="${concertInfo.runTime}" class="info-value">120분</span>
+                            <span th:if="${#strings.trim(concertInfo.runTime) != '' && concertInfo.runTime != null}" th:text="${concertInfo.runTime}" class="info-value">120분</span>
+                            <span th:if="${#strings.trim(concertInfo.runTime) == '' || concertInfo.runTime == null}" class="info-value">시간 정보가 없습니다</span>
                         </div>
                     </div>
 
@@ -262,7 +263,8 @@
             var markerPosition  = new kakao.maps.LatLng(latitude, longitude);
 
             var marker = new kakao.maps.Marker({
-                position: markerPosition
+                position: markerPosition,
+                clickable: true
             });
 
             marker.setMap(map);
@@ -271,11 +273,12 @@
                 '<div class="custom-overlay">' +
                 '    <div class="overlay-content">' +
                 '        <div class="overlay-header">' +
-                '            <span class="place-name">'+ areaName +'</span>' +
+                '            <div class="place-name">'+ areaName +'</div>' +
+                '            <div id="closeBtn" class="close" title="닫기"><i class="text-light bi bi-x closeIcon"></i></div>' +
                 '        </div>' +
                 '        <div class="overlay-body">' +
                 '            <p class="place-address">'+ areaAddress +'</p>' +
-                '            <a href="https://map.kakao.com/link/map/'+ areaName +',' + latitude + ',' + longitude + '" class="btn-map-link" target="_blank">' +
+                '            <a href="https://map.kakao.com/link/search/'+ areaAddress +'" class="btn-map-link" target="_blank">' +
                 '                <span>길찾기</span> <i class="bi bi-arrow-right-short"></i>' +
                 '            </a>' +
                 '        </div>' +
@@ -289,9 +292,17 @@
                 xAnchor: 0.5
             });
 
+            kakao.maps.event.addListener(marker, 'click', function() {
+                customOverlay.setMap(map);
+            });
 
-            customOverlay.setMap(map);
+            $(document).on("click", "#closeBtn", function() {
+                closeOverlay();
+            });
 
+            function closeOverlay() {
+                customOverlay.setMap(null);
+            }
 
             $('.star-rating-input i').on('click', function() {
                 let val = $(this).data('value');
