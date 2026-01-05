@@ -172,17 +172,15 @@
 
             let email = frontEmail + '@' + backEmail;
 
-            let data = {
-                "id" : id
-                , "nickname" : nickname
-                , "email" : email
-                , "password" : password
-                , "attentionAreaCode" : attentionAreaCode
+            let data = {"nickname" : nickname
+                        , "email" : email
+                        , "password" : password
+                        , "attentionAreaCode" : attentionAreaCode
             }
 
             $.ajax({
                 type : "put"
-                , url : `/user/${id}`
+                , url : `/user`
                 , contentType: 'application/json'
                 , data : JSON.stringify(data)
                 , success : function(response) {

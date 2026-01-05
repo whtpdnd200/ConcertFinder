@@ -61,14 +61,14 @@ public class UserRestController {
     }
 
     // 회원정보 수정 기능
-    @PutMapping("/{id}")
-    public Map<String, String> modify(@PathVariable long id
-                                     , @RequestBody ModifyUserDTO modifyUserDTO
+    @PutMapping()
+    public Map<String, String> modify(@RequestBody ModifyUserDTO modifyUserDTO
                                      , HttpSession session) {
 
+        LoginUserDTO loginUserDTO = (LoginUserDTO)session.getAttribute("userInfo");
         Map<String, String> resultMap = new HashMap<>();
-        if(userService.userModify(id, modifyUserDTO)) {
-            session.setAttribute("userInfo", userService.getUser(id));
+        if(userService.userModify(loginUserDTO.getId(), modifyUserDTO)) {
+            session.setAttribute("userInfo", userService.getUser(loginUserDTO.getId()));
             resultMap.put("result", "success");
             return resultMap;
         }

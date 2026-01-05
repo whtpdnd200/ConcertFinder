@@ -203,7 +203,7 @@
             <div class="concert-community-section my-5">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h4 class="font-weight-bold mb-0 border-left-primary pl-3">함께하는 커뮤니티</h4>
-                    <a href="/community/write" class="btn btn-dark btn-sm">글쓰기</a>
+                    <a th:href="@{/post/write/{id}(id = ${concertInfo.concertId})}" class="btn btn-dark btn-sm">글쓰기</a>
                 </div>
                 <div class="community-category-filter mb-3 d-flex flex-wrap shadow-sm p-2 rounded bg-light border">
                     <button class="btn btn-category active" data-category="all">전체글</button>
@@ -216,19 +216,19 @@
                         <thead class="thead-light">
                         <tr>
                             <th scope="col" style="width: 10%">번호</th>
+                            <th scope="col" style="width: 10%">카테고리</th>
                             <th scope="col" style="width: 50%">제목</th>
                             <th scope="col" style="width: 15%">작성자</th>
                             <th scope="col" style="width: 15%">작성일</th>
-                            <th scope="col" style="width: 10%">조회</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr>
-                            <td>1</td>
-                            <td><a href="#" class="text-dark">이번 콘서트 가시는 분 계신가요?</a></td>
-                            <td>재미니</td>
-                            <td>2026-01-03</td>
-                            <td>125</td>
+                            <td class="text-center">1</td>
+                            <td class="text-center">자유글</td>
+                            <td class="text-center"><a href="#" class="text-dark">이번 콘서트 가시는 분 계신가요?</a></td>
+                            <td class="text-center">재미니</td>
+                            <td class="text-center">2026-01-03</td>
                         </tr>
                         <tr>
                             <td colspan="5" class="text-center py-5 text-muted">작성된 게시글이 없습니다.</td>

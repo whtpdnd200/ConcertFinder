@@ -12,6 +12,10 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class InfoDTO {
 
+    // 콘서트 아이디
+    @XmlElement(name = "mt20id")
+    private String concertId;
+
     // 콘서트 이름
     @XmlElement(name = "prfnm")
     private String concertName;
