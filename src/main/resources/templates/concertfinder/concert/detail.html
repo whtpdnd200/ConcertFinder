@@ -16,37 +16,39 @@
             <div class="row concert-main-info mb-5">
                 <div class="col-lg-4 mb-4 mb-lg-0 text-center">
                     <div class="detail-poster-wrapper shadow">
-                        <img src="https://kopis.or.kr/_next/image?url=%2Fupload%2FpfmPoster%2FPF_PF280805_251203_132359.gif&w=384&q=75" alt="공연 포스터" class="img-fluid rounded">
+                        <img th:src="${concertInfo.posterPath}" alt="공연 포스터" class="img-fluid rounded">
                     </div>
                 </div>
 
                 <div class="col-lg-8 px-lg-5">
-                    <div class="d-flex align-items-center mb-2">
-                        <span class="badge-status mb-0 mr-2">공연중</span>
-                        <span class="text-muted small">대중음악</span>
+                    <div th:switch="${concertInfo.state}" class="d-flex align-items-center mb-2">
+                        <span th:case="공연중" class="badge-status-performing mb-0 mr-2">공연중</span>
+                        <span th:case="공연예정" class="badge-status-upcoming mb-0 mr-2">공연예정</span>
+                        <span th:case="*" th:text="${concertInfo.state}" class="badge-status-upcoming mb-0 mr-2">공연예정</span>
+                        <span th:text="${concertInfo.genre}" class="text-muted small">대중음악</span>
                     </div>
-                    <h2 class="display-5 font-weight-bold mb-4">공연 제목이 들어갑니다</h2>
+                    <h2 th:text="${concertInfo.concertName}" class="display-5 font-weight-bold mb-4">공연 제목이 들어갑니다</h2>
 
                     <div class="info-list-container">
                         <div class="info-item">
                             <span class="info-label">공연기간</span>
-                            <span class="info-value">2026.01.01 ~ 2026.01.15</span>
+                            <span class="info-value"><span th:text="${concertInfo.sDate}" ></span> ~ <span th:text="${concertInfo.eDate}"></span></span>
                         </div>
                         <div class="info-item">
                             <span class="info-label">공연장소</span>
-                            <span class="info-value">서울월드컵경기장</span>
+                            <span th:text="${concertInfo.areaName}" class="info-value">서울월드컵경기장</span>
                         </div>
                         <div class="info-item">
                             <span class="info-label">관람등급</span>
-                            <span class="info-value">전체 관람가</span>
+                            <span th:text="${concertInfo.ageRatings}" class="info-value">전체 관람가</span>
                         </div>
                         <div class="info-item">
                             <span class="info-label">티켓가격</span>
-                            <span class="info-value">무료 / 유료</span>
+                            <span th:text="${concertInfo.ticketPrice}" class="info-value">무료 / 유료</span>
                         </div>
                         <div class="info-item">
                             <span class="info-label">공연시간</span>
-                            <span class="info-value">120분</span>
+                            <span th:text="${concertInfo.runTime}" class="info-value">120분</span>
                         </div>
                     </div>
 
@@ -74,16 +76,10 @@
                             <p class="text-center text-muted mb-4">원하시는 예매처를 선택하시면 해당 페이지로 이동합니다.</p>
 
                             <div class="reserve-link-list">
-                                <a href="https://ticket.interpark.com" target="_blank" class="btn btn-outline-dark btn-block py-3 mb-3 d-flex justify-content-between align-items-center">
-                                    <span class="font-weight-bold">인터파크 티켓</span>
+                                <a th:each="tickets : ${concertInfo.tickets.ticketLists}" th:href="${tickets.officeURL}" target="_blank" class="btn btn-outline-dark btn-block py-3 mb-3 d-flex justify-content-between align-items-center">
+                                    <span th:text="${tickets.officeName}" class="font-weight-bold">인터파크 티켓</span>
                                     <i class="bi bi-chevron-right"></i>
                                 </a>
-
-                                <a href="https://ticket.yes24.com" target="_blank" class="btn btn-outline-dark btn-block py-3 mb-3 d-flex justify-content-between align-items-center">
-                                    <span class="font-weight-bold">예스24 티켓</span>
-                                    <i class="bi bi-chevron-right"></i>
-                                </a>
-
                             </div>
                         </div>
                         <div class="modal-footer border-0 p-3">
@@ -98,16 +94,16 @@
             <div class="concert-description">
                 <h4 class="font-weight-bold mb-4 border-left-primary pl-3">상세 정보</h4>
                 <div class="detail-content-images text-center">
-                    <img src="" class="img-fluid mb-3" alt="상세정보">
-                    <p class="text-muted py-5">상세 설명 이미지가 없습니다.</p>
+                    <img th:if="${concertInfo.infoImages != null && !concertInfo.infoImages.isEmpty()}" th:each="image : ${concertInfo.infoImages}" th:src="${image.imagePath}" class="img-fluid mb-3" alt="상세정보">
+                    <p th:if="${concertInfo.infoImages == null || concertInfo.infoImages.isEmpty()}" class="text-muted py-5">상세 설명 이미지가 없습니다.</p>
                 </div>
             </div>
 
-            <div class="concert-location-section my-5">
+            <div id="areaInfoTag" th:data-name="${concertInfo.areaName}" th:data-address="${concertInfo.areaInfo.address}" class="concert-location-section my-5">
                 <h4 class="font-weight-bold mb-4 border-left-primary pl-3">찾아오시는 길</h4>
                 <div class="location-container shadow-sm p-4 rounded bg-white">
-                    <p class="mb-3"><i class="bi bi-geo-alt-fill text-danger"></i> <span>공연장 이름</span> : <span >공연장 주소</span></p>
-                    <div id="map" style="width:100%; height:400px;" class="rounded border">
+                    <p class="mb-3"><i class="bi bi-geo-alt-fill text-danger"></i> <span th:text="${concertInfo.areaName}">공연장 이름</span> : <span th:text="${concertInfo.areaInfo.address}">공연장 주소</span></p>
+                    <div th:data-la="${concertInfo.areaInfo.latitude}" th:data-lo="${concertInfo.areaInfo.longitude}" id="map" style="width:100%; height:400px;" class="rounded border">
                         <div class="map-placeholder d-flex align-items-center justify-content-center h-100 bg-light">
                             <p class="text-muted"><i class="bi bi-map mr-2"></i>지도 데이터를 로딩 중입니다...</p>
                         </div>
@@ -246,19 +242,65 @@
 
     <script layout:fragment="script">
 
-        var container = document.getElementById('map');
-        var options = {
-            center: new kakao.maps.LatLng(33.450701, 126.570667),
-            level: 3
-        };
+        $(document).ready(function() {
+            var latitude = $("#map").data("la");
 
-        var map = new kakao.maps.Map(container, options);
+            var longitude = $("#map").data("lo");
 
-        $('.star-rating-input i').on('click', function() {
-            let val = $(this).data('value');
-            $('#ratingValue').val(val);
-            $(this).parent().find('i').removeClass('bi-star-fill').addClass('bi-star');
-            $(this).prevAll().addBack().removeClass('bi-star').addClass('bi-star-fill');
-        });
+            var areaName = $("#areaInfoTag").data("name");
+
+            var areaAddress = $("#areaInfoTag").data("address");
+
+            var container = document.getElementById('map');
+            var options = {
+                center: new kakao.maps.LatLng(latitude, longitude),
+                level: 3
+            };
+
+            var map = new kakao.maps.Map(container, options);
+
+            var markerPosition  = new kakao.maps.LatLng(latitude, longitude);
+
+            var marker = new kakao.maps.Marker({
+                position: markerPosition
+            });
+
+            marker.setMap(map);
+
+            var content =
+                '<div class="custom-overlay">' +
+                '    <div class="overlay-content">' +
+                '        <div class="overlay-header">' +
+                '            <span class="place-name">'+ areaName +'</span>' +
+                '        </div>' +
+                '        <div class="overlay-body">' +
+                '            <p class="place-address">'+ areaAddress +'</p>' +
+                '            <a href="https://map.kakao.com/link/map/'+ areaName +',' + latitude + ',' + longitude + '" class="btn-map-link" target="_blank">' +
+                '                <span>길찾기</span> <i class="bi bi-arrow-right-short"></i>' +
+                '            </a>' +
+                '        </div>' +
+                '    </div>' +
+                '</div>';
+
+            var customOverlay = new kakao.maps.CustomOverlay({
+                position: markerPosition,
+                content: content,
+                yAnchor: 1.2, // 마커 위에 떠 있게 위치 조정
+                xAnchor: 0.5
+            });
+
+
+            customOverlay.setMap(map);
+
+
+            $('.star-rating-input i').on('click', function() {
+                let val = $(this).data('value');
+                $('#ratingValue').val(val);
+                $(this).parent().find('i').removeClass('bi-star-fill').addClass('bi-star');
+                $(this).prevAll().addBack().removeClass('bi-star').addClass('bi-star-fill');
+            });
+
+        })
+
     </script>
 </html>

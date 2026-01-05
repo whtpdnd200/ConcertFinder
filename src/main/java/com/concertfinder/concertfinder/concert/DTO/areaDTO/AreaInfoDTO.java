@@ -16,4 +16,8 @@ public class AreaInfoDTO {
     // 경도
     @XmlElement(name = "lo")
     private String longitude;
+
+    // 공연장 주소
+    @XmlElement(name = "adres")
+    private String address;
 }
