@@ -1,17 +1,44 @@
 package com.concertfinder.concertfinder.post;
 
+import com.concertfinder.concertfinder.post.service.PostService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("/post")
+@RequiredArgsConstructor
 public class PostController {
 
-    @GetMapping("/write/{id}")
-    public String write(@PathVariable String id) {
+    private final PostService postService;
 
+    // 글 작성 페이지
+    @GetMapping("/write/{concertId}")
+    public String write(@PathVariable String concertId
+                        , Model model) {
+
+        model.addAttribute("concertId", concertId);
         return "concertfinder/post/write";
+    }
+
+    // 글 상세 페이지
+    @GetMapping("/{postId}")
+    public String detail(@PathVariable long postId
+                        , Model model) {
+
+        model.addAttribute("postInfo", postService.getPost(postId));
+        return "concertfinder/post/detail";
+    }
+
+    // 게시글 수정 페이지
+    @GetMapping("/modify/{postId}")
+    public String modify(@PathVariable long postId
+            , Model model) {
+
+        model.addAttribute("postModifyInfo", postService.getPost(postId));
+        return "concertfinder/post/modify";
     }
 }

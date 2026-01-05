@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{concertfinder/layouts/main_layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>글 상세</title>
+    <link layout:fragment="css" rel="stylesheet" th:href="@{/css/post/post_detail_style.css}">
+</head>
+    <section layout:fragment="contents" class="post-view-wrapper">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="post-header mb-4">
+                        <div th:switch="${postInfo.category}" class="d-flex align-items-center mb-3">
+                            <span th:case="F" class="badge badge-category mr-2">자유글</span>
+                            <span th:case="R" class="badge badge-category mr-2">동행 모집</span>
+                            <span th:case="T" class="badge badge-category mr-2">티켓 양도</span>
+                            <span class="text-muted small"><i class="bi bi-clock mr-1"></i> <span th:text="${#temporals.format(postInfo.createdAt, 'yyyy-MM-dd hh:mm:ss')}">2026-01-05 20:45</span></span>
+                        </div>
+                        <h2 th:text="${postInfo.title}" class="post-title font-weight-bold mb-4">이번 임영웅 콘서트 티켓팅 꿀팁 공유합니다!</h2>
+
+                        <div class="post-meta d-flex justify-content-between align-items-center pb-3 border-bottom">
+                            <div class="author-info d-flex align-items-center">
+                                <div class="author-avatar mr-2">
+                                    <i class="bi bi-person-circle"></i>
+                                </div>
+                                <span th:text="${postInfo.userNickname}" class="author-name font-weight-bold">재미니팬</span>
+                            </div>
+                            <div class="post-stats text-muted small">
+                                <span><i class="bi bi-chat-dots mr-1"></i> 댓글 12</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="post-content py-5 mb-5 border-bottom">
+                        <p th:text="${postInfo.content}">안녕하세요! 이번 콘서트 티켓팅 다들 성공하셨나요? <br><br>
+                            저는 이번에 운 좋게 앞자리 성공해서 제가 사용했던 방법들 공유해보려고 합니다.
+                            먼저 브라우저 설정부터 서버 시간 확인하는 법까지 차근차근 정리해드릴게요...</p>
+                    </div>
+
+                    <div class="post-actions d-flex justify-content-between">
+                        <div>
+                            <button class="btn btn-list mr-2">
+                                <i class="bi bi-list-ul mr-1"></i> <a class="text-light" th:href="@{/concert/{concertId}(concertId = ${postInfo.concertId})}">목록으로</a>
+                            </button>
+                        </div>
+                        <div th:if="${session.userInfo.id == postInfo.userId}" class="owner-buttons">
+                            <button class="btn btn-edit mr-2">
+                                <a class="text-dark" th:href="@{/post/modify/{postId}(postId = ${postInfo.id})}">수정하기</a>
+                            </button>
+                            <button id="deleteModalBtn" th:data-post-id="${postInfo.id}" class="btn btn-delete" data-toggle="modal" data-target="#deleteConfirmModal">
+                                삭제하기
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:data-concert-id="${postInfo.concertId}" class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow">
+                    <div class="modal-header bg-dark text-white">
+                        <h5 class="modal-title font-weight-bold">게시글 삭제</h5>
+                        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body p-4 text-center">
+                        <p class="mb-0">정말로 이 게시글을 삭제하시겠습니까?<br>삭제된 글은 복구할 수 없습니다.</p>
+                    </div>
+                    <div class="modal-footer border-0 p-3 justify-content-center">
+                        <button type="button" class="btn btn-light px-4 mr-2" data-dismiss="modal">취소</button>
+                        <button id="deleteBtn" type="button" class="btn btn-danger px-4">삭제확인</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <script layout:fragment="script">
+        $("#deleteBtn").on("click", function() {
+            let postId = $("#deleteModalBtn").data("post-id");
+            let concertId = $("#deleteConfirmModal").data("concert-id");
+            $.ajax({
+                type : "delete"
+                , url : "/post/" + postId
+                , success : function(response) {
+                    if(response.result == 'success') {
+                        location.href = "/concert/" + concertId;
+                    } else {
+                        alert("게시글 삭제 실패!");
+                    }
+                }
+                , error : function () {
+                    alert("게시글 삭제 에러!");
+                }
+            });
+        });
+    </script>
+</html>

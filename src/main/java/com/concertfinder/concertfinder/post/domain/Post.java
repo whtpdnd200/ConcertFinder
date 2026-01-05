@@ -24,7 +24,7 @@ public class Post {
 
     private String concertId;
 
-    private String userId;
+    private long userId;
 
     private Character category;
 
