@@ -197,7 +197,7 @@
     gap: 10px;
 }
 
-.btn-category {
+.categoryBtn {
     background: transparent;
     border: 1px solid transparent;
     color: #666;
@@ -208,13 +208,13 @@
     transition: all 0.2s ease;
 }
 
-.btn-category:hover {
+.categoryBtn:hover {
     color: #ff4d4d;
     background-color: #fff;
     border-color: #eee;
 }
 
-.btn-category.active {
+.categoryBtn.active {
     background-color: #ff4d4d;
     color: #fff;
     border-color: #ff4d4d;
