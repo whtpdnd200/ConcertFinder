@@ -54,9 +54,41 @@
                         <button class="btn btn-like-large mr-3">
                             <i class="bi bi-heart"></i> 관심공연
                         </button>
-                        <a target="_blank" class="btn btn-reserve-large flex-grow-1">
+                        <button type="button" class="btn btn-reserve-large flex-grow-1" data-toggle="modal" data-target="#reserveModal">
                             예매하기 <i class="bi bi-box-arrow-up-right ml-2"></i>
-                        </a>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="reserveModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content border-0 shadow">
+                        <div class="modal-header bg-dark text-white">
+                            <h5 class="modal-title font-weight-bold">예매처 선택</h5>
+                            <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body p-4">
+                            <p class="text-center text-muted mb-4">원하시는 예매처를 선택하시면 해당 페이지로 이동합니다.</p>
+
+                            <div class="reserve-link-list">
+                                <a href="https://ticket.interpark.com" target="_blank" class="btn btn-outline-dark btn-block py-3 mb-3 d-flex justify-content-between align-items-center">
+                                    <span class="font-weight-bold">인터파크 티켓</span>
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+
+                                <a href="https://ticket.yes24.com" target="_blank" class="btn btn-outline-dark btn-block py-3 mb-3 d-flex justify-content-between align-items-center">
+                                    <span class="font-weight-bold">예스24 티켓</span>
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+
+                            </div>
+                        </div>
+                        <div class="modal-footer border-0 p-3">
+                            <button type="button" class="btn btn-light btn-block" data-dismiss="modal">닫기</button>
+                        </div>
                     </div>
                 </div>
             </div>

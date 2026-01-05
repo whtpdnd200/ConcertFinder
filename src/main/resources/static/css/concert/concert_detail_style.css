@@ -220,3 +220,23 @@
     font-weight: 500;
     padding: 3px 8px;
 }
+
+/* 예매처 모달 전용 스타일 */
+.reserve-link-list .btn-outline-dark {
+    border: 1px solid #eee;
+    background-color: #f9f9f9;
+    transition: all 0.2s;
+    text-align: left;
+}
+
+.reserve-link-list .btn-outline-dark:hover {
+    background-color: #fff;
+    border-color: #ff4d4d;
+    color: #ff4d4d;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+}
+
+.reserve-link-list .btn-outline-dark span {
+    font-size: 1.05rem;
+}
