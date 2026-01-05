@@ -139,4 +139,16 @@ public class UserService {
         }
         return null;
     }
+
+    // 유저 이름 얻어오는 메서드
+    public String getNickname(long id) {
+
+        Optional<User> optionalUser = userRepository.findById(id);
+        if(optionalUser.isPresent()) {
+
+            return optionalUser.get().getNickname();
+        }
+
+        return null;
+    }
 }

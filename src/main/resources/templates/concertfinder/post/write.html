@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{concertfinder/layouts/main_layout}">
+  <head>
+    <meta charset="UTF-8">
+    <title>글 작성</title>
+    <link layout:fragment="css" rel="stylesheet" th:href="@{/css/post/post_write_style.css}">
+  </head>
+  <section layout:fragment="contents" class="write-page-wrapper">
+    <div class="container py-5">
+      <div class="write-header mb-5 text-center">
+        <h2 class="font-weight-bold">커뮤니티 <span class="text-danger">글쓰기</span></h2>
+        <p class="text-muted">공연에 대한 정보나 동행 모집, 티켓 양도 소식을 공유해 주세요.</p>
+      </div>
+
+      <div class="row justify-content-center">
+        <div class="col-lg-9">
+          <div class="write-card shadow-sm rounded bg-white p-4 p-md-5 border">
+            <form id="postWriteForm">
+              <div class="form-group mb-4">
+                <label class="form-label font-weight-bold">카테고리</label>
+                <div class="category-radio-group d-flex flex-wrap">
+                  <label class="category-item">
+                    <input type="radio" name="category" value="F" checked>
+                    <span class="category-btn">자유글</span>
+                  </label>
+                  <label class="category-item">
+                    <input type="radio" name="category" value="R">
+                    <span class="category-btn">동행 모집</span>
+                  </label>
+                  <label class="category-item">
+                    <input type="radio" name="category" value="T">
+                    <span class="category-btn">티켓 양도</span>
+                  </label>
+                </div>
+              </div>
+
+              <div id="idStorageTag" th:data-concert-id="${concertId}" class="form-group mb-4">
+                <label for="titleInput" class="form-label font-weight-bold">제목</label>
+                <input type="text" id="titleInput" name="title" class="form-control custom-input"
+                       placeholder="제목을 입력해 주세요 (최대 50자)">
+              </div>
+
+              <div class="form-group mb-5">
+                <label for="contentInput" class="form-label font-weight-bold">내용</label>
+                <textarea id="contentInput" name="content" class="form-control custom-textarea"
+                          rows="12" placeholder="공연과 관련된 소중한 이야기를 들려주세요. 타인을 비방하거나 광고성 글은 삭제될 수 있습니다."></textarea>
+              </div>
+
+              <div class="write-actions d-flex justify-content-center">
+                <button id="backBtn" type="button" class="btn btn-cancel mr-3" onclick="history.back();">취소</button>
+                <button id="writeBtn" type="submit" class="btn btn-submit px-5">등록하기</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script layout:fragment="script">
+
+      var titleLength;
+
+      $("#titleInput").on("input", function() {
+          titleLength = $("#titleInput").val().length;
+      });
+
+      $("#postWriteForm").on("submit", function(e) {
+          e.preventDefault();
+
+          let concertId = $("#idStorageTag").data("concert-id");
+
+          let category = $('input[name=category]:checked').prop('checked',true).val();
+
+          let title = $("#titleInput").val();
+
+          let content = $("#contentInput").val();
+
+          if(title == '') {
+              alert("제목을 입력 해주세요!");
+              $("#titleInput").focus();
+              return;
+          }
+
+          if(titleLength >= 50) {
+              alert("제목은 50글자를 넘을 수 없습니다!");
+              $("#titleInput").focus();
+              return;
+          }
+
+          if(content == '') {
+              alert("내용을 입력 해주세요!");
+              $("#contentInput").focus();
+              return;
+          }
+
+          $.ajax({
+              type : "post"
+              , url: "/post/" + concertId
+              , data : {"category" : category
+                        , "title" : title
+                        , "content" : content}
+              , success : function(response) {
+                  if(response.result == 'success') {
+                      location.href = "/concert/" + concertId;
+                  } else {
+                      alert("게시글 작성 실패!");
+                  }
+              }
+              , error : function() {
+                  alert("글 작성 에러!");
+              }
+          });
+      });
+  </script>
+</html>
