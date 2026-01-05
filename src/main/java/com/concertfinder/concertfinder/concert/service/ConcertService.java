@@ -1,7 +1,8 @@
 package com.concertfinder.concertfinder.concert.service;
 
-import com.concertfinder.concertfinder.SidoCode.service.SidoCodeService;
-import com.concertfinder.concertfinder.concert.DTO.ResponsesDTO;
+import com.concertfinder.concertfinder.concert.DTO.areaDTO.ResponsesAreaDTO;
+import com.concertfinder.concertfinder.concert.DTO.concertListDTO.ResponsesListDTO;
+import com.concertfinder.concertfinder.concert.DTO.infoDTO.ResponsesInfoDTO;
 import com.concertfinder.concertfinder.configuration.properties.KopisProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,9 +17,10 @@ public class ConcertService {
 
     private final WebClient kopisWebClient;
     private final KopisProperties kopisProperties;
-    private final SidoCodeService sidoCodeService;
 
-    public ResponsesDTO getResponseDTO(ResponsesDTO responsesDTO, int rows) {
+
+    // 다음 페이지가 있는지를 판단하는 hasNext값을 추가 해주는 메서드
+    public ResponsesListDTO getResponseDTO(ResponsesListDTO responsesDTO, int rows) {
 
         if(responsesDTO != null && responsesDTO.getLists() != null) {
             int size = responsesDTO.getLists().size();
@@ -34,7 +36,7 @@ public class ConcertService {
     }
 
     // 기본 화면의 콘서트 목록 출력 메서드
-    public ResponsesDTO getList(String code
+    public ResponsesListDTO getList(String code
                                 , Integer page
                                 , String areaCode
                                 , String keyword) {
@@ -57,12 +59,12 @@ public class ConcertService {
 
         final int rows = 8;
 
-        ResponsesDTO responsesDTO = kopisWebClient.get()
+        ResponsesListDTO responsesDTO = kopisWebClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/pblprfr")
                         .queryParam("service", kopisProperties.getKey())
                         .queryParam("stdate", LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")))
-                        .queryParam("eddate", LocalDate.now().plusDays(7).format(DateTimeFormatter.ofPattern("yyyyMMdd")))
+                        .queryParam("eddate", LocalDate.now().plusYears(1).format(DateTimeFormatter.ofPattern("yyyyMMdd")))
                         .queryParam("cpage", cPage)
                         .queryParam("rows", rows + 1)
                         .queryParam("shcate", "CCCD")
@@ -70,11 +72,37 @@ public class ConcertService {
                         .queryParam("shprfnm", keyword)
                         .build())
                 .retrieve()
-                .bodyToMono(ResponsesDTO.class)
+                .bodyToMono(ResponsesListDTO.class)
                 .block();
 
         return getResponseDTO(responsesDTO, rows);
     }
 
+    public ResponsesInfoDTO getConcertInfo(String concertId) {
 
+        ResponsesInfoDTO responsesInfoDTO = kopisWebClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/pblprfr/{concertId}")
+                        .queryParam("service", kopisProperties.getKey())
+                        .build(concertId))
+                .retrieve()
+                .bodyToMono(ResponsesInfoDTO.class)
+                .block();
+
+        String areaId = responsesInfoDTO.getInfoDTO().getAreaCode();
+        responsesInfoDTO.getInfoDTO().setAreaInfo(getAreaInfo(areaId).getAreaInfoDTO());
+        return responsesInfoDTO;
+    }
+
+    public ResponsesAreaDTO getAreaInfo(String areaCode) {
+
+        return kopisWebClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/prfplc/{areaId}")
+                        .queryParam("service", kopisProperties.getKey())
+                        .build(areaCode))
+                .retrieve()
+                .bodyToMono(ResponsesAreaDTO.class)
+                .block();
+    }
 }

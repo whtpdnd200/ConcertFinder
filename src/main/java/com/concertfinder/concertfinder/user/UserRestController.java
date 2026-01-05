@@ -60,6 +60,7 @@ public class UserRestController {
         return resultMap;
     }
 
+    // 회원정보 수정 기능
     @PutMapping("/{id}")
     public Map<String, String> modify(@PathVariable long id
                                      , @RequestBody ModifyUserDTO modifyUserDTO

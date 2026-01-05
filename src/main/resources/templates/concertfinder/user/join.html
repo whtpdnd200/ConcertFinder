@@ -45,7 +45,7 @@
                             </div>
                             <label>선호 지역</label>
                             <select id="areaSelect" class="form-control">
-                                <option th:each="sido : ${sidoList}" th:value="${sido.sidoCode}" th:utext="${sido.sidoName}"></option>
+                                <option th:each="sido : ${sidoList}" th:value="${sido.sidoCode}" th:text="${sido.sidoName}"></option>
                             </select>
                         </div>
                         <button id="joinBtn" type="submit" class="btn btn-primary btn-block py-2 font-weight-bold mt-4">가입 완료하기</button>

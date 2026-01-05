@@ -1,0 +1,322 @@
+/* 기본 레이아웃 보정 */
+.detail-page-wrapper {
+    background-color: #fff;
+    min-height: 100vh;
+}
+
+/* 포스터 이미지 꾸미기 */
+.detail-poster-wrapper img {
+    width: 100%;
+    max-width: 350px;
+    border: 1px solid #eee;
+    transition: transform 0.3s ease;
+}
+
+/* 상태 배지 */
+.badge-status-performing {
+    background-color: #ff4d4d;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.badge-status-upcoming {
+    background-color: #ffc107;
+    color: #333;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* 정보 리스트 스타일 */
+.info-list-container {
+    border-top: 2px solid #333;
+    padding-top: 20px;
+}
+
+.info-item {
+    display: flex;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.info-label {
+    width: 120px;
+    font-weight: 600;
+    color: #888;
+}
+
+.info-value {
+    color: #333;
+    flex: 1;
+}
+
+/* 버튼 스타일 */
+.btn-like-large {
+    border: 1px solid #ddd;
+    background: #fff;
+    padding: 15px 25px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.btn-like-large:hover {
+    background: #f8f8f8;
+    color: #ff4d4d;
+    border-color: #ff4d4d;
+}
+
+.btn-reserve-large {
+    background: #333;
+    color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-align: center;
+    transition: background 0.2s;
+}
+
+.btn-reserve-large:hover {
+    background: #ff4d4d;
+    color: #fff;
+    text-decoration: none;
+}
+
+/* 제목 옆 세로선 포인트 */
+.border-left-primary {
+    border-left: 5px solid #ff4d4d;
+}
+
+/* 지도 및 레이아웃 공통 */
+.location-container, .review-list, .table-responsive {
+    border: 1px solid #eee;
+}
+
+/* 지도 영역 내부 텍스트 */
+.map-placeholder {
+    font-size: 1.1rem;
+    color: #999;
+}
+
+/* 리뷰 아이템 스타일 */
+.review-item:last-child {
+    border-bottom: none !important;
+    margin-bottom: 0 !important;
+}
+
+/* 커뮤니티 테이블 스타일 */
+.table thead th {
+    border-top: none;
+    font-weight: 600;
+    color: #666;
+    background-color: #f8f9fa;
+    text-align: center;
+}
+
+.table tbody td {
+    vertical-align: middle;
+    text-align: center;
+    font-size: 0.95rem;
+}
+
+.table tbody td:nth-child(2) {
+    text-align: left; /* 제목만 왼쪽 정렬 */
+    padding-left: 20px;
+}
+
+.table tbody tr:hover {
+    background-color: #fff9f9; /* 마우스 호버 시 살짝 붉은 빛 */
+    cursor: pointer;
+}
+
+/* 공통 섹션 제목 포인트 */
+.border-left-primary {
+    border-left: 5px solid #ff4d4d;
+}
+
+/* 리뷰 전체 래퍼 */
+.concert-review-wrapper .border-left-primary {
+    border-left: 5px solid #ff4d4d;
+}
+
+/* 요약 카드 */
+.review-summary-card {
+    background-color: #fff;
+}
+.rating-label {
+    font-size: 0.85rem;
+    color: #888;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.rating-value .score-num {
+    font-size: 2.8rem;
+    font-weight: 800;
+}
+.rating-max {
+    color: #ccc;
+    font-size: 1rem;
+}
+.review-count-display .count-num {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #ff4d4d;
+}
+.review-count-display .count-unit {
+    font-size: 1rem;
+    margin-left: 4px;
+    font-weight: 600;
+}
+
+/* 리뷰 리스트 */
+.review-post:last-child {
+    border-bottom: none !important;
+}
+.review-author {
+    font-size: 1rem;
+    color: #333;
+}
+.review-body {
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+/* 별점 입력 애니메이션 (모달용) */
+.star-rating-input .bi-star-fill {
+    color: #ffc107;
+}
+
+/* 커뮤니티 카테고리 필터 */
+.community-category-filter {
+    gap: 10px;
+}
+
+.btn-category {
+    background: transparent;
+    border: 1px solid transparent;
+    color: #666;
+    padding: 6px 16px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border-radius: 20px;
+    transition: all 0.2s ease;
+}
+
+.btn-category:hover {
+    color: #ff4d4d;
+    background-color: #fff;
+    border-color: #eee;
+}
+
+.btn-category.active {
+    background-color: #ff4d4d;
+    color: #fff;
+    border-color: #ff4d4d;
+    box-shadow: 0 2px 5px rgba(255, 77, 77, 0.3);
+}
+
+/* 게시판 카테고리 뱃지 */
+.badge-outline-secondary {
+    border: 1px solid #ddd;
+    color: #888;
+    background: transparent;
+    font-weight: 500;
+    padding: 3px 8px;
+}
+
+/* 예매처 모달 전용 스타일 */
+.reserve-link-list .btn-outline-dark {
+    border: 1px solid #eee;
+    background-color: #f9f9f9;
+    transition: all 0.2s;
+    text-align: left;
+}
+
+.reserve-link-list .btn-outline-dark:hover {
+    background-color: #fff;
+    border-color: #ff4d4d;
+    color: #ff4d4d;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+}
+
+.reserve-link-list .btn-outline-dark span {
+    font-size: 1.05rem;
+}
+
+/* 카카오맵 커스텀 오버레이 스타일 */
+.custom-overlay {
+    position: relative;
+    bottom: 15px;
+    border-radius: 12px;
+    background: #fff;
+    border: 1px solid #eee;
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
+    /*transform: translateX(-50%); 중앙 정렬 */
+}
+
+/* 말풍선 꼬리 효과 */
+.custom-overlay:after {
+    content: '';
+    position: absolute;
+    margin-left: -10px;
+    left: 50%;
+    bottom: -10px;
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid #fff;
+}
+
+.overlay-content {
+    min-width: 200px;
+    overflow: hidden;
+}
+
+.overlay-header {
+    background: #333;
+    padding: 8px 12px;
+    border-radius: 10px 10px 0 0;
+}
+
+.overlay-header .place-name {
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.overlay-body {
+    padding: 12px;
+    text-align: center;
+}
+
+.overlay-body .place-address {
+    font-size: 0.8rem;
+    color: #666;
+    margin-bottom: 10px;
+    line-height: 1.4;
+    word-break: keep-all;
+}
+
+.btn-map-link {
+    display: inline-block;
+    background: #ff4d4d;
+    color: #fff !important;
+    text-decoration: none !important;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 20px;
+    transition: background 0.2s;
+}
+
+.btn-map-link:hover {
+    background: #e63939;
+}

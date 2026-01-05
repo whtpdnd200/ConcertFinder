@@ -1,11 +1,10 @@
-package com.concertfinder.concertfinder.concert.DTO;
+package com.concertfinder.concertfinder.concert.DTO.concertListDTO;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import lombok.Data;
 
-import java.time.LocalDate;
 
 
 @Data

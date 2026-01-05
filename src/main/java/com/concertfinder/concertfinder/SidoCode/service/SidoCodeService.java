@@ -15,6 +15,7 @@ public class SidoCodeService {
 
     private final SidoCodeRepository sidoCodeRepository;
 
+    // 시 도 목록 반환 메서드
     public List<SidoDTO> getAllCode() {
 
         List<SidoDTO> sidoDTOList = new ArrayList<>();
