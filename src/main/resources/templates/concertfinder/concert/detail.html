@@ -336,21 +336,6 @@
 
             return {
                 posts: [],
-                getCategory(code) {
-                    let name = '';
-                    if(code == 'F') {
-                        name = '자유글';
-                    } else if(code == 'T') {
-                        name = '티켓 양도';
-                    } else {
-                        name = '동행 모집';
-                    }
-                    return name;
-                },
-                getDate(date) {
-
-                    return date.split('T')[0];
-                },
                 loadPosts() {
                     let size = 5;
                     let concertId = $("#idStorageTag").data("concert-id");
@@ -359,6 +344,23 @@
                         .then(data => this.posts = data);
                 }
             }
+        }
+
+        function getCategory(code) {
+            let name = '';
+            if(code == 'F') {
+                name = '자유글';
+            } else if(code == 'T') {
+                name = '티켓 양도';
+            } else {
+                name = '동행 모집';
+            }
+            return name;
+        }
+
+        function getDate(date) {
+
+            return date.split('T')[0];
         }
     </script>
 </html>
