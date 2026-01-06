@@ -9,9 +9,7 @@ import com.concertfinder.concertfinder.post.repository.PostRepository;
 import com.concertfinder.concertfinder.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -123,13 +121,27 @@ public class PostService {
         return true;
     }
 
-    // 게시글 테스트 메서드
-    public List<PostListDTO> getPosts(String concertId, int page, int size) {
+    // 게시글 목록 조회 메서드
+    public Page<PostListDTO> getPosts(String concertId, int page, int size, char category, Pageable pageable) {
 
-        Page<Post> posts =
-                postRepository
-                        .findAllByConcertId(concertId
-                                , PageRequest.of(page, size, Sort.by("id").descending()));
+
+        Page<Post> posts = null;
+        Long count = null;
+        if(category =='A') {
+            posts = postRepository
+                     .findAllByConcertId(concertId
+                             , PageRequest.of(page, size, Sort.by("id").descending()));
+            count = postRepository.countByConcertId(concertId);
+        } else {
+            posts = postRepository
+                    .findAllByConcertIdAndCategory(concertId
+                                                   , category
+                                                   , PageRequest.of(page, size, Sort.by("id").descending()));
+            count = postRepository.countByConcertIdAndCategory(concertId, category);
+        }
+
+
+
         List<PostListDTO> postList = new ArrayList<>();
 
         for(Post post : posts) {
@@ -145,7 +157,8 @@ public class PostService {
 
             postList.add(postListDTO);
         }
+        Page<PostListDTO> postPageList = new PageImpl<>(postList, pageable, count);
 
-        return postList;
+        return postPageList;
     }
 }

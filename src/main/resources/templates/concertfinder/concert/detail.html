@@ -203,19 +203,19 @@
                 </div>
             </div>
 
-            <div class="concert-community-section my-5">
+            <div x-data="postData()" x-init="loadPosts(0, 'A')" id="idStorageTag" th:data-concert-id="${concertInfo.concertId}"  class="concert-community-section my-5">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h4 class="font-weight-bold mb-0 border-left-primary pl-3">함께하는 커뮤니티</h4>
                     <a th:href="@{/post/write/{concertId}(concertId = ${concertInfo.concertId})}" class="btn btn-dark btn-sm">글쓰기</a>
                 </div>
                 <div class="community-category-filter mb-3 d-flex flex-wrap shadow-sm p-2 rounded bg-light border">
-                    <button class="btn categoryBtn active" data-category="all">전체글</button>
-                    <button class="btn categoryBtn" data-category="F">자유글</button>
-                    <button class="btn categoryBtn" data-category="R">동행 모집</button>
-                    <button class="btn categoryBtn" data-category="T">티켓 양도</button>
+                    <button @click="loadPosts(0, 'A')" class="btn categoryBtn active" :class="{ 'active': currentCategory === 'A' }" data-category="A">전체글</button>
+                    <button @click="loadPosts(0, 'F')" class="btn categoryBtn" :class="{ 'active': currentCategory === 'F' }" data-category="F">자유글</button>
+                    <button @click="loadPosts(0, 'R')" class="btn categoryBtn" :class="{ 'active': currentCategory === 'R' }" data-category="R">동행 모집</button>
+                    <button @click="loadPosts(0, 'T')" class="btn categoryBtn" :class="{ 'active': currentCategory === 'T' }" data-category="T">티켓 양도</button>
                 </div>
 
-                <div id="idStorageTag" th:data-concert-id="${concertInfo.concertId}" class="table-responsive shadow-sm rounded">
+                <div class="table-responsive shadow-sm rounded">
                     <table class="table table-hover bg-white mb-0">
                         <thead class="thead-light">
                         <tr>
@@ -226,23 +226,59 @@
                             <th scope="col" style="width: 15%">작성일</th>
                         </tr>
                         </thead>
-                        <tbody x-data="postData()" x-init="loadPosts()">
-                        <template x-for="post in posts" :key="post.id">
+                        <tbody>
+                        <template x-for="post in posts.content" :key="post.id">
                             <tr>
                                 <td x-text="post.id" class="text-center">1</td>
                                 <td x-text="getCategory(post.category)" class="text-center">자유글</td>
-                                <td x-text="post.title" class="text-center"><a href="'/post/' + post.id" class="text-dark">이번 콘서트 가시는 분 계신가요?</a></td>
+                                <td ><a x-bind:href="getPostDetailUrl(post.id)" class="text-dark"><span x-text="post.title" class="text-center">이번 콘서트 가시는 분 계신가요?</span></a></td>
                                 <td x-text="post.userNickname" class="text-center">재미니</td>
                                 <td x-text="getDate(post.createdAt)" class="text-center">2026-01-03</td>
                             </tr>
                         </template>
-                        <template x-if="posts.length == 0">
+                        <template x-if="posts.content.length == 0">
                             <tr>
                                 <td colspan="5" class="text-center py-5 text-muted">작성된 게시글이 없습니다.</td>
                             </tr>
                         </template>
                         </tbody>
                     </table>
+                    <nav aria-label="Page navigation" class="mt-5" x-show="posts.page.totalPages > 0">
+                        <ul class="pagination justify-content-center custom-pagination">
+
+                            <li class="page-item" :class="{ 'disabled': posts.page.number == 0 }">
+                                <a class="page-link" href="javascript:void(0)" @click="changePage(0)">
+                                    <i class="bi bi-chevron-double-left"></i>
+                                </a>
+                            </li>
+
+                            <li class="page-item" :class="{ 'disabled': posts.page.number == 0 }">
+                                <a class="page-link" href="javascript:void(0)" @click="changePage(posts.page.number - 1)">
+                                    <i class="bi bi-chevron-left"></i>
+                                </a>
+                            </li>
+
+                            <template x-for="p in pageRange" :key="p">
+                                <li class="page-item" :class="{ 'active': p == (posts.page.number + 1) }">
+                                    <a class="page-link" href="javascript:void(0)"
+                                       x-text="p"
+                                       @click="changePage(p - 1)"></a>
+                                </li>
+                            </template>
+
+                            <li class="page-item" :class="{ 'disabled': posts.page.number == posts.page.totalPages - 1 }">
+                                <a class="page-link" href="javascript:void(0)" @click="changePage(posts.page.number + 1)">
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+                            </li>
+
+                            <li class="page-item" :class="{ 'disabled': posts.page.number == posts.page.totalPages - 1 }">
+                                <a class="page-link" href="javascript:void(0)" @click="changePage(posts.page.totalPages - 1)">
+                                    <i class="bi bi-chevron-double-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
                 </div>
             </div>
         </div>
@@ -322,40 +358,71 @@
                 $(this).prevAll().addBack().removeClass('bi-star').addClass('bi-star-fill');
             });
 
-            // 카테고리 선택 클릭 이벤트
-            $(".categoryBtn").on("click", function() {
 
-                let category = $(this).data("category");
-
-                $(".categoryBtn").removeClass("active");
-                $(this).addClass("active");
-            });
         })
 
+        // 동적 페이징을 위한 비동기 통신 함수 및 페이징 처리 함수
         function postData() {
 
-            return {
-                posts: [],
-                loadPosts() {
+            items = {
+                posts: {
+                    content: [],
+                    page: { number: 0, totalPages: 0, first: true, last: true }
+                },
+                currentCategory: 'A', // 현재 선택된 카테고리 저장
+                pageRange: [],
+                loadPosts(page = 0, category = this.currentCategory) {
+                    this.currentCategory = category;
                     let size = 5;
                     let concertId = $("#idStorageTag").data("concert-id");
-                    fetch('/post/' + concertId + '/list?page=' + 0 + '&size=' + size)
+                    fetch('/post/' + concertId + '/list?page=' + page + '&size=' + size + '&category=' + category)
                         .then(res => res.json())
-                        .then(data => this.posts = data);
+                        .then(data => {
+                            this.posts = data; // content와 page 정보가 한 번에 들어옴
+                            this.calculatePageRange();
+                        });
+                },
+                // 페이지 번호 5개씩 끊어서 보여주는 로직
+                calculatePageRange() {
+                    const current = this.posts.page.number; // 0부터 시작
+                    const total = this.posts.page.totalPages;
+                    const rangeSize = 5; // 화면에 한 번에 보여줄 페이지 번호 개수
+
+                    let start = Math.floor(current / rangeSize) * rangeSize;
+                    let end = Math.min(start + rangeSize, total);
+
+                    this.pageRange = [];
+                    for (let i = start + 1; i <= end; i++) {
+                        this.pageRange.push(i);
+                    }
+                },
+
+                changePage(p) {
+                    if (p >= 0 && p < this.posts.page.totalPages) {
+                        this.loadPosts(p);
+                    }
                 }
             }
+            console.log(items);
+            return items;
+        }
+
+        function getPostDetailUrl(postId) {
+
+            return "/post/" + postId;
         }
 
         function getCategory(code) {
             let name = '';
             if(code == 'F') {
-                name = '자유글';
-            } else if(code == 'T') {
-                name = '티켓 양도';
-            } else {
-                name = '동행 모집';
+                return '자유글';
             }
-            return name;
+            if(code == 'T') {
+                return '티켓 양도';
+            }
+            if(code == 'R') {
+                return '동행 모집';
+            }
         }
 
         function getDate(date) {

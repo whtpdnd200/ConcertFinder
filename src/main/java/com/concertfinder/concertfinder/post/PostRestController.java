@@ -8,6 +8,7 @@ import com.concertfinder.concertfinder.user.DTO.LoginUserDTO;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -72,9 +73,13 @@ public class PostRestController {
         return resultMap;
     }
 
-    // 게시글 목록 출력 테스트 API
+    // 게시글 목록 출력 API
     @GetMapping("/{concertId}/list")
-    public List<PostListDTO> getPosts(@PathVariable String concertId, int page, int size) {
-        return postService.getPosts(concertId, page, size);
+    public Page<PostListDTO> getPosts(@PathVariable String concertId
+                                    , @RequestParam int page
+                                    , @RequestParam int size
+                                    , @RequestParam char category
+                                    , Pageable pageable) {
+        return postService.getPosts(concertId, page, size, category, pageable);
     }
 }

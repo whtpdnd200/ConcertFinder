@@ -14,4 +14,10 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
 
     public Page<Post> findAllByConcertId(String concertId, Pageable pageable);
+
+    public long countByConcertId(String concertId);
+
+    public Page<Post> findAllByConcertIdAndCategory(String concertId, char category, Pageable pageable);
+
+    public long countByConcertIdAndCategory(String concertId, char category);
 }
