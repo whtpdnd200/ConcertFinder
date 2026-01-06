@@ -2,13 +2,15 @@
 <html lang="ko"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:x-on="http://www.w3.org/1999/xhtml"
+      xmlns:x-bind="http://www.w3.org/1999/xhtml"
       layout:decorate="~{concertfinder/layouts/main_layout}">
 <head>
     <meta charset="UTF-8">
     <title>상세 페이지</title>
     <link layout:fragment="css" rel="stylesheet" th:href="@{/css/concert/concert_detail_style.css}">
-    <script layout:fragment="kakaoLib" type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=a63cb198eeb8bf5e0801578ea8039e14&libraries=services,clusterer"></script>
     <script layout:fragment="kakao" type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=a63cb198eeb8bf5e0801578ea8039e14"></script>
+    <script layout:fragment="alpine" defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 
     <section layout:fragment="contents" class="detail-page-wrapper">
@@ -212,7 +214,8 @@
                     <button class="btn categoryBtn" data-category="R">동행 모집</button>
                     <button class="btn categoryBtn" data-category="T">티켓 양도</button>
                 </div>
-                <div class="table-responsive shadow-sm rounded">
+
+                <div id="idStorageTag" th:data-concert-id="${concertInfo.concertId}" class="table-responsive shadow-sm rounded">
                     <table class="table table-hover bg-white mb-0">
                         <thead class="thead-light">
                         <tr>
@@ -223,17 +226,21 @@
                             <th scope="col" style="width: 15%">작성일</th>
                         </tr>
                         </thead>
-                        <tbody>
-                        <tr>
-                            <td class="text-center">1</td>
-                            <td class="text-center">자유글</td>
-                            <td class="text-center"><a href="#" class="text-dark">이번 콘서트 가시는 분 계신가요?</a></td>
-                            <td class="text-center">재미니</td>
-                            <td class="text-center">2026-01-03</td>
-                        </tr>
-                        <tr>
-                            <td colspan="5" class="text-center py-5 text-muted">작성된 게시글이 없습니다.</td>
-                        </tr>
+                        <tbody x-data="postData()" x-init="loadPosts()">
+                        <template x-for="post in posts" :key="post.id">
+                            <tr>
+                                <td x-text="post.id" class="text-center">1</td>
+                                <td x-text="getCategory(post.category)" class="text-center">자유글</td>
+                                <td x-text="post.title" class="text-center"><a href="'/post/' + post.id" class="text-dark">이번 콘서트 가시는 분 계신가요?</a></td>
+                                <td x-text="post.userNickname" class="text-center">재미니</td>
+                                <td x-text="getDate(post.createdAt)" class="text-center">2026-01-03</td>
+                            </tr>
+                        </template>
+                        <template x-if="posts.length == 0">
+                            <tr>
+                                <td colspan="5" class="text-center py-5 text-muted">작성된 게시글이 없습니다.</td>
+                            </tr>
+                        </template>
                         </tbody>
                     </table>
                 </div>
@@ -292,18 +299,22 @@
                 xAnchor: 0.5
             });
 
+            // 카카오 맵의 마커 클릭시 커스텀 오버레이가 출력되는 이벤트
             kakao.maps.event.addListener(marker, 'click', function() {
                 customOverlay.setMap(map);
             });
 
+            // 닫기 버튼 클릭시 커스텀 오버레이 닫는 함수 호출
             $(document).on("click", "#closeBtn", function() {
                 closeOverlay();
             });
 
+            // 커스텀 오버레이 닫는 함수
             function closeOverlay() {
                 customOverlay.setMap(null);
             }
 
+            // 리뷰 등록시 별점 선택하는 클릭 이벤트
             $('.star-rating-input i').on('click', function() {
                 let val = $(this).data('value');
                 $('#ratingValue').val(val);
@@ -311,6 +322,7 @@
                 $(this).prevAll().addBack().removeClass('bi-star').addClass('bi-star-fill');
             });
 
+            // 카테고리 선택 클릭 이벤트
             $(".categoryBtn").on("click", function() {
 
                 let category = $(this).data("category");
@@ -318,8 +330,35 @@
                 $(".categoryBtn").removeClass("active");
                 $(this).addClass("active");
             });
-
         })
 
+        function postData() {
+
+            return {
+                posts: [],
+                getCategory(code) {
+                    let name = '';
+                    if(code == 'F') {
+                        name = '자유글';
+                    } else if(code == 'T') {
+                        name = '티켓 양도';
+                    } else {
+                        name = '동행 모집';
+                    }
+                    return name;
+                },
+                getDate(date) {
+
+                    return date.split('T')[0];
+                },
+                loadPosts() {
+                    let size = 5;
+                    let concertId = $("#idStorageTag").data("concert-id");
+                    fetch('/post/' + concertId + '/list?page=' + 0 + '&size=' + size)
+                        .then(res => res.json())
+                        .then(data => this.posts = data);
+                }
+            }
+        }
     </script>
 </html>

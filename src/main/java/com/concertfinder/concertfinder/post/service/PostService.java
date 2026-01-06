@@ -1,6 +1,7 @@
 package com.concertfinder.concertfinder.post.service;
 
 import com.concertfinder.concertfinder.post.DTO.PostDetailDTO;
+import com.concertfinder.concertfinder.post.DTO.PostListDTO;
 import com.concertfinder.concertfinder.post.DTO.PostModifyDTO;
 import com.concertfinder.concertfinder.post.DTO.PostWriteDTO;
 import com.concertfinder.concertfinder.post.domain.Post;
@@ -8,8 +9,13 @@ import com.concertfinder.concertfinder.post.repository.PostRepository;
 import com.concertfinder.concertfinder.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -115,5 +121,31 @@ public class PostService {
             }
         }
         return true;
+    }
+
+    // 게시글 테스트 메서드
+    public List<PostListDTO> getPosts(String concertId, int page, int size) {
+
+        Page<Post> posts =
+                postRepository
+                        .findAllByConcertId(concertId
+                                , PageRequest.of(page, size, Sort.by("id").descending()));
+        List<PostListDTO> postList = new ArrayList<>();
+
+        for(Post post : posts) {
+
+            PostListDTO postListDTO = PostListDTO.builder()
+                    .id(post.getId())
+                    .userId(post.getUserId())
+                    .category(post.getCategory())
+                    .title(post.getTitle())
+                    .userNickname(userService.getNickname(post.getUserId()))
+                    .createdAt(post.getCreatedAt())
+                    .build();
+
+            postList.add(postListDTO);
+        }
+
+        return postList;
     }
 }

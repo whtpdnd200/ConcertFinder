@@ -1,14 +1,17 @@
 package com.concertfinder.concertfinder.post;
 
+import com.concertfinder.concertfinder.post.DTO.PostListDTO;
 import com.concertfinder.concertfinder.post.DTO.PostModifyDTO;
 import com.concertfinder.concertfinder.post.DTO.PostWriteDTO;
 import com.concertfinder.concertfinder.post.service.PostService;
 import com.concertfinder.concertfinder.user.DTO.LoginUserDTO;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -67,5 +70,11 @@ public class PostRestController {
 
         resultMap.put("result", "fail");
         return resultMap;
+    }
+
+    // 게시글 목록 출력 테스트 API
+    @GetMapping("/{concertId}/list")
+    public List<PostListDTO> getPosts(@PathVariable String concertId, int page, int size) {
+        return postService.getPosts(concertId, page, size);
     }
 }
