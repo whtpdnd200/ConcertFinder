@@ -197,7 +197,7 @@
     gap: 10px;
 }
 
-.btn-category {
+.categoryBtn {
     background: transparent;
     border: 1px solid transparent;
     color: #666;
@@ -208,13 +208,13 @@
     transition: all 0.2s ease;
 }
 
-.btn-category:hover {
+.categoryBtn:hover {
     color: #ff4d4d;
     background-color: #fff;
     border-color: #eee;
 }
 
-.btn-category.active {
+.categoryBtn.active {
     background-color: #ff4d4d;
     color: #fff;
     border-color: #ff4d4d;
@@ -282,8 +282,9 @@
 
 .overlay-header {
     background: #333;
-    padding: 8px 12px;
+    padding: 8px 35px 8px 12px;
     border-radius: 10px 10px 0 0;
+
 }
 
 .overlay-header .place-name {
@@ -319,4 +320,61 @@
 
 .btn-map-link:hover {
     background: #e63939;
+}
+
+.close {
+    position: absolute;
+    top: 6px;
+    right: 13px;
+    color: #888;
+    width: 17px;
+    height: 17px;
+}
+
+.close:hover {
+    cursor: pointer;
+}
+
+.closeIcon {
+    font-size: 28px;
+}
+
+/* 페이징 전체 컨테이너 */
+.custom-pagination {
+    gap: 5px;
+}
+
+/* 기본 버튼 스타일 */
+.custom-pagination .page-link {
+    background-color: #1a1a1a; /* Dark 배경 */
+    border: 1px solid #333;
+    color: #999;
+    padding: 8px 14px;
+    border-radius: 4px !important;
+    font-size: 0.9rem;
+    transition: all 0.2s ease-in-out;
+}
+
+/* 호버 시 */
+.custom-pagination .page-link:hover {
+    background-color: #333;
+    color: #fff;
+    border-color: #444;
+}
+
+/* 활성화 페이지 (Active) */
+.custom-pagination .page-item.active .page-link {
+    background-color: #ff4d4d !important; /* 포인트 Red */
+    border-color: #ff4d4d !important;
+    color: #fff !important;
+    font-weight: bold;
+    box-shadow: 0 0 10px rgba(255, 77, 77, 0.4);
+}
+
+/* 비활성화 버튼 (Disabled) */
+.custom-pagination .page-item.disabled .page-link {
+    background-color: #121212;
+    color: #444;
+    border-color: #222;
+    cursor: not-allowed;
 }
