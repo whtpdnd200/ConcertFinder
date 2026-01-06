@@ -1,5 +1,6 @@
 package com.concertfinder.concertfinder.user;
 
+import com.concertfinder.concertfinder.common.DTO.ApiResponseDTO;
 import com.concertfinder.concertfinder.user.DTO.JoinUserDTO;
 import com.concertfinder.concertfinder.user.DTO.LoginUserDTO;
 import com.concertfinder.concertfinder.user.DTO.ModifyUserDTO;
@@ -20,60 +21,49 @@ public class UserRestController {
 
     // 회원가입 : 중복검사 기능
     @GetMapping("/id-check")
-    public Map<String, Object> isDuplicate(@RequestParam String userId) {
-        Map<String, Object> resultMap = new HashMap<>();
+    public ApiResponseDTO<Boolean> isDuplicate(@RequestParam String userId) {
 
-        resultMap.put("isDuplicate", userService.isDuplicate(userId));
-
-        return resultMap;
+        return ApiResponseDTO.isDuplicate("", userService.isDuplicate(userId));
     }
 
     // 회원가입 : 회원가입 기능
     @PostMapping
-    public Map<String, String> createUser(@ModelAttribute JoinUserDTO joinUserDTO) {
+    public ApiResponseDTO<Void> createUser(@ModelAttribute JoinUserDTO joinUserDTO) {
 
-        Map<String, String> resultMap = new HashMap<>();
         if(userService.insertUser(joinUserDTO)) {
-            resultMap.put("result", "success");
-            return resultMap;
+            return ApiResponseDTO.success("회원가입 성공", null);
         }
-        resultMap.put("result", "fail");
-        return resultMap;
+
+        return ApiResponseDTO.fail("회원가입 실패!");
     }
 
     // 로그인 : 로그인 기능
     @PostMapping("/login")
-    public Map<String, String> login(@RequestParam String userId
+    public ApiResponseDTO<Void> login(@RequestParam String userId
                                     , @RequestParam String password
                                     , HttpSession session) {
 
-        Map<String, String> resultMap = new HashMap<>();
         LoginUserDTO loginUserDTO = userService.loginUser(userId, password);
 
         if(loginUserDTO != null) {
             session.setAttribute("userInfo", loginUserDTO);
-            resultMap.put("result", "success");
-
-            return resultMap;
+            return ApiResponseDTO.success("로그인 성공", null);
         }
-        resultMap.put("result", "fail");
-        return resultMap;
+        return ApiResponseDTO.fail("로그인 실패! 아이디 혹은 비밀번호를 확인 해주세요!");
     }
 
     // 회원정보 수정 기능
     @PutMapping()
-    public Map<String, String> modify(@RequestBody ModifyUserDTO modifyUserDTO
+    public ApiResponseDTO<Void> modify(@RequestBody ModifyUserDTO modifyUserDTO
                                      , HttpSession session) {
 
         LoginUserDTO loginUserDTO = (LoginUserDTO)session.getAttribute("userInfo");
-        Map<String, String> resultMap = new HashMap<>();
+
         if(userService.userModify(loginUserDTO.getId(), modifyUserDTO)) {
             session.setAttribute("userInfo", userService.getUser(loginUserDTO.getId()));
-            resultMap.put("result", "success");
-            return resultMap;
+            return ApiResponseDTO.success("정보 수정 성공", null);
         }
 
-        resultMap.put("result", "fail");
-        return resultMap;
+        return ApiResponseDTO.fail("회원 정보 수정 실패!");
     }
 }

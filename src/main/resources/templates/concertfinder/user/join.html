@@ -165,10 +165,11 @@
                             , "attentionAreaCode" : attentionAreaCode
                          }
                 , success : function(response) {
+
                     if(response.result == "success") {
                         location.href = "/user/login";
                     } else {
-                        alert("회원가입 실패!");
+                        alert(response.message);
                     }
                 }
                 , error : function() {
@@ -224,9 +225,9 @@
                 , data : {"userId" : userId}
                 , success : function(response) {
                     isDuplicateChecked = true;
-                    isDuplicate = response.isDuplicate;
+                    isDuplicate = response.data;
 
-                    if(response.isDuplicate) {
+                    if(response.data) {
                         $("#idDuplicate").removeClass("d-none");
                         $("#idNotDuplicate").addClass("d-none");
                     } else {

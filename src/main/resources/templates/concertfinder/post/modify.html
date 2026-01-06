@@ -116,7 +116,7 @@
                     if(response.result == 'success') {
                         location.href = "/post/" + postId;
                     } else {
-                        alert("게시글 수정 실패!");
+                        alert(response.message);
                     }
                 }
                 , error : function() {

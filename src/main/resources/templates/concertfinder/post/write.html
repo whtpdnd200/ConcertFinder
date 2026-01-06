@@ -107,7 +107,7 @@
                   if(response.result == 'success') {
                       location.href = "/concert/" + concertId;
                   } else {
-                      alert("게시글 작성 실패!");
+                      alert(response.message);
                   }
               }
               , error : function() {

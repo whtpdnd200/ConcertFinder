@@ -227,53 +227,53 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <template x-for="post in posts.content" :key="post.id">
+                        <template x-for="post in posts.data.content" :key="post.id">
                             <tr>
                                 <td x-text="post.id" class="text-center">1</td>
                                 <td x-text="getCategory(post.category)" class="text-center">자유글</td>
-                                <td ><a x-bind:href="getPostDetailUrl(post.id)" class="text-dark"><span x-text="post.title" class="text-center">이번 콘서트 가시는 분 계신가요?</span></a></td>
+                                <td ><a :href="getPostDetailUrl(post.id)" class="text-dark"><span x-text="post.title" class="text-center">이번 콘서트 가시는 분 계신가요?</span></a></td>
                                 <td x-text="post.userNickname" class="text-center">재미니</td>
                                 <td x-text="getDate(post.createdAt)" class="text-center">2026-01-03</td>
                             </tr>
                         </template>
-                        <template x-if="posts.content.length == 0">
+                        <template x-if="posts.data.content.length == 0">
                             <tr>
                                 <td colspan="5" class="text-center py-5 text-muted">작성된 게시글이 없습니다.</td>
                             </tr>
                         </template>
                         </tbody>
                     </table>
-                    <nav aria-label="Page navigation" class="mt-5" x-show="posts.page.totalPages > 0">
+                    <nav aria-label="Page navigation" class="mt-5" x-show="posts.data.page.totalPages > 0">
                         <ul class="pagination justify-content-center custom-pagination">
 
-                            <li class="page-item" :class="{ 'disabled': posts.page.number == 0 }">
+                            <li class="page-item" :class="{ 'disabled': posts.data.page.number == 0 }">
                                 <a class="page-link" href="javascript:void(0)" @click="changePage(0)">
                                     <i class="bi bi-chevron-double-left"></i>
                                 </a>
                             </li>
 
-                            <li class="page-item" :class="{ 'disabled': posts.page.number == 0 }">
-                                <a class="page-link" href="javascript:void(0)" @click="changePage(posts.page.number - 1)">
+                            <li class="page-item" :class="{ 'disabled': posts.data.page.number == 0 }">
+                                <a class="page-link" href="javascript:void(0)" @click="changePage(posts.data.page.number - 1)">
                                     <i class="bi bi-chevron-left"></i>
                                 </a>
                             </li>
 
                             <template x-for="p in pageRange" :key="p">
-                                <li class="page-item" :class="{ 'active': p == (posts.page.number + 1) }">
+                                <li class="page-item" :class="{ 'active': p == (posts.data.page.number + 1) }">
                                     <a class="page-link" href="javascript:void(0)"
                                        x-text="p"
                                        @click="changePage(p - 1)"></a>
                                 </li>
                             </template>
 
-                            <li class="page-item" :class="{ 'disabled': posts.page.number == posts.page.totalPages - 1 }">
-                                <a class="page-link" href="javascript:void(0)" @click="changePage(posts.page.number + 1)">
+                            <li class="page-item" :class="{ 'disabled': posts.data.page.number == posts.data.page.totalPages - 1 }">
+                                <a class="page-link" href="javascript:void(0)" @click="changePage(posts.data.page.number + 1)">
                                     <i class="bi bi-chevron-right"></i>
                                 </a>
                             </li>
 
-                            <li class="page-item" :class="{ 'disabled': posts.page.number == posts.page.totalPages - 1 }">
-                                <a class="page-link" href="javascript:void(0)" @click="changePage(posts.page.totalPages - 1)">
+                            <li class="page-item" :class="{ 'disabled': posts.data.page.number == posts.data.page.totalPages - 1 }">
+                                <a class="page-link" href="javascript:void(0)" @click="changePage(posts.data.page.totalPages - 1)">
                                     <i class="bi bi-chevron-double-right"></i>
                                 </a>
                             </li>
@@ -364,17 +364,24 @@
         // 동적 페이징을 위한 비동기 통신 함수 및 페이징 처리 함수
         function postData() {
 
+            // 게시글 리스트와 페이징에 필요한 정보들을 저장하기 위한 리스트
             items = {
                 posts: {
-                    content: [],
-                    page: { number: 0, totalPages: 0, first: true, last: true }
+                    result: "",
+                    message: "",
+                    data: {
+                        content: [],
+                        page: { number: 0, totalPages: 0, first: true, last: true }
+                    }
                 },
                 currentCategory: 'A', // 현재 선택된 카테고리 저장
-                pageRange: [],
+                pageRange: [], // 페이지 블럭이 들어갈 리스트
+                // 파라미터에 default값 명시해서 첫 페이지에서도 잘 동작 하도록 설정
                 loadPosts(page = 0, category = this.currentCategory) {
-                    this.currentCategory = category;
-                    let size = 5;
-                    let concertId = $("#idStorageTag").data("concert-id");
+                    this.currentCategory = category; // 파라미터로 들어온 카테고리 값으로 선택된 카테고리 값 변경
+                    let size = 5; // 한 페이지당 보여줄 게시글의 갯수
+                    let concertId = $("#idStorageTag").data("concert-id"); // 해당 하는 콘서트 페이지에서 작성된 게시글만 보여주기 위해 콘서트 id값 저장
+                    // 자바스크립트의 fetch 메서드를 사용해 비동기 통신으로 API 데이터 가져옴
                     fetch('/post/' + concertId + '/list?page=' + page + '&size=' + size + '&category=' + category)
                         .then(res => res.json())
                         .then(data => {
@@ -384,11 +391,13 @@
                 },
                 // 페이지 번호 5개씩 끊어서 보여주는 로직
                 calculatePageRange() {
-                    const current = this.posts.page.number; // 0부터 시작
-                    const total = this.posts.page.totalPages;
-                    const rangeSize = 5; // 화면에 한 번에 보여줄 페이지 번호 개수
+                    const current = this.posts.data.page.number; // 0부터 시작
+                    const total = this.posts.data.page.totalPages; // 총 페이지 블럭 갯수
+                    const rangeSize = 5; // 화면에 한 번에 보여줄 페이지 블럭 개수
 
+                    // 페이지 블럭의 시작 번호를 저장 하는 변수
                     let start = Math.floor(current / rangeSize) * rangeSize;
+                    // 페이지 블럭의 마지막 번호를 저장하는 변수
                     let end = Math.min(start + rangeSize, total);
 
                     this.pageRange = [];
@@ -396,9 +405,9 @@
                         this.pageRange.push(i);
                     }
                 },
-
+                // 페이지를 이동 시킬때 실행 되는 함수
                 changePage(p) {
-                    if (p >= 0 && p < this.posts.page.totalPages) {
+                    if (p >= 0 && p < this.posts.data.page.totalPages) {
                         this.loadPosts(p);
                     }
                 }

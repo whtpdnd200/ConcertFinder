@@ -187,7 +187,7 @@
                     if(response.result == 'success') {
                         location.href = "/user/mypage";
                     } else {
-                        alert("회원 정보 수정 실패!");
+                        alert(response.message);
                     }
                 }
                 , error : function() {

@@ -27,4 +27,8 @@ public class ApiResponseDTO<T> {
     public static <T>ApiResponseDTO<T> fail(String message) {
         return new ApiResponseDTO<>("fail", message, null);
     }
+
+    public static <T>ApiResponseDTO<T> isDuplicate(String message, T data) {
+        return new ApiResponseDTO<>("isDuplicate", message, data);
+    }
 }
