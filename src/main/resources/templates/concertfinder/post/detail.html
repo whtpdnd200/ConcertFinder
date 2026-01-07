@@ -200,11 +200,9 @@
                     } else {
                         alert(response.message);
                     }
-
                 }
-                , error: function (response) {
-                    console.log(response);
-                    alert("댓글 작성 에러!");
+                , error: function (xhr) {
+                    alert(xhr.responseJSON.message);
                 }
             });
         });

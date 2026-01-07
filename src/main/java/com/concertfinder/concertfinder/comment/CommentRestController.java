@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpServerErrorException;
 
 @RestController
 @RequestMapping("/comment")
@@ -26,10 +27,21 @@ public class CommentRestController {
                                              , HttpSession session) {
 
         LoginUserDTO loginUserDTO = (LoginUserDTO)session.getAttribute("userInfo");
-        if(commentService.insertComment(postId, comment, loginUserDTO.getId())) {
-            return ResponseEntity.ok(ApiResponseDTO.success("댓글 작성 성공"));
+
+        if(loginUserDTO == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponseDTO.fail("로그인이 필요한 서비스 입니다!"));
         }
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponseDTO.fail("댓글 작성 실패"));
+
+        try {
+            commentService.insertComment(postId, comment, loginUserDTO.getId());
+        } catch(IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponseDTO.fail(e.getMessage()));
+        }
+        catch(HttpServerErrorException.InternalServerError e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponseDTO.fail("댓글 작성 에러!"));
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDTO.success("댓글 작성 성공"));
     }
 
     // 댓글 목록 출력 API

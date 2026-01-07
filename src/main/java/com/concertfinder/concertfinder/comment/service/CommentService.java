@@ -17,7 +17,11 @@ public class CommentService {
     private final CommentRepository commentRepository;
 
     // 댓글 저장 메서드
-    public boolean insertComment(long postId, String comment, long userId) {
+    public void insertComment(long postId, String comment, long userId) {
+
+        if (comment == null || comment.trim().isEmpty()) {
+            throw new IllegalArgumentException("댓글 내용은 비어있을 수 없습니다!");
+        }
 
         Comment commentEntity = Comment.builder()
                 .postId(postId)
@@ -28,9 +32,9 @@ public class CommentService {
         try {
             commentRepository.save(commentEntity);
         } catch(DataAccessException e) {
-            return false;
+            throw new RuntimeException("댓글 작성 에러!");
         }
-        return true;
+
     }
 
     // 댓글 목록 출력 메서드
