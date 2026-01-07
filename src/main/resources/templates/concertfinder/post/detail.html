@@ -10,6 +10,7 @@
     <title>글 상세</title>
     <link layout:fragment="css" rel="stylesheet" th:href="@{/css/post/post_detail_style.css}">
     <script layout:fragment="alpine" defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script layout:fragment="functionScript" th:src="@{/js/comment/comment_main.js}"></script>
 </head>
     <section id="postIdTag" th:data-id="${postInfo.id}" layout:fragment="contents" class="post-view-wrapper">
         <div class="container py-5">
@@ -32,7 +33,7 @@
                                 <span th:text="${postInfo.userNickname}" class="author-name font-weight-bold">재미니팬</span>
                             </div>
                             <div class="post-stats text-muted small">
-                                <span><i class="bi bi-chat-dots mr-1"></i> 댓글 12</span>
+                                <span><i class="bi bi-chat-dots mr-1"></i> 댓글 <span th:text="${postInfo.commentCount}">12</span></span>
                             </div>
                         </div>
                     </div>
@@ -77,21 +78,22 @@
                     </div>
                     <div class="modal-footer border-0 p-3 justify-content-center">
                         <button type="button" class="btn btn-light px-4 mr-2" data-dismiss="modal">취소</button>
-                        <button id="deleteBtn" type="button" class="btn btn-danger px-4">삭제확인</button>
+                        <button id="postDeleteBtn" type="button" class="btn btn-danger px-4">삭제확인</button>
                     </div>
                 </div>
             </div>
         </div>
         <div class="comment-area-wrapper mt-5 pt-5 border-top">
             <div class="row justify-content-center">
-                <div class="col-lg-10"> <div class="d-flex align-items-center mb-4">
-                    <h5 class="font-weight-bold mb-0 border-left-primary pl-3">
-                        댓글 <span class="comment-count-text text-danger ml-1">0</span>
-                    </h5>
-                </div>
+                <div class="col-lg-6">
+                    <div class="d-flex align-items-center mb-4">
+                        <h5 class="font-weight-bold mb-0 border-left-primary pl-3">
+                            댓글 <span class="comment-count-text text-danger ml-1"><span th:text="${postInfo.commentCount}">0</span></span>
+                        </h5>
+                     </div>
 
                     <div class="comment-write-card shadow-sm rounded bg-white p-4 mb-5 border-0">
-                        <form>
+                        <form id="commentWriteForm">
                             <div class="form-group mb-3">
                         <textarea id="commentInput" class="form-control comment-textarea bg-light"
                                   rows="3"
@@ -117,13 +119,33 @@
                                             <span class="mx-2 text-muted" style="font-size: 0.8rem;">|</span>
                                             <span class="text-muted small" x-text="getDate(comment.createdAt)">2026-01-07</span>
                                         </div>
-                                        <template x-if="$('#dataValue').data('id') == comment.userId" >
-                                            <button class="btn btn-sm text-muted">
+
+                                        <div class="comment-actions d-flex align-items-center" x-show="$('#dataValue').data('id') == comment.userId">
+                                            <button :data-comment-id="comment.id" class="btn btn-sm text-muted hover-edit p-1 mr-1 commentModifyIcon" title="수정">
+                                                <i class="bi bi-pencil" style="font-size: 0.85rem;"></i>
+                                            </button>
+
+                                            <button :data-comment-id="comment.id" class="btn btn-sm text-muted hover-delete p-1 commentDeleteBtn">
                                                 <i class="bi bi-trash"></i>
                                             </button>
-                                        </template>
+                                        </div>
                                     </div>
-                                    <div class="comment-text text-secondary px-1" x-text="comment.comment" style="font-size: 0.92rem; line-height: 1.5;">
+                                    <form :id="'commentModifyForm' + comment.id" class="d-none">
+                                        <div class="form-group mb-3">
+                                                    <textarea :id="'commentModifyInput' + comment.id" class="form-control comment-textarea bg-light"
+                                                              rows="3"
+                                                              placeholder="공연에 대한 궁금한 점이나 소중한 의견을 남겨주세요." x-text="comment.comment"></textarea>
+                                            <div class="text-secondary text-right small">
+                                                <span id="commentModifyLength">0</span>/250
+                                            </div>
+                                        </div>
+                                        <div class="d-flex justify-content-end">
+                                            <button :id="'commentModifyBtn' + comment.id" data-comment-id="" type="submit" class="btn btn-dark px-4 font-weight-bold commentModifyBtn" style="border-radius: 20px;">
+                                                수정하기
+                                            </button>
+                                        </div>
+                                    </form>
+                                    <div :id="'commentTag' + comment.id" class="comment-text text-secondary px-1" x-text="comment.comment" style="font-size: 0.92rem; line-height: 1.5;">
                                         댓글 내용이 노출됩니다.
                                     </div>
                                 </div>
@@ -166,67 +188,39 @@
     </section>
     <script layout:fragment="script">
 
-        function commentData() {
+        $(document).on("click", ".commentModifyBtn", function(e) {
+            e.preventDefault();
+            let commentId = $(this).data("comment-id");
+            alert(commentId);
+        });
 
-            // 댓글 리스트와 페이징에 필요한 정보들을 저장하기 위한 리스트
-            items = {
-                comments: {
-                    result: "",
-                    message: "",
-                    data: {
-                        content: [],
-                        page: { number: 0, totalPages: 0, first: true, last: true }
-                    }
-                },
-                commentPageRange: [], // 페이지 블럭이 들어갈 리스트
-                // 파라미터에 default값 명시해서 첫 페이지에서도 잘 동작 하도록 설정
-                loadComments(page = 0) {
-                    let size = 5; // 한 페이지당 보여줄 댓글의 갯수
-                    let postId = $("#postIdTag").data("id"); // 해당 하는 게시글 페이지에서 작성된 댓글만 보여주기 위해 게시글 id값 저장
-                    // 자바스크립트의 fetch 메서드를 사용해 비동기 통신으로 API 데이터 가져옴
-                    fetch('/comment/' + postId + '/list?page=' + page + '&size=' + size)
-                        .then(res => res.json())
-                        .then(data => {
-                            this.comments = data; // content와 page 정보가 한 번에 들어옴
-                            this.calculatePageRange();
-                        });
-                },
-                // 페이지 번호 5개씩 끊어서 보여주는 로직
-                calculatePageRange() {
-                    const current = this.comments.data.page.number; // 0부터 시작
-                    const total = this.comments.data.page.totalPages; // 총 페이지 블럭 갯수
-                    const rangeSize = 5; // 화면에 한 번에 보여줄 페이지 블럭 개수
+        $(document).on("click", ".commentModifyIcon", function() {
+            let commentId = $(this).data("comment-id");
+            $("#commentTag" + commentId).addClass("d-none");
+            $("#commentModifyForm" + commentId).removeClass("d-none");
+            $("#commentModifyBtn" + commentId).data("comment-id", commentId);
+            $(".commentModifyIcon").removeClass("commentModifyIcon");
+        });
 
-                    // 페이지 블럭의 시작 번호를 저장 하는 변수
-                    let start = Math.floor(current / rangeSize) * rangeSize;
-                    // 페이지 블럭의 마지막 번호를 저장하는 변수
-                    let end = Math.min(start + rangeSize, total);
+        $(document).on("click", ".commentDeleteBtn", function() {
+            let commentId = $(this).data("comment-id");
 
-                    this.commentPageRange = [];
-                    for (let i = start + 1; i <= end; i++) {
-                        this.commentPageRange.push(i);
-                    }
-                },
-                // 페이지를 이동 시킬때 실행 되는 함수
-                changePage(p) {
-                    if (p >= 0 && p < this.comments.data.page.totalPages) {
-                        this.loadComments(p);
+            $.ajax({
+                type: "delete"
+                , url: "/comment/" + commentId
+                , success: function(response) {
+                    if(response.result === 'success') {
+                        location.reload();
+                    } else {
+                        console.log(response);
+                        alert(response.message);
                     }
                 }
-            }
-            console.log(items);
-            return items;
-        }
-
-        function getCommentDeleteUrl(commentId) {
-
-            return "/comment/" + commentId;
-        }
-
-        function getDate(date) {
-
-            return date.split('T')[0];
-        }
+                , error: function(xhr) {
+                    alert(xhr.responseJSON.message);
+                }
+            });
+        });
 
         $("#commentInput").on("input", function() {
             let length = $("#commentInput").val().length;
@@ -274,7 +268,7 @@
             });
         });
 
-        $("#deleteBtn").on("click", function() {
+        $("#postDeleteBtn").on("click", function() {
             let postId = $("#deleteModalBtn").data("post-id");
             let concertId = $("#deleteConfirmModal").data("concert-id");
             $.ajax({
@@ -282,6 +276,7 @@
                 , url : "/post/" + postId
                 , success : function(response) {
                     if(response.result == 'success') {
+
                         location.href = "/concert/" + concertId;
                     } else {
                         alert(response.message);

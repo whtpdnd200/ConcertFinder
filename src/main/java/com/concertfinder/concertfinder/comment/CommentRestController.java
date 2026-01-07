@@ -58,4 +58,26 @@ public class CommentRestController {
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.success("댓글 목록 출력 성공", commentList));
     }
+
+    // 댓글 삭제 API
+    @DeleteMapping("/{commentId}")
+    public ResponseEntity<ApiResponseDTO<Object>> removeComment(@PathVariable long commentId
+                                                             , HttpSession session) {
+        LoginUserDTO loginUserDTO = (LoginUserDTO)session.getAttribute("userInfo");
+        if(loginUserDTO == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponseDTO.fail("로그인이 필요한 서비스 입니다!"));
+        }
+
+        try {
+            commentService.deleteComment(commentId, loginUserDTO.getId());
+
+        } catch(IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ApiResponseDTO.fail(e.getMessage()));
+        } catch(RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponseDTO.fail(e.getMessage()));
+        }
+
+
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.success("댓글 삭제 성공"));
+    }
 }

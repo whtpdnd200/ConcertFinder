@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -53,16 +54,16 @@ public class PostRestController {
 
     // 게시글 삭제 API
     @DeleteMapping("{postId}")
-    public ApiResponseDTO<Void> removePost(@PathVariable long postId
+    public ResponseEntity<ApiResponseDTO<Void>> removePost(@PathVariable long postId
                                          , HttpSession session) {
         LoginUserDTO loginUserDTO = (LoginUserDTO)session.getAttribute("userInfo");
         if(postService.postDelete(postId, loginUserDTO.getId())) {
 
 
-            return ApiResponseDTO.success("게시글 삭제 성공");
+            return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.success("게시글 삭제 성공"));
         }
 
-        return ApiResponseDTO.fail("게시글 삭제 실패!");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponseDTO.fail("게시글 삭제 실패!"));
     }
 
     // 게시글 목록 출력 API

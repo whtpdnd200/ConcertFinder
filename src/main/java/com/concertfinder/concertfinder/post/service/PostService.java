@@ -1,5 +1,6 @@
 package com.concertfinder.concertfinder.post.service;
 
+import com.concertfinder.concertfinder.comment.service.CommentService;
 import com.concertfinder.concertfinder.post.DTO.PostDetailDTO;
 import com.concertfinder.concertfinder.post.DTO.PostListDTO;
 import com.concertfinder.concertfinder.post.DTO.PostModifyDTO;
@@ -24,6 +25,8 @@ public class PostService {
 
     private final UserService userService;
 
+    private final CommentService commentService;
+
     // 게시글 DTO에 담기
     public PostDetailDTO addDto(Post post) {
         PostDetailDTO postDetailDTO = PostDetailDTO.builder()
@@ -34,6 +37,7 @@ public class PostService {
                 .category(post.getCategory())
                 .title(post.getTitle())
                 .content(post.getContent())
+                .commentCount(commentService.getCommentCount(post.getId()))
                 .createdAt(post.getCreatedAt())
                 .updatedAt(post.getUpdatedAt())
                 .build();

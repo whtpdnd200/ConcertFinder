@@ -7,14 +7,12 @@ import com.concertfinder.concertfinder.comment.repository.CommentRepository;
 import com.concertfinder.concertfinder.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -48,7 +46,7 @@ public class CommentService {
     public Page<CommentListDTO> getCommentList(long postId, int page, int size, Pageable pageable) {
 
 
-        Page<Comment> comments = commentRepository.findAllByPostId(postId, PageRequest.of(page, size));
+        Page<Comment> comments = commentRepository.findAllByPostId(postId, PageRequest.of(page, size, Sort.by("id").descending()));
 
         List<CommentListDTO> lists = new ArrayList<>();
 
@@ -67,5 +65,29 @@ public class CommentService {
 
         Page<CommentListDTO> commentList = new PageImpl<>(lists, pageable, commentRepository.countByPostId(postId));
         return commentList;
+    }
+
+    // 댓글 목록 갯수 반환 메서드
+    public int getCommentCount(long postId) {
+        return commentRepository.countByPostId(postId);
+    }
+
+    // 댓글 삭제 메서드
+    public void deleteComment(long commentId, long userId) {
+        Optional<Comment> optionalComment = commentRepository.findById(commentId);
+
+        if(optionalComment.isPresent()) {
+            Comment comment = optionalComment.get();
+            if(userId != comment.getUserId()) {
+                throw new IllegalArgumentException("삭제 권한이 없습니다!");
+            }
+
+            try {
+                commentRepository.delete(comment);
+            } catch(DataAccessException e) {
+                throw new RuntimeException("댓글 삭제 에러!");
+            }
+
+        }
     }
 }

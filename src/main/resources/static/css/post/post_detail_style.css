@@ -168,3 +168,23 @@
     font-size: 0.7rem;
     vertical-align: middle;
 }
+
+/* 수정/삭제 아이콘 공통 */
+.comment-actions .btn {
+    transition: all 0.2s ease;
+    line-height: 1;
+}
+
+/* 수정 아이콘 호버 */
+.hover-edit:hover {
+    color: #4dabf7 !important; /* 부드러운 파란색 */
+    background-color: #f1f3f5;
+    border-radius: 4px;
+}
+
+/* 삭제 아이콘 호버 */
+.hover-delete:hover {
+    color: #ff4d4d !important; /* 포인트 레드 */
+    background-color: #fff1f1;
+    border-radius: 4px;
+}
