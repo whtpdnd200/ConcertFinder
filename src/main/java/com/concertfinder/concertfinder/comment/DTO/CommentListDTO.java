@@ -17,6 +17,8 @@ public class CommentListDTO {
 
     private long userId;
 
+    private String userNickname;
+
     private String comment;
 
     private LocalDateTime createdAt;

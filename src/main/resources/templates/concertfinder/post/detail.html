@@ -2,13 +2,16 @@
 <html lang="ko"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:x-on="http://www.w3.org/1999/xhtml"
+      xmlns:x-bind="http://www.w3.org/1999/xhtml"
       layout:decorate="~{concertfinder/layouts/main_layout}">
 <head>
     <meta charset="UTF-8">
     <title>글 상세</title>
     <link layout:fragment="css" rel="stylesheet" th:href="@{/css/post/post_detail_style.css}">
+    <script layout:fragment="alpine" defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
-    <section layout:fragment="contents" class="post-view-wrapper">
+    <section id="postIdTag" th:data-id="${postInfo.id}" layout:fragment="contents" class="post-view-wrapper">
         <div class="container py-5">
             <div class="row justify-content-center">
                 <div class="col-lg-10">
@@ -103,63 +106,127 @@
                         </form>
                     </div>
 
-                    <div class="comment-list-container mt-4">
+                    <div x-data="commentData()" x-init="loadComments(0)" class="comment-list-container mt-4">
 
                         <div class="comment-list mb-4">
-<!--                            <template x-for="comment in comments" :key="comment.id">-->
+                            <template x-for="comment in comments.data.content" :key="comment.id">
                                 <div class="comment-item border-bottom py-3">
                                     <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <div class="d-flex align-items-center">
+                                        <div class="d-flex alig n-items-center">
                                             <span class="font-weight-bold text-dark small" x-text="comment.userNickname">작성자</span>
                                             <span class="mx-2 text-muted" style="font-size: 0.8rem;">|</span>
-                                            <span class="text-muted small" x-text="formatDate(comment.createdAt)">2026-01-07</span>
+                                            <span class="text-muted small" x-text="getDate(comment.createdAt)">2026-01-07</span>
                                         </div>
-                                        <button x-show="comment.isMine" @click="deleteComment(comment.id)" class="btn btn-sm text-muted">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
+                                        <template x-if="$('#dataValue').data('id') == comment.userId" >
+                                            <button class="btn btn-sm text-muted">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </template>
                                     </div>
-                                    <div class="comment-text text-secondary px-1" x-text="comment.content" style="font-size: 0.92rem; line-height: 1.5;">
+                                    <div class="comment-text text-secondary px-1" x-text="comment.comment" style="font-size: 0.92rem; line-height: 1.5;">
                                         댓글 내용이 노출됩니다.
                                     </div>
                                 </div>
-<!--                            </template>-->
+                            </template>
 
-<!--                            <template x-if="comments.length === 0">-->
+                            <template x-if="comments.data.content.length == 0">
                                 <div class="text-center py-5 text-muted border-bottom">
                                     등록된 댓글이 없습니다.
                                 </div>
-<!--                            </template>-->
+                            </template>
                         </div>
 
-<!--                        <nav aria-label="Comment page navigation" x-show="commentPage.totalPages > 1">-->
-<!--                            <ul class="pagination pagination-sm justify-content-center comment-pagination">-->
-<!--                                <li class="page-item" :class="{ 'disabled': commentPage.number === 0 }">-->
-<!--                                    <a class="page-link" href="javascript:void(0)" @click="loadComments(commentPage.number - 1)">-->
-<!--                                        <i class="bi bi-chevron-left"></i>-->
-<!--                                    </a>-->
-<!--                                </li>-->
+                        <nav aria-label="Comment page navigation" x-show="comments.data.page.totalPages > 1">
+                            <ul class="pagination pagination-sm justify-content-center comment-pagination">
+                                <li class="page-item" :class="{ 'disabled': comments.data.page.number == 0 }">
+                                    <a class="page-link" href="javascript:void(0)" @click="loadComments(comments.data.page.number - 1)">
+                                        <i class="bi bi-chevron-left"></i>
+                                    </a>
+                                </li>
 
-<!--                                <template x-for="p in commentPageRange" :key="p">-->
-<!--                                    <li class="page-item" :class="{ 'active': p === (commentPage.number + 1) }">-->
-<!--                                        <a class="page-link" href="javascript:void(0)"-->
-<!--                                           x-text="p"-->
-<!--                                           @click="loadComments(p - 1)"></a>-->
-<!--                                    </li>-->
-<!--                                </template>-->
+                                <template x-for="p in commentPageRange" :key="p">
+                                    <li class="page-item" :class="{ 'active': p === (comments.data.page.number + 1) }">
+                                        <a class="page-link" href="javascript:void(0)"
+                                           x-text="p"
+                                           @click="loadComments(p - 1)"></a>
+                                    </li>
+                                </template>
 
-<!--                                <li class="page-item" :class="{ 'disabled': commentPage.number === commentPage.totalPages - 1 }">-->
-<!--                                    <a class="page-link" href="javascript:void(0)" @click="loadComments(commentPage.number + 1)">-->
-<!--                                        <i class="bi bi-chevron-right"></i>-->
-<!--                                    </a>-->
-<!--                                </li>-->
-<!--                            </ul>-->
-<!--                        </nav>-->
+                                <li class="page-item" :class="{ 'disabled': comments.data.page.number === comments.data.page.totalPages - 1 }">
+                                    <a class="page-link" href="javascript:void(0)" @click="loadComments(comments.data.page.number + 1)">
+                                        <i class="bi bi-chevron-right"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
                     </div>
                 </div>
             </div>
         </div>
     </section>
     <script layout:fragment="script">
+
+        function commentData() {
+
+            // 댓글 리스트와 페이징에 필요한 정보들을 저장하기 위한 리스트
+            items = {
+                comments: {
+                    result: "",
+                    message: "",
+                    data: {
+                        content: [],
+                        page: { number: 0, totalPages: 0, first: true, last: true }
+                    }
+                },
+                commentPageRange: [], // 페이지 블럭이 들어갈 리스트
+                // 파라미터에 default값 명시해서 첫 페이지에서도 잘 동작 하도록 설정
+                loadComments(page = 0) {
+                    let size = 5; // 한 페이지당 보여줄 댓글의 갯수
+                    let postId = $("#postIdTag").data("id"); // 해당 하는 게시글 페이지에서 작성된 댓글만 보여주기 위해 게시글 id값 저장
+                    // 자바스크립트의 fetch 메서드를 사용해 비동기 통신으로 API 데이터 가져옴
+                    fetch('/comment/' + postId + '/list?page=' + page + '&size=' + size)
+                        .then(res => res.json())
+                        .then(data => {
+                            this.comments = data; // content와 page 정보가 한 번에 들어옴
+                            this.calculatePageRange();
+                        });
+                },
+                // 페이지 번호 5개씩 끊어서 보여주는 로직
+                calculatePageRange() {
+                    const current = this.comments.data.page.number; // 0부터 시작
+                    const total = this.comments.data.page.totalPages; // 총 페이지 블럭 갯수
+                    const rangeSize = 5; // 화면에 한 번에 보여줄 페이지 블럭 개수
+
+                    // 페이지 블럭의 시작 번호를 저장 하는 변수
+                    let start = Math.floor(current / rangeSize) * rangeSize;
+                    // 페이지 블럭의 마지막 번호를 저장하는 변수
+                    let end = Math.min(start + rangeSize, total);
+
+                    this.commentPageRange = [];
+                    for (let i = start + 1; i <= end; i++) {
+                        this.commentPageRange.push(i);
+                    }
+                },
+                // 페이지를 이동 시킬때 실행 되는 함수
+                changePage(p) {
+                    if (p >= 0 && p < this.comments.data.page.totalPages) {
+                        this.loadComments(p);
+                    }
+                }
+            }
+            console.log(items);
+            return items;
+        }
+
+        function getCommentDeleteUrl(commentId) {
+
+            return "/comment/" + commentId;
+        }
+
+        function getDate(date) {
+
+            return date.split('T')[0];
+        }
 
         $("#commentInput").on("input", function() {
             let length = $("#commentInput").val().length;

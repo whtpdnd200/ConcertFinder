@@ -3,6 +3,7 @@ package com.concertfinder.concertfinder.comment;
 import com.concertfinder.concertfinder.comment.DTO.CommentListDTO;
 import com.concertfinder.concertfinder.comment.service.CommentService;
 import com.concertfinder.concertfinder.common.DTO.ApiResponseDTO;
+import com.concertfinder.concertfinder.post.DTO.PostListDTO;
 import com.concertfinder.concertfinder.user.DTO.LoginUserDTO;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -45,10 +46,16 @@ public class CommentRestController {
     }
 
     // 댓글 목록 출력 API
-    @GetMapping("/{postId}")
-    public ResponseEntity<ApiResponseDTO<Page<CommentListDTO>>> getComments(@PathVariable long postId,
-                                                                            Pageable pageable) {
+    @GetMapping("/{postId}/list")
+    public ResponseEntity<ApiResponseDTO<Page<CommentListDTO>>> getComments(@PathVariable long postId
+                                                                           , @RequestParam int page
+                                                                           , @RequestParam int size
+                                                                           , Pageable pageable) {
+        Page<CommentListDTO> commentList = commentService.getCommentList(postId, page, size, pageable);
+        if(commentList == null) {
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponseDTO.fail("댓글 목록을 불러오지 못했습니다!"));
+        }
 
-        return null;
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.success("댓글 목록 출력 성공", commentList));
     }
 }
