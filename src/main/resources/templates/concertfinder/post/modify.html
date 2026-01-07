@@ -113,14 +113,11 @@
                 , contentType : "application/json"
                 , data : JSON.stringify(data)
                 , success : function(response) {
-                    if(response.result == 'success') {
-                        location.href = "/post/" + postId;
-                    } else {
-                        alert(response.message);
-                    }
+
+                    location.href = "/post/" + postId;
                 }
-                , error : function() {
-                    alert("글 수정 에러!");
+                , error : function(xhr) {
+                    alert(xhr.responseJSON.message);
                 }
             });
         });

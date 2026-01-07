@@ -1,6 +1,8 @@
 package com.concertfinder.concertfinder.post.service;
 
 import com.concertfinder.concertfinder.comment.service.CommentService;
+import com.concertfinder.concertfinder.exceptionHandler.GlobalExceptionHandler;
+import com.concertfinder.concertfinder.exceptionHandler.customException.UnAuthorizedException;
 import com.concertfinder.concertfinder.post.DTO.PostDetailDTO;
 import com.concertfinder.concertfinder.post.DTO.PostListDTO;
 import com.concertfinder.concertfinder.post.DTO.PostModifyDTO;
@@ -13,8 +15,10 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -26,6 +30,9 @@ public class PostService {
     private final UserService userService;
 
     private final CommentService commentService;
+
+
+
 
     // 게시글 DTO에 담기
     public PostDetailDTO addDto(Post post) {
@@ -46,9 +53,11 @@ public class PostService {
     }
 
     // 게시글 DB 저장
-    public boolean postInsert(String concertId
+    public void postInsert(String concertId
                              , PostWriteDTO postWriteDTO
-                             , long userId) {
+                             , Long userId) {
+
+        GlobalExceptionHandler.loginException(userId);
 
         Post post = Post.builder()
                 .concertId(concertId)
@@ -61,10 +70,9 @@ public class PostService {
         try {
             postRepository.save(post);
         } catch(DataAccessException e) {
-            return false;
+            throw new RuntimeException("서버 에러로 인해 게시글 작성이 실패 하였습니다 잠시 후 다시 시도해주세요!");
         }
 
-        return true;
     }
 
     // 특정 게시글 조회
@@ -81,15 +89,16 @@ public class PostService {
     }
 
     // 게시글 수정 메서드
-    public boolean postUpdate(long postId, PostModifyDTO postModifyDTO, long userId) {
+    public void postUpdate(long postId, PostModifyDTO postModifyDTO, Long userId) {
 
+        GlobalExceptionHandler.loginException(userId);
 
         Optional<Post> optionalPost = postRepository.findById(postId);
 
         if(optionalPost.isPresent()) {
             Post post = optionalPost.get();
-            if(userId != post.getUserId()) {
-                return false;
+            if(!userId.equals(post.getUserId())) {
+                throw new UnAuthorizedException("다른 사람의 게시글은 수정 할 수 없습니다!");
             }
             post = post.toBuilder()
                     .category(postModifyDTO.getCategory())
@@ -100,29 +109,29 @@ public class PostService {
             try {
                 postRepository.save(post);
             } catch(DataAccessException e) {
-                return false;
+                throw new RuntimeException("서버 에러로 게시글을 수정 하지 못했습니다 잠시 후 다시 시도 해주세요!");
             }
         }
-
-        return true;
     }
 
     // 게시글 삭제 메서드
-    public boolean postDelete(long postId, long userId) {
+    public void postDelete(long postId, Long userId) {
+
+        GlobalExceptionHandler.loginException(userId);
+
         Optional<Post> optionalPost = postRepository.findById(postId);
 
         if(optionalPost.isPresent()) {
             Post post = optionalPost.get();
-            if(post.getUserId() != userId) {
-                return false;
+            if(!userId.equals(post.getUserId())) {
+                throw new UnAuthorizedException("다른 사람의 게시글은 삭제 할 수 없습니다!");
             }
             try {
                 postRepository.delete(post);
             } catch(DataAccessException e) {
-                return false;
+                throw new RuntimeException("서버 에러로 인해 게시글 삭제가 실패 하였습니다 잠시 후 다시 시도해주세요!");
             }
         }
-        return true;
     }
 
     // 게시글 목록 조회 메서드
@@ -144,7 +153,9 @@ public class PostService {
             count = postRepository.countByConcertIdAndCategory(concertId, category);
         }
 
-
+        if(posts == null) {
+            throw new NoSuchElementException("게시글 목록 조회에 실패 했습니다! 나중에 다시 시도 해주세요");
+        }
 
         List<PostListDTO> postList = new ArrayList<>();
 

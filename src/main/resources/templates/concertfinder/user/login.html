@@ -70,14 +70,10 @@
                 , url : "/user/login"
                 , data : {"userId" : userId, "password" : password}
                 , success : function(response) {
-                    if(response.result == 'success') {
-                        location.href = "/concert/list";
-                    } else {
-                        alert(response.message);
-                    }
+                    location.href = "/concert/list";
                 }
-                , error : function() {
-                    alert("로그인 에러!");
+                , error : function(xhr) {
+                    alert(xhr.responseJSON.message);
                 }
             });
         });

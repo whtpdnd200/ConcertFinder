@@ -166,14 +166,11 @@
                          }
                 , success : function(response) {
 
-                    if(response.result == "success") {
-                        location.href = "/user/login";
-                    } else {
-                        alert(response.message);
-                    }
+                    location.href = "/user/login";
+
                 }
-                , error : function() {
-                    alert("회원가입 에러!");
+                , error : function(xhr) {
+                    alert(xhr.responseJSON.message);
                 }
             });
         });

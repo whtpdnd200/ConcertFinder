@@ -206,17 +206,14 @@
                 , contentType: 'application/json'
                 , data: JSON.stringify(data)
                 , success: function(response) {
-                    if(response.result == 'success') {
-                        location.reload();
-                    } else {
-                        alert(response.message);
-                    }
+
+                    location.reload();
                 }
                 , complete: function() {
                     $(".modifyStatus").addClass("commentModifyIcon");
                 }
-                , error: function() {
-                    alert("서버 에러!");
+                , error: function(xhr) {
+                    alert(xhr.responseJSON.message);
                 }
             });
         });
@@ -236,12 +233,8 @@
                 type: "delete"
                 , url: "/comment/" + commentId
                 , success: function(response) {
-                    if(response.result === 'success') {
-                        location.reload();
-                    } else {
-                        console.log(response);
-                        alert(response.message);
-                    }
+
+                    location.reload();
                 }
                 , error: function(xhr) {
                     alert(xhr.responseJSON.message);
@@ -283,11 +276,8 @@
                 , url: "/comment/" + postId
                 , data: {"comment" : comment}
                 , success: function(response) {
-                    if(response.result == 'success') {
-                        location.reload();
-                    } else {
-                        alert(response.message);
-                    }
+
+                    location.reload();
                 }
                 , error: function (xhr) {
                     alert(xhr.responseJSON.message);
@@ -302,15 +292,11 @@
                 type : "delete"
                 , url : "/post/" + postId
                 , success : function(response) {
-                    if(response.result == 'success') {
 
-                        location.href = "/concert/" + concertId;
-                    } else {
-                        alert(response.message);
-                    }
+                    location.href = "/concert/" + concertId;
                 }
-                , error : function () {
-                    alert("게시글 삭제 에러!");
+                , error : function (xhr) {
+                    alert(xhr.responseJSON.message);
                 }
             });
         });
