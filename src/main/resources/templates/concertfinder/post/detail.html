@@ -85,7 +85,7 @@
         </div>
         <div class="comment-area-wrapper mt-5 pt-5 border-top">
             <div class="row justify-content-center">
-                <div class="col-lg-6">
+                <div class="col-lg-8">
                     <div class="d-flex align-items-center mb-4">
                         <h5 class="font-weight-bold mb-0 border-left-primary pl-3">
                             댓글 <span class="comment-count-text text-danger ml-1"><span th:text="${postInfo.commentCount}">0</span></span>
@@ -121,7 +121,7 @@
                                         </div>
 
                                         <div class="comment-actions d-flex align-items-center" x-show="$('#dataValue').data('id') == comment.userId">
-                                            <button :data-comment-id="comment.id" class="btn btn-sm text-muted hover-edit p-1 mr-1 commentModifyIcon" title="수정">
+                                            <button :data-comment-id="comment.id" class="btn btn-sm text-muted hover-edit p-1 mr-1 commentModifyIcon modifyStatus" title="수정">
                                                 <i class="bi bi-pencil" style="font-size: 0.85rem;"></i>
                                             </button>
 
@@ -191,7 +191,34 @@
         $(document).on("click", ".commentModifyBtn", function(e) {
             e.preventDefault();
             let commentId = $(this).data("comment-id");
-            alert(commentId);
+            let comment = $("#commentModifyInput" + commentId).val();
+
+            if(comment == '') {
+                alert("댓글을 입력 해주세요!");
+                $("#commentModifyInput" + commentId).focus();
+                return;
+            }
+
+            let data = {"comment" : comment};
+            $.ajax({
+                type: "put"
+                , url: "/comment/" + commentId
+                , contentType: 'application/json'
+                , data: JSON.stringify(data)
+                , success: function(response) {
+                    if(response.result == 'success') {
+                        location.reload();
+                    } else {
+                        alert(response.message);
+                    }
+                }
+                , complete: function() {
+                    $(".modifyStatus").addClass("commentModifyIcon");
+                }
+                , error: function() {
+                    alert("서버 에러!");
+                }
+            });
         });
 
         $(document).on("click", ".commentModifyIcon", function() {
@@ -199,7 +226,7 @@
             $("#commentTag" + commentId).addClass("d-none");
             $("#commentModifyForm" + commentId).removeClass("d-none");
             $("#commentModifyBtn" + commentId).data("comment-id", commentId);
-            $(".commentModifyIcon").removeClass("commentModifyIcon");
+            $(".modifyStatus").removeClass("commentModifyIcon");
         });
 
         $(document).on("click", ".commentDeleteBtn", function() {

@@ -1,6 +1,7 @@
 package com.concertfinder.concertfinder.comment;
 
 import com.concertfinder.concertfinder.comment.DTO.CommentListDTO;
+import com.concertfinder.concertfinder.comment.DTO.CommentModifyDTO;
 import com.concertfinder.concertfinder.comment.service.CommentService;
 import com.concertfinder.concertfinder.common.DTO.ApiResponseDTO;
 import com.concertfinder.concertfinder.post.DTO.PostListDTO;
@@ -57,6 +58,24 @@ public class CommentRestController {
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.success("댓글 목록 출력 성공", commentList));
+    }
+
+    // 댓글 수정 API
+    @PutMapping("/{commentId}")
+    public ResponseEntity<ApiResponseDTO<Void>> modifyComment(@PathVariable long commentId
+                                                              , @RequestBody CommentModifyDTO comment
+                                                              , HttpSession session) {
+
+        LoginUserDTO loginUserDTO = (LoginUserDTO)session.getAttribute("userInfo");
+        try {
+            commentService.updateComment(commentId, loginUserDTO.getId(), comment);
+        } catch(IllegalArgumentException e) {
+            ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponseDTO.fail(e.getMessage()));
+        } catch(RuntimeException e) {
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponseDTO.fail(e.getMessage()));
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.success("댓글 수정 성공"));
     }
 
     // 댓글 삭제 API

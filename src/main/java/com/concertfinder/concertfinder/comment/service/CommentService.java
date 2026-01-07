@@ -1,6 +1,7 @@
 package com.concertfinder.concertfinder.comment.service;
 
 import com.concertfinder.concertfinder.comment.DTO.CommentListDTO;
+import com.concertfinder.concertfinder.comment.DTO.CommentModifyDTO;
 import com.concertfinder.concertfinder.comment.DTO.CommentWriteDTO;
 import com.concertfinder.concertfinder.comment.domain.Comment;
 import com.concertfinder.concertfinder.comment.repository.CommentRepository;
@@ -10,6 +11,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -39,6 +41,29 @@ public class CommentService {
             commentRepository.save(commentEntity);
         } catch(DataAccessException e) {
             throw new RuntimeException("댓글 작성 에러!");
+        }
+    }
+
+    // 댓글 수정 메서드
+    public void updateComment(long commentId, long userId, CommentModifyDTO commentModifyDTO) {
+
+        Optional<Comment> optionalComment = commentRepository.findById(commentId);
+
+        if(optionalComment.isPresent()) {
+            Comment comment = optionalComment.get();
+
+            if(userId != comment.getUserId()) {
+                throw new IllegalArgumentException("타인의 댓글은 수정 할 수 없습니다!");
+            }
+            comment = comment.toBuilder()
+                    .comment(commentModifyDTO.getComment())
+                    .build();
+
+            try {
+                commentRepository.save(comment);
+            } catch(DataAccessException e) {
+                throw new RuntimeException("댓글 수정 에러!");
+            }
         }
     }
 
