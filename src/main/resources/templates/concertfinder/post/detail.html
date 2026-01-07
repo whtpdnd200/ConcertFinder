@@ -55,6 +55,7 @@
                             </button>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -78,8 +79,136 @@
                 </div>
             </div>
         </div>
+        <div class="comment-area-wrapper mt-5 pt-5 border-top">
+            <div class="row justify-content-center">
+                <div class="col-lg-10"> <div class="d-flex align-items-center mb-4">
+                    <h5 class="font-weight-bold mb-0 border-left-primary pl-3">
+                        댓글 <span class="comment-count-text text-danger ml-1">0</span>
+                    </h5>
+                </div>
+
+                    <div class="comment-write-card shadow-sm rounded bg-white p-4 mb-5 border-0">
+                        <form>
+                            <div class="form-group mb-3">
+                        <textarea id="commentInput" class="form-control comment-textarea bg-light"
+                                  rows="3"
+                                  placeholder="공연에 대한 궁금한 점이나 소중한 의견을 남겨주세요."></textarea>
+                                <div class="text-secondary text-right small"><span id="commentLength">0</span>/250</div>
+                            </div>
+                            <div class="d-flex justify-content-end">
+                                <button id="commentSubmitBtn" type="submit" class="btn btn-dark px-4 font-weight-bold" style="border-radius: 20px;">
+                                    등록하기
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="comment-list-container mt-4">
+
+                        <div class="comment-list mb-4">
+<!--                            <template x-for="comment in comments" :key="comment.id">-->
+                                <div class="comment-item border-bottom py-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <div class="d-flex align-items-center">
+                                            <span class="font-weight-bold text-dark small" x-text="comment.userNickname">작성자</span>
+                                            <span class="mx-2 text-muted" style="font-size: 0.8rem;">|</span>
+                                            <span class="text-muted small" x-text="formatDate(comment.createdAt)">2026-01-07</span>
+                                        </div>
+                                        <button x-show="comment.isMine" @click="deleteComment(comment.id)" class="btn btn-sm text-muted">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                    <div class="comment-text text-secondary px-1" x-text="comment.content" style="font-size: 0.92rem; line-height: 1.5;">
+                                        댓글 내용이 노출됩니다.
+                                    </div>
+                                </div>
+<!--                            </template>-->
+
+<!--                            <template x-if="comments.length === 0">-->
+                                <div class="text-center py-5 text-muted border-bottom">
+                                    등록된 댓글이 없습니다.
+                                </div>
+<!--                            </template>-->
+                        </div>
+
+<!--                        <nav aria-label="Comment page navigation" x-show="commentPage.totalPages > 1">-->
+<!--                            <ul class="pagination pagination-sm justify-content-center comment-pagination">-->
+<!--                                <li class="page-item" :class="{ 'disabled': commentPage.number === 0 }">-->
+<!--                                    <a class="page-link" href="javascript:void(0)" @click="loadComments(commentPage.number - 1)">-->
+<!--                                        <i class="bi bi-chevron-left"></i>-->
+<!--                                    </a>-->
+<!--                                </li>-->
+
+<!--                                <template x-for="p in commentPageRange" :key="p">-->
+<!--                                    <li class="page-item" :class="{ 'active': p === (commentPage.number + 1) }">-->
+<!--                                        <a class="page-link" href="javascript:void(0)"-->
+<!--                                           x-text="p"-->
+<!--                                           @click="loadComments(p - 1)"></a>-->
+<!--                                    </li>-->
+<!--                                </template>-->
+
+<!--                                <li class="page-item" :class="{ 'disabled': commentPage.number === commentPage.totalPages - 1 }">-->
+<!--                                    <a class="page-link" href="javascript:void(0)" @click="loadComments(commentPage.number + 1)">-->
+<!--                                        <i class="bi bi-chevron-right"></i>-->
+<!--                                    </a>-->
+<!--                                </li>-->
+<!--                            </ul>-->
+<!--                        </nav>-->
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
     <script layout:fragment="script">
+
+        $("#commentInput").on("input", function() {
+            let length = $("#commentInput").val().length;
+
+            $("#commentLength").text(length);
+
+            if(length >= 250) {
+                alert("댓글은 250글자 제한입니다!");
+                $("#commentInput").val($("#commentInput").val().substring(0, 249));
+            }
+        });
+
+        $("#commentSubmitBtn").on("click", function(e) {
+            e.preventDefault();
+
+            let postId = $("#deleteModalBtn").data("post-id");
+            let comment = $("#commentInput").val();
+
+            if(comment == '') {
+                alert("댓글을 입력 해주세요!");
+                $("#commentInput").focus();
+                return;
+            }
+
+            if($("#commentInput").val().length >= 250) {
+                alert("댓글은 250글자를 넘길 수 없습니다!");
+                $("#commentInput").focus();
+                return;
+            }
+
+            $.ajax({
+                type: "post"
+                , url: "/comment/" + postId
+                , data: {"comment" : comment}
+                , success: function(response) {
+                    if(response.result == 'success') {
+                        location.reload();
+                    } else {
+                        alert(response.message);
+                    }
+
+                }
+                , error: function (response) {
+                    console.log(response);
+                    alert("댓글 작성 에러!");
+                }
+            });
+        });
+
         $("#deleteBtn").on("click", function() {
             let postId = $("#deleteModalBtn").data("post-id");
             let concertId = $("#deleteConfirmModal").data("concert-id");

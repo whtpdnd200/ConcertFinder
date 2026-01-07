@@ -76,3 +76,95 @@
     background-color: #ff4d4d;
     color: #fff;
 }
+
+/* 댓글 섹션 래퍼 */
+.comment-area-wrapper {
+    margin-bottom: 100px; /* 하단 여백 확보 */
+}
+
+/* 왼쪽 레드 포인트 보더 */
+.border-left-red {
+    border-left: 4px solid #ff4d4d !important;
+}
+
+/* 댓글 입력창 포커스 효과 */
+.comment-textarea {
+    resize: none;
+    border: 1px solid transparent;
+    font-size: 0.9rem;
+    padding: 15px;
+}
+
+.comment-textarea:focus {
+    background-color: #fff !important;
+    border-color: #ff4d4d !important;
+    box-shadow: none;
+}
+
+/* 댓글 아이템 카드 */
+.comment-item-card {
+    transition: transform 0.2s ease;
+}
+
+.comment-item-card:hover {
+    transform: translateY(-2px);
+}
+
+.comment-count-text {
+    font-family: 'Arial', sans-serif;
+}
+
+/* 모바일 대응: 작은 화면에서는 너비 꽉 차게 */
+@media (max-width: 991.98px) {
+    .col-lg-10 {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+}
+
+/* 댓글 아이템 구분선 */
+.comment-item {
+    border-bottom: 1px solid #f2f2f2 !important;
+}
+
+.comment-item:last-child {
+    border-bottom: none !important;
+}
+
+/* 댓글 페이징 커스텀 (Red & Dark 테마 유지) */
+.comment-pagination .page-link {
+    background-color: transparent;
+    border: none;
+    color: #888;
+    margin: 0 2px;
+    padding: 5px 10px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.comment-pagination .page-link:hover {
+    color: #ff4d4d;
+    background-color: #fff1f1;
+    border-radius: 4px;
+}
+
+/* 활성화된 페이지 번호 */
+.comment-pagination .page-item.active .page-link {
+    background-color: #ff4d4d !important; /* 포인트 레드 */
+    color: white !important;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(255, 77, 77, 0.2);
+}
+
+/* 비활성화 상태 */
+.comment-pagination .page-item.disabled .page-link {
+    color: #ddd;
+    background-color: transparent;
+}
+
+/* 아이콘 정렬 */
+.comment-pagination i {
+    font-size: 0.7rem;
+    vertical-align: middle;
+}

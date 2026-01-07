@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -56,6 +57,7 @@ public class PostRestController {
                                          , HttpSession session) {
         LoginUserDTO loginUserDTO = (LoginUserDTO)session.getAttribute("userInfo");
         if(postService.postDelete(postId, loginUserDTO.getId())) {
+
 
             return ApiResponseDTO.success("게시글 삭제 성공");
         }
