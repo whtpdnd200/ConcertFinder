@@ -20,11 +20,19 @@ function postData() {
             let concertId = $("#idStorageTag").data("concert-id"); // 해당 하는 콘서트 페이지에서 작성된 게시글만 보여주기 위해 콘서트 id값 저장
             // 자바스크립트의 fetch 메서드를 사용해 비동기 통신으로 API 데이터 가져옴
             fetch('/post/' + concertId + '/list?page=' + page + '&size=' + size + '&category=' + category)
-                .then(res => res.json())
+                .then(res => {
+                    if(!res.ok) {
+                        return res.json().then(err => {
+                            throw new Error(err.message);
+                        });
+                    }
+                    return res.json();
+                })
                 .then(data => {
                     this.posts = data; // content와 page 정보가 한 번에 들어옴
                     this.calculatePageRange();
-                });
+                })
+                .catch(error => alert(error));
         },
         // 페이지 번호 5개씩 끊어서 보여주는 로직
         calculatePageRange() {

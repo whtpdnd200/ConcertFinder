@@ -56,7 +56,7 @@ public class CommentService {
 
         if(optionalComment.isPresent()) {
             Comment comment = optionalComment.get();
-            
+
             if(!userId.equals(comment.getUserId())) {
                 throw new UnAuthorizedException("타인의 댓글은 수정 할 수 없습니다!");
             }

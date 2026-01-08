@@ -21,9 +21,11 @@ public class UserRestController {
 
     // 회원가입 : 중복검사 기능
     @GetMapping("/id-check")
-    public ApiResponseDTO<Boolean> isDuplicate(@RequestParam String userId) {
+    public ResponseEntity<ApiResponseDTO<Boolean>> isDuplicate(@RequestParam String userId) {
 
-        return ApiResponseDTO.isDuplicate("", userService.isDuplicate(userId));
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponseDTO
+                        .isDuplicate("", userService.isDuplicate(userId)));
     }
 
     // 회원가입 : 회원가입 기능
