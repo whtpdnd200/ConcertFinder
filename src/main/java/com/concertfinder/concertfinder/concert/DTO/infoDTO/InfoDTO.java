@@ -73,4 +73,6 @@ public class InfoDTO {
     private TicketListDTO tickets;
 
     private AreaInfoDTO areaInfo;
+
+    private boolean isFavorites;
 }

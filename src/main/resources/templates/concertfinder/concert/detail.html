@@ -57,7 +57,10 @@
                     </div>
 
                     <div class="action-buttons mt-5 d-flex">
-                        <button class="btn btn-like-large mr-3">
+                        <button id="unlikeBtn" th:if="${concertInfo.favorites}" th:data-id="${concertInfo.concertId}" class="btn btn-like-large mr-3">
+                            <i class="text-danger bi bi-heart-fill"></i> 관심공연
+                        </button>
+                        <button id="likeBtn" th:unless="${concertInfo.favorites}" th:data-id="${concertInfo.concertId}" class="btn btn-like-large mr-3">
                             <i class="bi bi-heart"></i> 관심공연
                         </button>
                         <button type="button" class="btn btn-reserve-large flex-grow-1" data-toggle="modal" data-target="#reserveModal">
@@ -72,7 +75,7 @@
                     <div class="modal-content border-0 shadow">
                         <div class="modal-header bg-dark text-white">
                             <h5 class="modal-title font-weight-bold">예매처 선택</h5>
-                            <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                            <button id="ticketClose" type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
@@ -357,6 +360,41 @@
                 $('#ratingValue').val(val);
                 $(this).parent().find('i').removeClass('bi-star-fill').addClass('bi-star');
                 $(this).prevAll().addBack().removeClass('bi-star').addClass('bi-star-fill');
+            });
+        });
+
+        $("#unlikeBtn").on("click", function(e) {
+            e.preventDefault();
+
+            let concertId = $(this).data("id");
+
+            $.ajax({
+                type: "delete"
+                , url: "/favorites/" + concertId
+                , success: function() {
+                    location.reload();
+                }
+                , error: function(xhr) {
+                    alert(xhr.responseJSON.message);
+                }
+            });
+        });
+
+        $("#likeBtn").on("click", function(e) {
+            e.preventDefault();
+
+            let concertId = $(this).data("id");
+
+            $.ajax({
+                type: "post"
+                , url: "/favorites/" + concertId
+                ,success: function(response) {
+
+                    location.reload();
+                }
+                , error: function(xhr) {
+                    alert(xhr.responseJSON.message);
+                }
             });
         });
     </script>

@@ -2,6 +2,8 @@ package com.concertfinder.concertfinder.user.service;
 
 import com.concertfinder.concertfinder.SidoCode.service.SidoCodeService;
 import com.concertfinder.concertfinder.common.SHA256HashingEncoder;
+import com.concertfinder.concertfinder.concert.DTO.ConcertFavoritesListDTO;
+import com.concertfinder.concertfinder.concert.service.ConcertService;
 import com.concertfinder.concertfinder.user.DTO.JoinUserDTO;
 import com.concertfinder.concertfinder.user.DTO.LoginUserDTO;
 import com.concertfinder.concertfinder.user.DTO.ModifyUserDTO;
@@ -11,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -20,6 +23,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final SidoCodeService sidoCodeService;
+    private final ConcertService concertService;
 
     // LoginUserDTO에 User 정보 담아주는 함수
     public LoginUserDTO addDTO(Optional<User> oUser) {
@@ -158,5 +162,15 @@ public class UserService {
         }
 
         return null;
+    }
+
+    public List<ConcertFavoritesListDTO> getLists(long userId) {
+
+        return concertService.getConcertList(userId);
+    }
+
+    public List<ConcertFavoritesListDTO> getConcertListTop3(long userId) {
+
+        return concertService.getConcertListTop3(userId);
     }
 }

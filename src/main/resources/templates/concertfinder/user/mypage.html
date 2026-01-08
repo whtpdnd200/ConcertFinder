@@ -6,6 +6,7 @@
 <head>
     <title>마이페이지</title>
     <link layout:fragment="css" rel="stylesheet" th:href="@{/css/user/mypage_style.css}">
+    <script layout:fragment="alpine" defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
     <section layout:fragment="contents">
         <div class="container py-5">
@@ -47,20 +48,28 @@
                                 <h5 class="font-weight-bold mb-4 border-bottom pb-3">
                                     <i class="bi bi-heart-fill text-danger mr-2"></i>즐겨찾는 공연
                                 </h5>
-                                <div class="list-group list-group-flush">
-                                    <a href="#" class="list-group-item list-group-item-action border-0 px-0 d-flex align-items-center">
+                                <div th:if="${concertList != null && !concertList.isEmpty()}" th:each="concert : ${concertList}" class="list-group list-group-flush">
+                                    <a th:href="@{/concert/{id}(id = ${concert.concertId})}" class="list-group-item list-group-item-action border-0 px-0 d-flex align-items-center">
                                         <div class="concert-thumb mr-3">
-                                            <i class="bi bi-image"></i>
+                                            <img width="45.38px" height="65px" th:src="${concert.posterPath}">
                                         </div>
                                         <div class="flex-grow-1">
-                                            <h6 class="mb-0 font-weight-bold text-truncate-custom">2025 임영웅 콘서트 [IM HERO]</h6>
-                                            <small class="mb-0 text-muted">서울 특별시</small>
+                                            <h6 th:text="${concert.concertName}" class="mb-0 font-weight-bold text-truncate-custom">2025 임영웅 콘서트 [IM HERO]</h6>
+                                            <small th:text="${concert.areaName}" class="mb-0 text-muted">서울 특별시</small>
                                         </div>
                                         <i class="bi bi-chevron-right text-muted small"></i>
                                     </a>
                                 </div>
-                                <div class="activity-footer">
-                                    <a href="#" class="btn btn-link text-primary btn-sm">전체 보기 <i class="bi bi-plus-circle"></i></a>
+                                <div th:if="${concertList == null || concertList.isEmpty()}" class="no-fav-container">
+                                    <div class="no-fav-content">
+                                        <h3>아직 즐겨찾기한 공연이 없어요!</h3>
+                                        <p>마음에 드는 콘서트를 담아보세요!</p>
+
+                                        <a href="/concert/list" class="btn-explore">공연 찾아보기</a>
+                                    </div>
+                                </div>
+                                <div th:if="${concertList != null && !concertList.isEmpty()}" class="activity-footer">
+                                    <a href="javascript:void(0)" id="openFavBtn" class="btn btn-link text-primary btn-sm">전체 보기 <i class="bi bi-plus-circle"></i></a>
                                 </div>
                             </div>
                         </div>
@@ -88,12 +97,80 @@
                                 </div>
                             </div>
                         </div>
-                    </div> </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="favoritesModal" class="modal-overlay">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="fw-bold">내 즐겨찾기 목록</h2>
+                    <button type="button" class="close-modal">&times;</button>
+                </div>
+                <div x-data="favoritesComponent()" @load-favorites.window="fetchFavorites()" class="modal-body">
+
+                    <ul id="favoritesList" class="fav-list">
+                        <template x-for="item in favorites.data" :key="item.concertId">
+                            <li class="fav-item d-flex align-items-center mb-3">
+                                <a :href="'/concert/' + item.concertId" class="d-flex align-items-center w-100 text-decoration-none">
+                                    <div class="mr-3">
+                                        <img width="45px" height="60px" :src="item.posterPath" class="rounded">
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h6 x-text="item.concertName" class="mb-0 font-weight-bold text-dark">공연제목</h6>
+                                        <small x-text="item.areaName" class="text-muted">지역명</small>
+                                    </div>
+                                </a>
+                            </li>
+                        </template>
+                    </ul>
+                </div>
             </div>
         </div>
     </section>
 
     <script layout:fragment="script">
 
+        var userId = $("#dataValue").data("id");
+
+        function favoritesComponent() {
+            return {
+                favorites: [],
+                fetchFavorites() {
+                    fetch("/concert/" + userId + "/list")
+                        .then(res => {
+                            if(!res.ok) {
+                                return res.json().then(err => {
+                                    throw new Error(err.message);
+                                });
+                            }
+                            return res.json();
+                        })
+                        .then(data => this.favorites = data)
+                        .catch(error => alert(error.message));
+                }
+            }
+        }
+
+        $(document).ready(function() {
+
+            // 1. 모달 열기 (전체보기 버튼 클릭 시)
+            $('#openFavBtn').on('click', function(e) {
+                e.preventDefault();
+                $('#favoritesModal').css('display', 'flex').hide().fadeIn(200);
+
+                $('body').css('overflow', 'hidden');
+                window.dispatchEvent(new CustomEvent('load-favorites'));
+            });
+
+            // 2. 모달 닫기 (X 버튼 혹은 배경 클릭 시)
+            $('.close-modal, .modal-overlay').on('click', function(e) {
+                // 배경 클릭 시 자식 요소인 modal-content 클릭은 무시
+                if (e.target !== this && !$(e.target).hasClass('close-modal')) return;
+
+                $('#favoritesModal').fadeOut(200);
+                $('body').css('overflow', 'auto');
+            });
+        });
     </script>
 </html>

@@ -54,7 +54,8 @@
                                 <span th:case="공연중" class="status-badge badge-performing shadow-sm">공연중</span>
                                 <span th:case="공연예정" class="status-badge badge-upcoming shadow-sm">공연예정</span>
                                 <span th:case="*" th:text="${info.state}" class="status-badge badge-upcoming shadow-sm">공연예정</span>
-                                <button th:data-concert-id="${info.concertId}" class="like-btn shadow-sm concertFavorites"><i class="bi bi-heart"></i></button>
+                                <button th:if="${!info.favorites}" th:data-concert-id="${info.concertId}" class="like-btn shadow-sm concertFavorites"><i class="bi bi-heart"></i></button>
+                                <button th:unless="${!info.favorites}" th:data-concert-id="${info.concertId}" class="like-btn shadow-sm concertUnFavorites"><i class="bi bi-heart-fill"></i></button>
 
                                 <img th:src="${info.posterPath}" alt="콘서트 포스터">
                             </div>
@@ -105,6 +106,23 @@
     <script layout:fragment="script">
 
         window.onload = function() {
+
+            $(".concertUnFavorites").on("click", function(e) {
+                e.preventDefault();
+
+                let concertId = $(this).data("concert-id");
+
+                $.ajax({
+                    type: "delete"
+                    , url: "/favorites/" + concertId
+                    , success: function() {
+                        location.reload();
+                    }
+                    , error: function(xhr) {
+                        alert(xhr.responseJSON.message);
+                    }
+                });
+            });
 
             $(".concertFavorites").on("click", function(e) {
                 e.preventDefault();

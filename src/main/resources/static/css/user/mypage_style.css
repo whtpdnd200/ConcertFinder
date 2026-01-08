@@ -49,3 +49,162 @@
     text-align: center;
     margin-top: 1rem;
 }
+
+/* 모달 배경 */
+.modal-overlay {
+    display: none; /* 기본은 숨김 */
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px); /* 배경 흐림 효과 */
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 모달 컨텐츠 박스 */
+.modal-content {
+    background: #fff;
+    width: 90%;
+    max-width: 500px;
+    max-height: 80vh;
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #f4f4f4;
+    padding-bottom: 15px;
+}
+
+.close-modal {
+    background: none;
+    border: none;
+    font-size: 30px;
+    cursor: pointer;
+    color: #999;
+}
+
+/* 리스트 스타일 */
+.modal-body {
+    overflow-y: auto; /* 내용이 많으면 스크롤 */
+    flex-grow: 1;
+}
+
+.fav-list {
+    list-style: none;
+    padding: 0;
+}
+
+.fav-item {
+    display: flex;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid #eee;
+    transition: background 0.2s;
+}
+
+.fav-poster {
+    width: 60px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-right: 15px;
+}
+
+.fav-info {
+    flex-grow: 1;
+}
+
+.fav-title {
+    display: block;
+    font-weight: 600;
+    font-size: 1.05rem;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.fav-date {
+    font-size: 0.85rem;
+    color: #777;
+}
+
+.fav-remove-btn {
+    background: #ffeded;
+    color: #ff4d4d;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.fav-remove-btn:hover {
+    background: #ff4d4d;
+    color: #fff;
+}
+
+/* 비어있을 때 컨테이너 */
+.no-fav-container {
+    width: 100%;
+    padding: 60px 20px;
+    background-color: #fcfcfc; /* 아주 연한 회색 배경 */
+    border: 2px dashed #e9ecef; /* 점선 테두리로 '비어있음' 표현 */
+    border-radius: 20px;
+    text-align: center;
+    margin: 20px 0;
+}
+
+.no-fav-content {
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+.no-fav-icon {
+    font-size: 3.5rem;
+    margin-bottom: 15px;
+    animation: floating 2s ease-in-out infinite; /* 살짝 둥둥 뜨는 효과 */
+}
+
+.no-fav-container h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #343a40;
+    margin-bottom: 10px;
+}
+
+.no-fav-container p {
+    font-size: 0.95rem;
+    color: #868e96;
+    line-height: 1.5;
+    margin-bottom: 25px;
+}
+
+/* 탐색 버튼 */
+.btn-explore {
+    display: inline-block;
+    padding: 12px 24px;
+    background-color: #5c7cff; /* 재미니 프로젝트의 메인 컬러에 맞춰 조절하세요 */
+    color: white;
+    text-decoration: none;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(92, 124, 255, 0.2);
+}
+
+.btn-explore:hover {
+    background-color: #4a69e2;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(92, 124, 255, 0.3);
+}
+

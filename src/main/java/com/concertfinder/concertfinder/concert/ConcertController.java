@@ -44,8 +44,10 @@ public class ConcertController {
     // 콘서트 상세 페이지
     @GetMapping("/{id}")
     public String detail(@PathVariable String id
-                        , Model model) {
-        model.addAttribute("concertInfo", concertService.getConcertInfo(id).getInfoDTO());
+                         , HttpSession session
+                         , Model model) {
+        LoginUserDTO loginUserDTO = (LoginUserDTO)session.getAttribute("userInfo");
+        model.addAttribute("concertInfo", concertService.getConcertInfo(id, loginUserDTO.getId()).getInfoDTO());
         return "concertfinder/concert/detail";
     }
 
