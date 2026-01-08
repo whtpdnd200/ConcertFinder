@@ -1,7 +1,7 @@
-package com.concertfinder.concertfinder.exceptionHandler;
+package com.concertfinder.concertfinder.exception;
 
 import com.concertfinder.concertfinder.common.DTO.ApiResponseDTO;
-import com.concertfinder.concertfinder.exceptionHandler.customException.UnAuthorizedException;
+import com.concertfinder.concertfinder.exception.custom_exception.UnAuthorizedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;

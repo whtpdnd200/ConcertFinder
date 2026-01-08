@@ -1,4 +1,4 @@
-package com.concertfinder.concertfinder.exceptionHandler.customException;
+package com.concertfinder.concertfinder.exception.custom_exception;
 
 import lombok.Getter;
 

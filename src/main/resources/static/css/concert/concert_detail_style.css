@@ -331,6 +331,24 @@
     height: 17px;
 }
 
+#ticketClose {
+    position: absolute;
+    top: 16px;
+    right: 32px;
+    color: #888;
+    width: 17px;
+    height: 17px;
+}
+
+#reviewClose {
+    position: absolute;
+    top: 16px;
+    right: 32px;
+    color: #888;
+    width: 17px;
+    height: 17px;
+}
+
 .close:hover {
     cursor: pointer;
 }

@@ -7,7 +7,7 @@ import lombok.Getter;
 @Builder
 public class LoginUserDTO {
 
-    private long id;
+    private Long id;
     private String userId;
     private String nickname;
     private String email;

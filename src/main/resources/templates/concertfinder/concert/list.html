@@ -54,12 +54,13 @@
                                 <span th:case="공연중" class="status-badge badge-performing shadow-sm">공연중</span>
                                 <span th:case="공연예정" class="status-badge badge-upcoming shadow-sm">공연예정</span>
                                 <span th:case="*" th:text="${info.state}" class="status-badge badge-upcoming shadow-sm">공연예정</span>
-                                <button class="like-btn shadow-sm"><i class="bi bi-heart"></i></button>
+                                <button th:if="${!info.favorites}" th:data-concert-id="${info.concertId}" class="like-btn shadow-sm concertFavorites"><i class="bi bi-heart"></i></button>
+                                <button th:unless="${!info.favorites}" th:data-concert-id="${info.concertId}" class="like-btn shadow-sm concertUnFavorites"><i class="bi bi-heart-fill"></i></button>
 
                                 <img th:src="${info.posterPath}" alt="콘서트 포스터">
                             </div>
                             <div class="card-body p-3">
-                                <h6 th:text="${info.concertName}" class="card-title font-weight-bold mb-2 text-truncate">2025 임영웅 콘서트 [IM HERO]</h6>
+                                <h6 th:data-favorites="${info.favorites}" th:text="${info.concertName}" class="card-title font-weight-bold mb-2 text-truncate">2025 임영웅 콘서트 [IM HERO]</h6>
                                 <div class="small text-muted">
                                     <p class="mb-1"><i class="bi bi-geo-alt-fill mr-1"></i><span th:text="${info.area}">서울월드컵경기장</span></p>
                                     <div class="d-flex">
@@ -72,7 +73,6 @@
                             </div>
                         </div>
                     </a>
-
                 </div>
             </div>
             <div th:unless="${concertList.lists != null}" class="empty-concert-section">
@@ -106,6 +106,41 @@
     <script layout:fragment="script">
 
         window.onload = function() {
+
+            $(".concertUnFavorites").on("click", function(e) {
+                e.preventDefault();
+
+                let concertId = $(this).data("concert-id");
+
+                $.ajax({
+                    type: "delete"
+                    , url: "/favorites/" + concertId
+                    , success: function() {
+                        location.reload();
+                    }
+                    , error: function(xhr) {
+                        alert(xhr.responseJSON.message);
+                    }
+                });
+            });
+
+            $(".concertFavorites").on("click", function(e) {
+                e.preventDefault();
+
+                let concertId = $(this).data("concert-id");
+
+                $.ajax({
+                    type: "post"
+                    , url: "/favorites/" + concertId
+                    ,success: function(response) {
+
+                        location.reload();
+                    }
+                    , error: function(xhr) {
+                        alert(xhr.responseJSON.message);
+                    }
+                });
+            });
 
             var url = new URL(location.href).searchParams;
 

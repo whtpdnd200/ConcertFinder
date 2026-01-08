@@ -2,7 +2,7 @@ package com.concertfinder.concertfinder.comment;
 
 import com.concertfinder.concertfinder.comment.DTO.CommentModifyDTO;
 import com.concertfinder.concertfinder.comment.service.CommentService;
-import com.concertfinder.concertfinder.exceptionHandler.customException.UnAuthorizedException;
+import com.concertfinder.concertfinder.exception.custom_exception.UnAuthorizedException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

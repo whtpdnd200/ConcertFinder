@@ -2,6 +2,8 @@ package com.concertfinder.concertfinder.user;
 
 import com.concertfinder.concertfinder.SidoCode.DTO.SidoDTO;
 import com.concertfinder.concertfinder.SidoCode.service.SidoCodeService;
+import com.concertfinder.concertfinder.user.DTO.LoginUserDTO;
+import com.concertfinder.concertfinder.user.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -18,7 +20,7 @@ import java.util.List;
 public class UserController {
 
     private final SidoCodeService sidoCodeService;
-
+    private final UserService userService;
 
     // 회원가입 페이지
     @GetMapping("/join")
@@ -37,8 +39,12 @@ public class UserController {
 
     // 마이 페이지
     @GetMapping("/mypage")
-    public String myPage() {
+    public String myPage(Model model
+                        , HttpSession session) {
 
+        LoginUserDTO loginUserDTO = (LoginUserDTO)session.getAttribute("userInfo");
+
+        model.addAttribute("concertList", userService.getConcertListTop3(loginUserDTO.getId()));
         return "concertfinder/user/mypage";
     }
 
