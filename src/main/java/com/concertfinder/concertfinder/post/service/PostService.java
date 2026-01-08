@@ -1,8 +1,8 @@
 package com.concertfinder.concertfinder.post.service;
 
 import com.concertfinder.concertfinder.comment.service.CommentService;
-import com.concertfinder.concertfinder.exceptionHandler.GlobalExceptionHandler;
-import com.concertfinder.concertfinder.exceptionHandler.customException.UnAuthorizedException;
+import com.concertfinder.concertfinder.exception.GlobalExceptionHandler;
+import com.concertfinder.concertfinder.exception.custom_exception.UnAuthorizedException;
 import com.concertfinder.concertfinder.post.DTO.PostDetailDTO;
 import com.concertfinder.concertfinder.post.DTO.PostListDTO;
 import com.concertfinder.concertfinder.post.DTO.PostModifyDTO;

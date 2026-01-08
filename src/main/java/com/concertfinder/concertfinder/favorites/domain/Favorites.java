@@ -1,7 +1,8 @@
-package com.concertfinder.concertfinder.concert.domain;
+package com.concertfinder.concertfinder.favorites.domain;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,26 +12,20 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
-@Getter
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@IdClass(FavoritesId.class)
 @Entity
-@Table(name = "`concert`")
-public class Concert {
+@Table(name = "`favorites`")
+public class Favorites {
+
+    @Id
+    private long userId;
 
     @Id
     private String concertId;
-
-    private String concertName;
-
-    private String posterPath;
-
-    private String areaCode;
-
-    private String areaName;
-
-    private String state;
 
     @CreationTimestamp
     private LocalDateTime createdAt;

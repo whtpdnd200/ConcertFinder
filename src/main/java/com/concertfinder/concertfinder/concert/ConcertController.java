@@ -33,7 +33,8 @@ public class ConcertController {
         model.addAttribute("concertList", concertService.getList(loginUserDTO.getAttentionAreaCode()
                                                                                     , page
                                                                                     , areaCode
-                                                                                    , keyword));
+                                                                                    , keyword
+                                                                                    , loginUserDTO.getId()));
         model.addAttribute("areaCode", areaCode);
         model.addAttribute("areaName", sidoCodeService.getSidoName(areaCode));
         model.addAttribute("keyword", keyword);
