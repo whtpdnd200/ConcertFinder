@@ -54,7 +54,7 @@
                                 <span th:case="공연중" class="status-badge badge-performing shadow-sm">공연중</span>
                                 <span th:case="공연예정" class="status-badge badge-upcoming shadow-sm">공연예정</span>
                                 <span th:case="*" th:text="${info.state}" class="status-badge badge-upcoming shadow-sm">공연예정</span>
-                                <button class="like-btn shadow-sm"><i class="bi bi-heart"></i></button>
+                                <button class="like-btn shadow-sm concertFavorites"><i class="bi bi-heart"></i></button>
 
                                 <img th:src="${info.posterPath}" alt="콘서트 포스터">
                             </div>
@@ -72,7 +72,6 @@
                             </div>
                         </div>
                     </a>
-
                 </div>
             </div>
             <div th:unless="${concertList.lists != null}" class="empty-concert-section">
@@ -106,6 +105,12 @@
     <script layout:fragment="script">
 
         window.onload = function() {
+
+            $(".concertFavorites").on("click", function(e) {
+                e.preventDefault();
+
+
+            });
 
             var url = new URL(location.href).searchParams;
 
