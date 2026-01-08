@@ -104,14 +104,12 @@
                         , "title" : title
                         , "content" : content}
               , success : function(response) {
-                  if(response.result == 'success') {
-                      location.href = "/concert/" + concertId;
-                  } else {
-                      alert("게시글 작성 실패!");
-                  }
+
+                  location.href = "/concert/" + concertId;
+
               }
-              , error : function() {
-                  alert("글 작성 에러!");
+              , error : function(xhr) {
+                  alert(xhr.responseJSON.message);
               }
           });
       });

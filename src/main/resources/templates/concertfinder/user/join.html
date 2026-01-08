@@ -165,14 +165,12 @@
                             , "attentionAreaCode" : attentionAreaCode
                          }
                 , success : function(response) {
-                    if(response.result == "success") {
-                        location.href = "/user/login";
-                    } else {
-                        alert("회원가입 실패!");
-                    }
+
+                    location.href = "/user/login";
+
                 }
-                , error : function() {
-                    alert("회원가입 에러!");
+                , error : function(xhr) {
+                    alert(xhr.responseJSON.message);
                 }
             });
         });
@@ -224,9 +222,9 @@
                 , data : {"userId" : userId}
                 , success : function(response) {
                     isDuplicateChecked = true;
-                    isDuplicate = response.isDuplicate;
+                    isDuplicate = response.data;
 
-                    if(response.isDuplicate) {
+                    if(response.data) {
                         $("#idDuplicate").removeClass("d-none");
                         $("#idNotDuplicate").addClass("d-none");
                     } else {

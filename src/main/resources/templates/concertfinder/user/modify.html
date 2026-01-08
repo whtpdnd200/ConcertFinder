@@ -184,14 +184,11 @@
                 , contentType: 'application/json'
                 , data : JSON.stringify(data)
                 , success : function(response) {
-                    if(response.result == 'success') {
-                        location.href = "/user/mypage";
-                    } else {
-                        alert("회원 정보 수정 실패!");
-                    }
+
+                    location.href = "/user/mypage";
                 }
-                , error : function() {
-                    alert("회원 정보 수정 에러!");
+                , error : function(xhr) {
+                    alert(xhr.responseJSON.message);
                 }
             });
         });

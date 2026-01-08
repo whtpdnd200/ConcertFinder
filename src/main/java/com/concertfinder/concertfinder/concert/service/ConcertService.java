@@ -78,6 +78,7 @@ public class ConcertService {
         return getResponseDTO(responsesDTO, rows);
     }
 
+    // 특정 단일 항목의 콘서트 API를 호출해 DTO에 저장하는 메서드
     public ResponsesInfoDTO getConcertInfo(String concertId) {
 
         ResponsesInfoDTO responsesInfoDTO = kopisWebClient.get()
@@ -94,6 +95,7 @@ public class ConcertService {
         return responsesInfoDTO;
     }
 
+    // 콘서트 상세 DTO에 들어갈 경도 위도 주소를 저장하기 위해 호출하는 API 메서드
     public ResponsesAreaDTO getAreaInfo(String areaCode) {
 
         return kopisWebClient.get()

@@ -23,6 +23,8 @@ public class PostDetailDTO {
 
     private String content;
 
+    private int commentCount;
+
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;

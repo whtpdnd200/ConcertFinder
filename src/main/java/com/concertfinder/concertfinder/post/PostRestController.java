@@ -1,5 +1,6 @@
 package com.concertfinder.concertfinder.post;
 
+import com.concertfinder.concertfinder.common.DTO.ApiResponseDTO;
 import com.concertfinder.concertfinder.post.DTO.PostListDTO;
 import com.concertfinder.concertfinder.post.DTO.PostModifyDTO;
 import com.concertfinder.concertfinder.post.DTO.PostWriteDTO;
@@ -9,11 +10,10 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/post")
@@ -25,61 +25,48 @@ public class PostRestController {
 
     // 게시글 생성 API
     @PostMapping("/{concertId}")
-    public Map<String, String> createPost(@PathVariable String concertId
+    public ResponseEntity<ApiResponseDTO<Void>> createPost(@PathVariable String concertId
                                     , @ModelAttribute PostWriteDTO postWriteDTO
                                     , HttpSession session) {
 
         LoginUserDTO loginUserDTO = (LoginUserDTO)session.getAttribute("userInfo");
-        Map<String, String> resultMap = new HashMap<>();
-        if(postService.postInsert(concertId, postWriteDTO, loginUserDTO.getId())) {
-            resultMap.put("result", "success");
-            return resultMap;
-        }
-        resultMap.put("result", "fail");
-        return resultMap;
+        postService.postInsert(concertId, postWriteDTO, loginUserDTO.getId());
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDTO.success("게시글 작성 성공"));
     }
 
     // 게시글 수정 API
     @PutMapping("/{postId}")
-    public Map<String, String> updatePost(@PathVariable long postId
+    public ResponseEntity<ApiResponseDTO<Void>> updatePost(@PathVariable long postId
                                           , @RequestBody PostModifyDTO postModifyDTO
                                           , HttpSession session) {
 
-        Map<String, String> resultMap = new HashMap<>();
         LoginUserDTO loginUserDTO = (LoginUserDTO)session.getAttribute("userInfo");
-        if(postService.postUpdate(postId, postModifyDTO, loginUserDTO.getId())) {
+        postService.postUpdate(postId, postModifyDTO, loginUserDTO.getId());
 
-            resultMap.put("result", "success");
-            return resultMap;
-        }
-
-        resultMap.put("result", "fail");
-        return resultMap;
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.success("게시글 수정 성공"));
     }
 
     // 게시글 삭제 API
     @DeleteMapping("{postId}")
-    public Map<String, String> removePost(@PathVariable long postId
+    public ResponseEntity<ApiResponseDTO<Void>> removePost(@PathVariable long postId
                                          , HttpSession session) {
         LoginUserDTO loginUserDTO = (LoginUserDTO)session.getAttribute("userInfo");
-        Map<String, String> resultMap = new HashMap<>();
-        if(postService.postDelete(postId, loginUserDTO.getId())) {
+        postService.postDelete(postId, loginUserDTO.getId());
 
-            resultMap.put("result", "success");
-            return resultMap;
-        }
-
-        resultMap.put("result", "fail");
-        return resultMap;
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.success("게시글 삭제 성공"));
     }
 
     // 게시글 목록 출력 API
     @GetMapping("/{concertId}/list")
-    public Page<PostListDTO> getPosts(@PathVariable String concertId
+    public ResponseEntity<ApiResponseDTO<Page<PostListDTO>>> getPosts(@PathVariable String concertId
                                     , @RequestParam int page
                                     , @RequestParam int size
                                     , @RequestParam char category
                                     , Pageable pageable) {
-        return postService.getPosts(concertId, page, size, category, pageable);
+
+        Page<PostListDTO> posts = postService.getPosts(concertId, page, size, category, pageable);
+
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.success("게시글 목록 조회 성공", posts));
     }
 }

@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -43,7 +44,11 @@ public class UserService {
     }
 
     // 회원가입 : 유저 정보 DB 저장 메서드
-    public boolean insertUser(JoinUserDTO joinUserDTO) {
+    public void insertUser(JoinUserDTO joinUserDTO) {
+
+        if(joinUserDTO.getNickname().length() > 16) {
+            throw new IllegalArgumentException("닉네임은 16글자 이하로 작성해야 합니다!");
+        }
 
         String salt = SHA256HashingEncoder.getSalt();
         User user = User.builder()
@@ -58,9 +63,8 @@ public class UserService {
         try {
             userRepository.save(user);
         } catch(DataAccessException e) {
-            return false;
+            throw new RuntimeException("서버 에러로 인해 회원가입이 실패 하였습니다 잠시 뒤 다시 시도해주세요!");
         }
-        return true;
     }
 
     // 로그인 : 로그인 시도 유저 정보 조회 메서드
@@ -68,16 +72,17 @@ public class UserService {
 
         String salt = getSalt(userId);
 
-        if(salt != null) {
-
-            Optional<User> optionalUser = userRepository.findByUserIdAndPassword(userId, SHA256HashingEncoder.encode(password, salt));
-            if(optionalUser.isPresent()) {
-
-                return addDTO(optionalUser);
-            }
+        if(salt == null) {
+            throw new NoSuchElementException("일치하는 아이디가 존재하지 않습니다!");
         }
 
-        return null;
+        Optional<User> optionalUser = userRepository.findByUserIdAndPassword(userId, SHA256HashingEncoder.encode(password, salt));
+        if(!optionalUser.isPresent()) {
+
+            throw new NoSuchElementException("비밀번호가 일치하지 않습니다!");
+        }
+
+        return addDTO(optionalUser);
     }
 
     // 로그인 : id를 통해 salt를 얻어오는 메서드
@@ -95,7 +100,11 @@ public class UserService {
     }
 
     // 회원 정보 수정 메서드
-    public boolean userModify(long id, ModifyUserDTO modifyUserDTO) {
+    public void userModify(long id, ModifyUserDTO modifyUserDTO) {
+
+        if(modifyUserDTO.getNickname().length() > 16) {
+            throw new IllegalArgumentException("닉네임은 16글자 이하로 작성해야 합니다!");
+        }
 
         Optional<User> optionalUser = userRepository.findById(id);
 
@@ -123,10 +132,9 @@ public class UserService {
             try {
                 userRepository.save(user);
             } catch(DataAccessException e) {
-                return false;
+                throw new RuntimeException("서버에러로 회원 정보 수정이 실패 했습니다 잠시후 다시 시도해주세요!");
             }
         }
-        return true;
     }
 
     // 회원 정보를 얻어오는 메서드

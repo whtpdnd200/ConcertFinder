@@ -2,13 +2,17 @@
 <html lang="ko"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:x-on="http://www.w3.org/1999/xhtml"
+      xmlns:x-bind="http://www.w3.org/1999/xhtml"
       layout:decorate="~{concertfinder/layouts/main_layout}">
 <head>
     <meta charset="UTF-8">
     <title>글 상세</title>
     <link layout:fragment="css" rel="stylesheet" th:href="@{/css/post/post_detail_style.css}">
+    <script layout:fragment="alpine" defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script layout:fragment="functionScript" th:src="@{/js/comment/comment_main.js}"></script>
 </head>
-    <section layout:fragment="contents" class="post-view-wrapper">
+    <section id="postIdTag" th:data-id="${postInfo.id}" layout:fragment="contents" class="post-view-wrapper">
         <div class="container py-5">
             <div class="row justify-content-center">
                 <div class="col-lg-10">
@@ -29,7 +33,7 @@
                                 <span th:text="${postInfo.userNickname}" class="author-name font-weight-bold">재미니팬</span>
                             </div>
                             <div class="post-stats text-muted small">
-                                <span><i class="bi bi-chat-dots mr-1"></i> 댓글 12</span>
+                                <span><i class="bi bi-chat-dots mr-1"></i> 댓글 <span th:text="${postInfo.commentCount}">12</span></span>
                             </div>
                         </div>
                     </div>
@@ -55,6 +59,7 @@
                             </button>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -73,28 +78,225 @@
                     </div>
                     <div class="modal-footer border-0 p-3 justify-content-center">
                         <button type="button" class="btn btn-light px-4 mr-2" data-dismiss="modal">취소</button>
-                        <button id="deleteBtn" type="button" class="btn btn-danger px-4">삭제확인</button>
+                        <button id="postDeleteBtn" type="button" class="btn btn-danger px-4">삭제확인</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="comment-area-wrapper mt-5 pt-5 border-top">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="d-flex align-items-center mb-4">
+                        <h5 class="font-weight-bold mb-0 border-left-primary pl-3">
+                            댓글 <span class="comment-count-text text-danger ml-1"><span th:text="${postInfo.commentCount}">0</span></span>
+                        </h5>
+                     </div>
+
+                    <div class="comment-write-card shadow-sm rounded bg-white p-4 mb-5 border-0">
+                        <form id="commentWriteForm">
+                            <div class="form-group mb-3">
+                        <textarea id="commentInput" class="form-control comment-textarea bg-light"
+                                  rows="3"
+                                  placeholder="공연에 대한 궁금한 점이나 소중한 의견을 남겨주세요."></textarea>
+                                <div class="text-secondary text-right small"><span id="commentLength">0</span>/250</div>
+                            </div>
+                            <div class="d-flex justify-content-end">
+                                <button id="commentSubmitBtn" type="submit" class="btn btn-dark px-4 font-weight-bold" style="border-radius: 20px;">
+                                    등록하기
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div x-data="commentData()" x-init="loadComments(0)" class="comment-list-container mt-4">
+
+                        <div class="comment-list mb-4">
+                            <template x-for="comment in comments.data.content" :key="comment.id">
+                                <div class="comment-item border-bottom py-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <div class="d-flex align-items-center">
+                                            <span class="font-weight-bold text-dark small" x-text="comment.userNickname">작성자</span>
+                                            <span class="mx-2 text-muted" style="font-size: 0.8rem;">|</span>
+                                            <span class="text-muted small" x-text="getDate(comment.createdAt)">2026-01-07</span>
+                                        </div>
+
+                                        <div class="comment-actions d-flex align-items-center" x-show="$('#dataValue').data('id') == comment.userId">
+                                            <button :data-comment-id="comment.id" class="btn btn-sm text-muted hover-edit p-1 mr-1 commentModifyIcon modifyStatus" title="수정">
+                                                <i class="bi bi-pencil" style="font-size: 0.85rem;"></i>
+                                            </button>
+
+                                            <button :data-comment-id="comment.id" class="btn btn-sm text-muted hover-delete p-1 commentDeleteBtn">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <form :id="'commentModifyForm' + comment.id" class="d-none">
+                                        <div class="form-group mb-3">
+                                                    <textarea :id="'commentModifyInput' + comment.id" class="form-control comment-textarea bg-light"
+                                                              rows="3"
+                                                              placeholder="공연에 대한 궁금한 점이나 소중한 의견을 남겨주세요." x-text="comment.comment"></textarea>
+                                            <div class="text-secondary text-right small">
+                                                <span id="commentModifyLength">0</span>/250
+                                            </div>
+                                        </div>
+                                        <div class="d-flex justify-content-end">
+                                            <button :id="'commentModifyBtn' + comment.id" data-comment-id="" type="submit" class="btn btn-dark px-4 font-weight-bold commentModifyBtn" style="border-radius: 20px;">
+                                                수정하기
+                                            </button>
+                                        </div>
+                                    </form>
+                                    <div :id="'commentTag' + comment.id" class="comment-text text-secondary px-1" x-text="comment.comment" style="font-size: 0.92rem; line-height: 1.5;">
+                                        댓글 내용이 노출됩니다.
+                                    </div>
+                                </div>
+                            </template>
+
+                            <template x-if="comments.data.content.length == 0">
+                                <div class="text-center py-5 text-muted border-bottom">
+                                    등록된 댓글이 없습니다.
+                                </div>
+                            </template>
+                        </div>
+
+                        <nav aria-label="Comment page navigation" x-show="comments.data.page.totalPages > 1">
+                            <ul class="pagination pagination-sm justify-content-center comment-pagination">
+                                <li class="page-item" :class="{ 'disabled': comments.data.page.number == 0 }">
+                                    <a class="page-link" href="javascript:void(0)" @click="loadComments(comments.data.page.number - 1)">
+                                        <i class="bi bi-chevron-left"></i>
+                                    </a>
+                                </li>
+
+                                <template x-for="p in commentPageRange" :key="p">
+                                    <li class="page-item" :class="{ 'active': p === (comments.data.page.number + 1) }">
+                                        <a class="page-link" href="javascript:void(0)"
+                                           x-text="p"
+                                           @click="loadComments(p - 1)"></a>
+                                    </li>
+                                </template>
+
+                                <li class="page-item" :class="{ 'disabled': comments.data.page.number === comments.data.page.totalPages - 1 }">
+                                    <a class="page-link" href="javascript:void(0)" @click="loadComments(comments.data.page.number + 1)">
+                                        <i class="bi bi-chevron-right"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
                     </div>
                 </div>
             </div>
         </div>
     </section>
     <script layout:fragment="script">
-        $("#deleteBtn").on("click", function() {
+
+        $(document).on("click", ".commentModifyBtn", function(e) {
+            e.preventDefault();
+            let commentId = $(this).data("comment-id");
+            let comment = $("#commentModifyInput" + commentId).val();
+
+            if(comment == '') {
+                alert("댓글을 입력 해주세요!");
+                $("#commentModifyInput" + commentId).focus();
+                return;
+            }
+
+            let data = {"comment" : comment};
+            $.ajax({
+                type: "put"
+                , url: "/comment/" + commentId
+                , contentType: 'application/json'
+                , data: JSON.stringify(data)
+                , success: function(response) {
+
+                    location.reload();
+                }
+                , complete: function() {
+                    $(".modifyStatus").addClass("commentModifyIcon");
+                }
+                , error: function(xhr) {
+                    alert(xhr.responseJSON.message);
+                }
+            });
+        });
+
+        $(document).on("click", ".commentModifyIcon", function() {
+            let commentId = $(this).data("comment-id");
+            $("#commentTag" + commentId).addClass("d-none");
+            $("#commentModifyForm" + commentId).removeClass("d-none");
+            $("#commentModifyBtn" + commentId).data("comment-id", commentId);
+            $(".modifyStatus").removeClass("commentModifyIcon");
+        });
+
+        $(document).on("click", ".commentDeleteBtn", function() {
+            let commentId = $(this).data("comment-id");
+
+            $.ajax({
+                type: "delete"
+                , url: "/comment/" + commentId
+                , success: function(response) {
+
+                    location.reload();
+                }
+                , error: function(xhr) {
+                    alert(xhr.responseJSON.message);
+                }
+            });
+        });
+
+        $("#commentInput").on("input", function() {
+            let length = $("#commentInput").val().length;
+
+            $("#commentLength").text(length);
+
+            if(length >= 250) {
+                alert("댓글은 250글자 제한입니다!");
+                $("#commentInput").val($("#commentInput").val().substring(0, 249));
+            }
+        });
+
+        $("#commentSubmitBtn").on("click", function(e) {
+            e.preventDefault();
+
+            let postId = $("#deleteModalBtn").data("post-id");
+            let comment = $("#commentInput").val();
+
+            if(comment == '') {
+                alert("댓글을 입력 해주세요!");
+                $("#commentInput").focus();
+                return;
+            }
+
+            if($("#commentInput").val().length >= 250) {
+                alert("댓글은 250글자를 넘길 수 없습니다!");
+                $("#commentInput").focus();
+                return;
+            }
+
+            $.ajax({
+                type: "post"
+                , url: "/comment/" + postId
+                , data: {"comment" : comment}
+                , success: function(response) {
+
+                    location.reload();
+                }
+                , error: function (xhr) {
+                    alert(xhr.responseJSON.message);
+                }
+            });
+        });
+
+        $("#postDeleteBtn").on("click", function() {
             let postId = $("#deleteModalBtn").data("post-id");
             let concertId = $("#deleteConfirmModal").data("concert-id");
             $.ajax({
                 type : "delete"
                 , url : "/post/" + postId
                 , success : function(response) {
-                    if(response.result == 'success') {
-                        location.href = "/concert/" + concertId;
-                    } else {
-                        alert("게시글 삭제 실패!");
-                    }
+
+                    location.href = "/concert/" + concertId;
                 }
-                , error : function () {
-                    alert("게시글 삭제 에러!");
+                , error : function (xhr) {
+                    alert(xhr.responseJSON.message);
                 }
             });
         });
