@@ -11,7 +11,8 @@
     <link layout:fragment="css" rel="stylesheet" th:href="@{/css/concert/concert_detail_style.css}">
     <script layout:fragment="kakao" type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=a63cb198eeb8bf5e0801578ea8039e14"></script>
     <script layout:fragment="alpine" defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <script layout:fragment="functionScript" th:src="@{/js/post/post_main.js}"></script>
+    <script layout:fragment="postFunctionScript" th:src="@{/js/post/post_main.js}"></script>
+    <script layout:fragment="reviewFunctionScript" th:src="@{/js/concert/concert_main.js}"></script>
 </head>
 
     <section layout:fragment="contents" class="detail-page-wrapper">
@@ -118,7 +119,7 @@
                 </div>
             </div>
 
-            <div class="concert-review-wrapper my-5">
+            <div  x-data="reviewData()" x-init="loadReviews(0)" class="concert-review-wrapper my-5">
                 <div class="d-flex justify-content-between align-items-end mb-4">
                     <div>
                         <h4 class="font-weight-bold mb-1 border-left-primary pl-3">공연장 리뷰</h4>
@@ -129,46 +130,134 @@
                     </button>
                 </div>
 
-                <div class="review-summary-card shadow-sm rounded bg-white p-4 mb-4 border">
+                <div th:with="head = ${#numbers.formatInteger(concertInfo.averageReview, 0)}" class="review-summary-card shadow-sm rounded bg-white p-4 mb-4 border">
                     <div class="row align-items-center text-center">
-                        <div class="col-md-6 border-right">
+                        <div th:if="${concertInfo.reviewCount != 0}"  class="col-md-6 border-right">
                             <div class="rating-label">평균 별점</div>
                             <div class="rating-value">
-                                <span class="text-dark">4.8</span>
+                                <span th:text="${#strings.substring(concertInfo.averageReview, 0, 3)}" class="text-dark">4.8</span>
                                 <span class="rating-max">/ 5.0</span>
                             </div>
-                            <div class="rating-stars-visual text-warning">
-                                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i>
+                            <div th:with="maxNum = 5, head = ${T(java.lang.Math).floor(concertInfo.averageReview.intValue())}" class="rating-stars-visual text-warning d-flex justify-content-center">
+                                <i th:each="num : ${#numbers.sequence(1, #numbers.formatInteger(T(java.lang.Math).floor(concertInfo.averageReview), 0))}"  class="bi bi-star-fill"></i>
+                                <i th:if="${concertInfo.averageReview % 1 != 0}" class="bi bi-star-half"></i><i th:each="num : ${#numbers.sequence(1, maxNum - head - (concertInfo.averageReview % 1 != 0 ? 1 : 0))}" class="bi bi-star"></i>
                             </div>
+                        </div>
+                        <div th:unless="${concertInfo.reviewCount != 0}"  class="col-md-6 border-right no-review-display">
+                            <i class="bi bi-chat-left-dots"></i>
+                            <p>작성된 리뷰가 없습니다</p>
                         </div>
                         <div class="col-md-6">
                             <div class="rating-label">전체 리뷰</div>
                             <div class="review-count-display">
-                                <span class="count-num">0</span><span class="count-unit">건</span>
+                                <span th:text="${concertInfo.reviewCount}" class="count-num">0</span><span class="count-unit">건</span>
                             </div>
-                            <p class="small text-muted mb-0">최근 1개월간 등록된 후기 기준</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="review-list-container shadow-sm rounded bg-white border">
-                    <div class="review-post p-4 border-bottom">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <div>
-                                <span class="review-author font-weight-bold mr-2">사용자</span>
-                                <span class="review-stars text-warning small">
-                            <i class="bi bi-star-fill"></i>
-                        </span>
-                            </div>
-                            <span class="text-muted small">2026-01-03</span>
-                        </div>
-                        <p class="review-body text-secondary mb-0">정말 만족스러운 공연장이었습니다!</p>
+                <div class="review-header d-flex justify-content-between align-items-center mb-4 px-2">
+                    <div class="review-count-badge">
+                        <span class="text-secondary small">Total</span>
+                        <span class="count-number fw-bold" th:text="${concertInfo.reviewCount}">0</span>
                     </div>
 
-                    <div class="empty-review text-center py-5">
-                        <i class="bi bi-chat-dots d-block mb-3 text-muted" style="font-size: 2.5rem;"></i>
-                        <p class="text-muted">아직 작성된 리뷰가 없습니다.<br>첫 번째 후기의 주인공이 되어보세요!</p>
+                    <div class="custom-sort-wrapper">
+                        <div class="d-flex align-items-center sort-box">
+                            <i class="bi bi-sort-down text-muted me-2"></i>
+                            <select class="form-select custom-select"
+                                    x-model="orderType"
+                                    @change="console.log('값 변경됨:', orderType); loadReviews(0)">
+                                <option value="desc">최신순</option>
+                                <option value="highRating">별점 높은순</option>
+                                <option value="lowRating">별점 낮은순</option>
+                            </select>
+                        </div>
                     </div>
+                </div>
+                <div class="review-list-wrapper">
+                    <div class="review-list-container shadow-sm rounded bg-white border">
+                        <template x-for="review in reviews.data.content" :key="review.id">
+                            <div class="review-post p-4 border-bottom">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div>
+                                        <span class="review-author font-weight-bold mr-2" x-text="review.userNickname">사용자</span>
+                                        <span class="review-stars text-warning small" x-html="renderStars(review.point)"></span>
+                                    </div>
+                                    <span class="text-muted small" x-text="formatDate(review.createdAt)">2026-01-09</span>
+                                </div>
+
+                                <form :id="'reviewModifyForm' + review.id" class="d-none">
+                                    <div class="mb-2 d-flex align-items-center" x-data="{ tempRating: review.point }">
+                                        <div class="rating-stars-visual text-warning me-2" style="cursor: pointer;">
+                                            <template x-for="i in [1, 2, 3, 4, 5]">
+                                                <span class="position-relative d-inline-block">
+                                                    <i class="bi"
+                                                       :class="tempRating >= i - 0.5 ? 'bi-star-half text-warning' : 'bi-star text-muted'"
+                                                       style="position: absolute; width: 50%; overflow: hidden; z-index: 2;"
+                                                       @click="tempRating = i - 0.5"></i>
+                                                    <i class="bi"
+                                                       :class="tempRating >= i ? 'bi-star-fill text-warning' : 'bi-star text-muted'"
+                                                       @click="tempRating = i"></i>
+                                                </span>
+                                            </template>
+                                        </div>
+                                        <span class="badge bg-light text-dark" x-text="tempRating + '점'"></span>
+                                        <input type="hidden" :id="'reviewModifyPoint' + review.id" :value="tempRating">
+                                    </div>
+                                    <div class="form-group mb-3">
+                                        <textarea :id="'reviewModifyInput' + review.id" class="form-control review-textarea bg-light"
+                                                  rows="3"
+                                                  style="resize: none;"
+                                                  placeholder="공연에 대한 궁금한 점이나 소중한 의견을 남겨주세요." x-text="review.review"></textarea>
+
+                                    </div>
+                                    <div class="d-flex justify-content-end">
+                                        <button :id="'reviewModifyBtn' + review.id" data-review-id="" type="submit" class="btn btn-dark px-4 font-weight-bold reviewModifyBtn" style="border-radius: 20px;">
+                                            수정하기
+                                        </button>
+                                    </div>
+                                </form>
+                                <p :id="'reviewTag' + review.id" class="review-body text-secondary mb-0" x-text="review.review">리뷰 내용이 들어갑니다.</p>
+                                <template x-if="$('#dataValue').data('id') == review.userId">
+                                    <div class="me-3 d-flex justify-content-end">
+                                        <button :data-review-id="review.id" class="btn btn-sm text-muted hover-edit p-1 mr-1 reviewModifyIcon modifyStatus" title="수정">
+                                            <i class="bi bi-pencil" style="font-size: 1.0rem;"></i>
+                                        </button>
+
+                                        <button :data-review-id="review.id" class="btn btn-sm text-muted hover-delete p-1 reviewDeleteBtn">
+                                            <i class="bi bi-trash" style="font-size: 1.0rem;"></i>
+                                        </button>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+
+                        <template x-if="reviews.data.content.length === 0">
+                            <div class="empty-review text-center py-5">
+                                <i class="bi bi-chat-dots d-block mb-3 text-muted" style="font-size: 2.5rem;"></i>
+                                <p class="text-muted">아직 작성된 리뷰가 없습니다.</p>
+                            </div>
+                        </template>
+                    </div>
+
+                    <nav aria-label="Page navigation" class="mt-4" x-show="reviews.data.page.totalPages > 0">
+                        <ul class="pagination justify-content-center custom-pagination">
+                            <li class="page-item" :class="{ 'disabled': reviews.first }">
+                                <a class="page-link" @click="reviewChangePage(reviews.data.page.number - 1)"><i class="bi bi-chevron-left"></i></a>
+                            </li>
+
+                            <template x-for="p in reviewPageRange" :key="p">
+                                <li class="page-item" :class="{ 'active': p === reviews.data.page.number + 1 }">
+                                    <a class="page-link" x-text="p" @click="reviewChangePage(p - 1)"></a>
+                                </li>
+                            </template>
+
+                            <li class="page-item" :class="{ 'disabled': reviews.last }">
+                                <a class="page-link" @click="reviewChangePage(reviews.data.page.number + 1)"><i class="bi bi-chevron-right"></i></a>
+                            </li>
+                        </ul>
+                    </nav>
                 </div>
             </div>
 
@@ -185,22 +274,31 @@
                             <div class="modal-body p-4">
                                 <div class="form-group text-center mb-4">
                                     <label class="d-block font-weight-bold">이 공연장은 어떠셨나요?</label>
-                                    <div class="star-rating-input text-warning" style="font-size: 1.8rem; cursor: pointer;">
-                                        <i class="bi bi-star" data-value="1"></i>
-                                        <i class="bi bi-star" data-value="2"></i>
-                                        <i class="bi bi-star" data-value="3"></i>
-                                        <i class="bi bi-star" data-value="4"></i>
-                                        <i class="bi bi-star" data-value="5"></i>
-                                        <input type="hidden" name="rating" id="ratingValue" value="5">
+                                    <div class="rating-container" x-data="ratingComponent()">
+                                        <div class="star-rating-wrapper">
+                                            <div class="star-rating">
+                                                <template x-for="i in [0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0]" :key="i">
+                                                    <label class="star-label"
+                                                           @mouseenter="hoverRating = i"
+                                                           @mouseleave="hoverRating = 0">
+                                                        <input type="radio" :checked="i == rating" name="rating" :value="i" x-model="rating" class="d-none">
+                                                        <i class="bi" :class="getStarClass(i)"></i>
+                                                    </label>
+                                                </template>
+                                            </div>
+                                            <div class="rating-text">
+                                                <span x-text="rating">0</span>점 / 5.0점
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <textarea style="resize: none;" class="form-control" name="content" rows="4" placeholder="시설의 청결도, 시야, 음향 등 상세한 후기를 남겨주세요." required></textarea>
+                                    <textarea id="reviewInput" style="resize: none;" class="form-control" name="content" rows="4" placeholder="시설의 청결도, 시야, 음향 등 상세한 후기를 남겨주세요."></textarea>
                                 </div>
                             </div>
                             <div class="modal-footer border-0 p-4">
                                 <button type="button" class="btn btn-light" data-dismiss="modal">취소</button>
-                                <button type="submit" class="btn btn-danger px-4">등록하기</button>
+                                <button id="reviewSubmitBtn" th:data-area-code="${concertInfo.areaCode}" type="submit" class="btn btn-danger px-4">등록하기</button>
                             </div>
                         </form>
                     </div>
@@ -354,14 +452,91 @@
                 customOverlay.setMap(null);
             }
 
-            // 리뷰 등록시 별점 선택하는 클릭 이벤트
-            $('.star-rating-input i').on('click', function() {
-                let val = $(this).data('value');
-                $('#ratingValue').val(val);
-                $(this).parent().find('i').removeClass('bi-star-fill').addClass('bi-star');
-                $(this).prevAll().addBack().removeClass('bi-star').addClass('bi-star-fill');
+
+        });
+
+        $("#reviewForm").on("submit", function(e) {
+            e.preventDefault();
+            let areaCode = $("#reviewSubmitBtn").data("area-code");
+            let reviewPoint = $('input[name=rating]:checked').val();
+            let review = $("#reviewInput").val();
+
+            if(review == '') {
+                alert("리뷰를 작성 해주세요!");
+                $("#reviewInput").focus();
+                return;
+            }
+
+            $.ajax({
+                type: "post"
+                , url: "/review/" + areaCode
+                , data: {"review" : review, "point" : reviewPoint}
+                , success: function() {
+                    location.reload();
+                }
+                , error: function(xhr) {
+                    alert(xhr.responseJSON.message);
+                }
             });
         });
+
+        $(document).on("click", ".reviewDeleteBtn", function(e) {
+            e.preventDefault();
+            let reviewId = $(this).data("review-id");
+
+            $.ajax({
+                type: "delete"
+                , url: "/review/" + reviewId
+                , success: function() {
+                    location.reload();
+                }
+                , error: function(xhr) {
+                    alert(xhr.responseJSON.message);
+
+                }
+            });
+        });
+
+        $(document).on("click", ".reviewModifyBtn", function(e) {
+            e.preventDefault();
+            let reviewId = $(this).data("review-id");
+            let review = $("#reviewModifyInput" + reviewId).val();
+            let point = $("#reviewModifyPoint" + reviewId).val();
+
+
+            if(review == '') {
+                alert("리뷰를 작성 해주세요!");
+                $("#reviewModifyInput" + reviewId).focus();
+                return;
+            }
+
+            let data = {"review" : review , "point" : point};
+
+            $.ajax({
+                type: "put"
+                , url: "/review/" + reviewId
+                , contentType: 'application/json'
+                , data: JSON.stringify(data)
+                , success: function() {
+                    location.reload();
+                }
+                , complete: function() {
+                    $(".modifyStatus").addClass("reviewModifyIcon");
+                }
+                , error: function(xhr) {
+                    alert(xhr.responseJSON.message);
+                }
+            });
+        });
+
+        $(document).on("click", ".reviewModifyIcon", function() {
+            let reviewId = $(this).data("review-id");
+            $("#reviewTag" + reviewId).addClass("d-none");
+            $("#reviewModifyForm" + reviewId).removeClass("d-none");
+            $("#reviewModifyBtn" + reviewId).data("review-id", reviewId);
+            $(".modifyStatus").removeClass("reviewModifyIcon");
+        });
+
 
 
         $("#unlikeBtn").on("click", function(e) {

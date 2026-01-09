@@ -1,12 +1,14 @@
 package com.concertfinder.concertfinder.post.DTO;
 
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Getter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 public class PostListDTO {
 
     private long id;

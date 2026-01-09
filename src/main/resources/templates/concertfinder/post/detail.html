@@ -120,16 +120,19 @@
                                             <span class="text-muted small" x-text="getDate(comment.createdAt)">2026-01-07</span>
                                         </div>
 
-                                        <div class="comment-actions d-flex align-items-center" x-show="$('#dataValue').data('id') == comment.userId">
-                                            <button :data-comment-id="comment.id" class="btn btn-sm text-muted hover-edit p-1 mr-1 commentModifyIcon modifyStatus" title="수정">
-                                                <i class="bi bi-pencil" style="font-size: 0.85rem;"></i>
-                                            </button>
+                                        <template x-if="$('#dataValue').data('id') == comment.userId">
+                                            <div class="comment-actions d-flex align-items-center" x-show="$('#dataValue').data('id') == comment.userId">
+                                                <button :data-comment-id="comment.id" class="btn btn-sm text-muted hover-edit p-1 mr-1 commentModifyIcon modifyStatus" title="수정">
+                                                    <i class="bi bi-pencil" style="font-size: 0.85rem;"></i>
+                                                </button>
 
-                                            <button :data-comment-id="comment.id" class="btn btn-sm text-muted hover-delete p-1 commentDeleteBtn">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </div>
+                                                <button :data-comment-id="comment.id" class="btn btn-sm text-muted hover-delete p-1 commentDeleteBtn">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </div>
+                                        </template>
                                     </div>
+
                                     <form :id="'commentModifyForm' + comment.id" class="d-none">
                                         <div class="form-group mb-3">
                                                     <textarea :id="'commentModifyInput' + comment.id" class="form-control comment-textarea bg-light"

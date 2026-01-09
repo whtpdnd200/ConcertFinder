@@ -1,10 +1,12 @@
-package com.concertfinder.concertfinder.SidoCode.DTO;
+package com.concertfinder.concertfinder.sidoCode.DTO;
 
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 @Getter
 @Builder(toBuilder = true)
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class SidoDTO {
 
     private String sidoCode;

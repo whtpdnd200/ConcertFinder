@@ -1,4 +1,4 @@
-package com.concertfinder.concertfinder.SidoCode.domain;
+package com.concertfinder.concertfinder.sidoCode.domain;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

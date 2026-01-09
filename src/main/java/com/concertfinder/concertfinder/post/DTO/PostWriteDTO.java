@@ -1,12 +1,12 @@
 package com.concertfinder.concertfinder.post.DTO;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Builder
-@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
+@Setter
 public class PostWriteDTO {
 
     private Character category;

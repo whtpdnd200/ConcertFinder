@@ -1,6 +1,6 @@
 package com.concertfinder.concertfinder.concert;
 
-import com.concertfinder.concertfinder.SidoCode.service.SidoCodeService;
+import com.concertfinder.concertfinder.sidoCode.service.SidoCodeService;
 import com.concertfinder.concertfinder.concert.service.ConcertService;
 import com.concertfinder.concertfinder.user.DTO.LoginUserDTO;
 import jakarta.servlet.http.HttpSession;

@@ -1,4 +1,4 @@
-package com.concertfinder.concertfinder.common.service;
+package com.concertfinder.concertfinder.ladder.service;
 
 import com.concertfinder.concertfinder.concert.service.ConcertService;
 import com.concertfinder.concertfinder.favorites.service.FavoritesService;
@@ -8,11 +8,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class BasicService {
+public class ConcertAndFavoritesLadderService {
 
     private final ConcertService concertService;
     private final FavoritesService favoritesService;
-
 
     @Transactional
     public void insertFavoritesAndConcert(String concertId, long userId) {

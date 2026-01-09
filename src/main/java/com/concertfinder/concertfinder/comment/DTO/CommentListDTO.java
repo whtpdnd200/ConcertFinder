@@ -1,14 +1,14 @@
 package com.concertfinder.concertfinder.comment.DTO;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Getter
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 public class CommentListDTO {
 
     private long id;

@@ -1,10 +1,12 @@
 package com.concertfinder.concertfinder.user.DTO;
 
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 @Getter
+@Setter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class LoginUserDTO {
 
     private Long id;

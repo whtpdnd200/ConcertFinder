@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ConcertRepository extends JpaRepository<Concert, String> {
@@ -27,4 +28,5 @@ public interface ConcertRepository extends JpaRepository<Concert, String> {
             ORDER BY c.createdAt DESC
             """)
     public List<Concert> findAllTop3ByConcertId(List<String> concertIdList, Pageable pageable);
+
 }

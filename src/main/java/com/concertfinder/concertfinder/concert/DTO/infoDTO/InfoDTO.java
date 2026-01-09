@@ -75,4 +75,8 @@ public class InfoDTO {
     private AreaInfoDTO areaInfo;
 
     private boolean isFavorites;
+
+    private int reviewCount;
+
+    private Double averageReview;
 }

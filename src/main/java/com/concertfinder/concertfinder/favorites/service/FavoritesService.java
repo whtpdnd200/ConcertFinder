@@ -57,9 +57,14 @@ public class FavoritesService{
         }
     }
 
+    // 유저가 해당 콘서트를 즐겨찾기 했는지 확인하는 메서드
     public boolean isFavorites(String concertId, long userId) {
 
         return favoritesRepository.existsByUserIdAndConcertId(userId, concertId);
+    }
+
+    public boolean isFavorites(String concertId) {
+        return favoritesRepository.existsByConcertId(concertId);
     }
 
     public List<String> getFavoritesConcertIds(long userId) {

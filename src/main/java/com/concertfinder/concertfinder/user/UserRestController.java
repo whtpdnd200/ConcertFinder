@@ -57,6 +57,6 @@ public class UserRestController {
 
         userService.userModify(loginUserDTO.getId(), modifyUserDTO);
         session.setAttribute("userInfo", userService.getUser(loginUserDTO.getId()));
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.success("회원 정보 수정 성공"));
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.success("회원 정보 수정 성공"));
     }
 }

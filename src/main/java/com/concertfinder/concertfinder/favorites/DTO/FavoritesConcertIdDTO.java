@@ -1,14 +1,12 @@
 package com.concertfinder.concertfinder.favorites.DTO;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Getter
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 public class FavoritesConcertIdDTO {
 
     private String concertId;
