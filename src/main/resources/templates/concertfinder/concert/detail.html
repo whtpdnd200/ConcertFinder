@@ -129,24 +129,27 @@
                     </button>
                 </div>
 
-                <div class="review-summary-card shadow-sm rounded bg-white p-4 mb-4 border">
+                <div th:with="head = ${#numbers.formatInteger(concertInfo.averageReview, 0)}" class="review-summary-card shadow-sm rounded bg-white p-4 mb-4 border">
                     <div class="row align-items-center text-center">
                         <div class="col-md-6 border-right">
                             <div class="rating-label">평균 별점</div>
                             <div class="rating-value">
-                                <span class="text-dark">4.8</span>
+                                <span th:text="${concertInfo.averageReview}" class="text-dark">4.8</span>
                                 <span class="rating-max">/ 5.0</span>
                             </div>
-                            <div class="rating-stars-visual text-warning">
-                                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i>
+                            <div th:text="${head}" class="rating-stars-visual text-warning">
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-half"></i>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="rating-label">전체 리뷰</div>
                             <div class="review-count-display">
-                                <span class="count-num">0</span><span class="count-unit">건</span>
+                                <span th:text="${concertInfo.reviewCount}" class="count-num">0</span><span class="count-unit">건</span>
                             </div>
-                            <p class="small text-muted mb-0">최근 1개월간 등록된 후기 기준</p>
                         </div>
                     </div>
                 </div>
@@ -189,8 +192,11 @@
                                         <div class="star-rating-wrapper">
                                             <div class="star-rating">
                                                 <template x-for="i in [0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0]" :key="i">
-                                                    <label class="star-label">
-                                                        <input type="radio" name="rating" :value="i">
+                                                    <label class="star-label"
+                                                           @mouseenter="hoverRating = i"
+                                                           @mouseleave="hoverRating = 0">
+                                                        <input type="radio" :checked="i == rating" name="rating" :value="i" x-model="rating" class="d-none">
+                                                        <i class="bi" :class="getStarClass(i)"></i>
                                                     </label>
                                                 </template>
                                             </div>
@@ -201,12 +207,12 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <textarea style="resize: none;" class="form-control" name="content" rows="4" placeholder="시설의 청결도, 시야, 음향 등 상세한 후기를 남겨주세요." required></textarea>
+                                    <textarea id="reviewInput" style="resize: none;" class="form-control" name="content" rows="4" placeholder="시설의 청결도, 시야, 음향 등 상세한 후기를 남겨주세요."></textarea>
                                 </div>
                             </div>
                             <div class="modal-footer border-0 p-4">
                                 <button type="button" class="btn btn-light" data-dismiss="modal">취소</button>
-                                <button type="submit" class="btn btn-danger px-4">등록하기</button>
+                                <button id="reviewSubmitBtn" th:data-area-code="${concertInfo.areaCode}" type="submit" class="btn btn-danger px-4">등록하기</button>
                             </div>
                         </form>
                     </div>
@@ -363,7 +369,47 @@
 
         });
 
+        $("#reviewForm").on("submit", function(e) {
+            e.preventDefault();
+            let areaCode = $("#reviewSubmitBtn").data("area-code");
+            let reviewPoint = $('input[name=rating]:checked').val();
+            let review = $("#reviewInput").val();
 
+            if(review == '') {
+                alert("리뷰를 작성 해주세요!");
+                $("#reviewInput").focus();
+                return;
+            }
+
+            $.ajax({
+                type: "post"
+                , url: "/review/" + areaCode
+                , data: {"review" : review, "point" : reviewPoint}
+                , success: function() {
+                    location.reload();
+                }
+                , error: function(xhr) {
+                    alert(xhr.responseJSON.message);
+                }
+            });
+        });
+
+        function ratingComponent() {
+            return {
+                rating: 3.5,        // 기본값 3.5점 클릭시 확정되는 점수
+                hoverRating: 0,   // 마우스 올린 임시 점수
+
+                getStarClass(i) {
+                    // 마우스가 올라가 있으면 hoverRating 기준, 아니면 확정된 rating 기준
+                    let current = this.hoverRating || this.rating;
+
+                    // i(해당 조각의 값)가 현재 점수보다 작거나 같으면 꽉 찬 별
+                    return i <= current ? 'bi-star-fill text-warning' : 'bi-star text-muted';
+
+
+                }
+            }
+        }
 
         $("#unlikeBtn").on("click", function(e) {
             e.preventDefault();

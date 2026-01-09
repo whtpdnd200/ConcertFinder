@@ -1,10 +1,12 @@
 package com.concertfinder.concertfinder.comment.DTO;
 
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
-@Getter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 public class CommentModifyDTO {
 
     private String comment;

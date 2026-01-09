@@ -1,6 +1,6 @@
 package com.concertfinder.concertfinder.user.service;
 
-import com.concertfinder.concertfinder.SidoCode.service.SidoCodeService;
+import com.concertfinder.concertfinder.sidoCode.service.SidoCodeService;
 import com.concertfinder.concertfinder.common.SHA256HashingEncoder;
 import com.concertfinder.concertfinder.concert.DTO.ConcertFavoritesListDTO;
 import com.concertfinder.concertfinder.concert.service.ConcertService;

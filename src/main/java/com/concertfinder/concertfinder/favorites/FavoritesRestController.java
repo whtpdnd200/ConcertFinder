@@ -1,8 +1,8 @@
 package com.concertfinder.concertfinder.favorites;
 
 import com.concertfinder.concertfinder.common.DTO.ApiResponseDTO;
-import com.concertfinder.concertfinder.common.service.BasicService;
 import com.concertfinder.concertfinder.favorites.service.FavoritesService;
+import com.concertfinder.concertfinder.ladder.service.ConcertAndFavoritesLadderService;
 import com.concertfinder.concertfinder.user.DTO.LoginUserDTO;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 public class FavoritesRestController {
 
     private final FavoritesService favoritesService;
-    private final BasicService basicService;
+    private final ConcertAndFavoritesLadderService concertAndFavoritesLadderService;
 
 
     @PostMapping("/{concertId}")
@@ -24,7 +24,7 @@ public class FavoritesRestController {
                                                             , HttpSession session) {
 
         LoginUserDTO loginUserDTO = (LoginUserDTO)session.getAttribute("userInfo");
-        basicService.insertFavoritesAndConcert(concertId, loginUserDTO.getId());
+        concertAndFavoritesLadderService.insertFavoritesAndConcert(concertId, loginUserDTO.getId());
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.success("즐겨찾기 등록 성공"));
     }
 

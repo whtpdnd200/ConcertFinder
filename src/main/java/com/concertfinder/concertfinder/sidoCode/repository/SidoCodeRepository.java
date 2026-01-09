@@ -1,6 +1,6 @@
-package com.concertfinder.concertfinder.SidoCode.repository;
+package com.concertfinder.concertfinder.sidoCode.repository;
 
-import com.concertfinder.concertfinder.SidoCode.domain.SidoCode;
+import com.concertfinder.concertfinder.sidoCode.domain.SidoCode;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

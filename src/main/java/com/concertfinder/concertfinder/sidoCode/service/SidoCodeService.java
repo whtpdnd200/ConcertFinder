@@ -1,8 +1,8 @@
-package com.concertfinder.concertfinder.SidoCode.service;
+package com.concertfinder.concertfinder.sidoCode.service;
 
-import com.concertfinder.concertfinder.SidoCode.DTO.SidoDTO;
-import com.concertfinder.concertfinder.SidoCode.domain.SidoCode;
-import com.concertfinder.concertfinder.SidoCode.repository.SidoCodeRepository;
+import com.concertfinder.concertfinder.sidoCode.DTO.SidoDTO;
+import com.concertfinder.concertfinder.sidoCode.domain.SidoCode;
+import com.concertfinder.concertfinder.sidoCode.repository.SidoCodeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

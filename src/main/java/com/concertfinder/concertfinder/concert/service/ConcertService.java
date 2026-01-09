@@ -10,8 +10,8 @@ import com.concertfinder.concertfinder.concert.DTO.infoDTO.ResponsesInfoDTO;
 import com.concertfinder.concertfinder.concert.domain.Concert;
 import com.concertfinder.concertfinder.concert.repository.ConcertRepository;
 import com.concertfinder.concertfinder.configuration.properties.KopisProperties;
-import com.concertfinder.concertfinder.favorites.DTO.FavoritesConcertIdDTO;
 import com.concertfinder.concertfinder.favorites.service.FavoritesService;
+import com.concertfinder.concertfinder.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.PageRequest;
@@ -23,7 +23,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +32,7 @@ public class ConcertService {
     private final KopisProperties kopisProperties;
     private final ConcertRepository concertRepository;
     private final FavoritesService favoritesService;
+    private final ReviewService reviewService;
 
 
     // 즐겨찾기 했는지 안했는지를 판별하는 isFavorites 값 추가 메서드
@@ -125,6 +125,8 @@ public class ConcertService {
                 .block();
 
         String areaId = responsesInfoDTO.getInfoDTO().getAreaCode();
+        responsesInfoDTO.getInfoDTO().setAverageReview(reviewService.getAveragePoint(areaId));
+        responsesInfoDTO.getInfoDTO().setReviewCount(reviewService.getReviewCounts(areaId));
         responsesInfoDTO.getInfoDTO().setFavorites(favoritesService.isFavorites(concertId, userId));
         responsesInfoDTO.getInfoDTO().setAreaInfo(getAreaInfo(areaId).getAreaInfoDTO());
         return responsesInfoDTO;

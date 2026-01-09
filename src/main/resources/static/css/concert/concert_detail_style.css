@@ -397,3 +397,41 @@
     cursor: not-allowed;
 }
 
+/* 별점 컨테이너 */
+.star-rating {
+    display: inline-flex;
+    position: relative;
+    flex-direction: row;
+}
+
+/* 별 조각 하나하나의 레이블 */
+.star-label {
+    width: 17px;      /* 별 반 개의 너비 */
+    height: 44px;     /* 높이 */
+    overflow: hidden; /* 영역 밖 아이콘은 숨김 */
+    cursor: pointer;
+    position: relative;
+}
+
+/* 별 아이콘 기본 설정 (부트스트랩 아이콘 기준) */
+.star-label i {
+    width: 17px;
+    font-size: 34px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    transition: color 0.2s;
+}
+
+/* 홀수 번째(1.0, 2.0...) 조각은 반대로 뒤집기 */
+.star-label:nth-child(odd) i {
+    transform: scaleX(-1);
+
+}
+
+/* 색상 설정 */
+.text-warning { color: #ffc107 !important; } /* 노란색 별 */
+.text-muted { color: #e4e5e9 !important; }  /* 회색 별 */
+
+
+

@@ -1,8 +1,10 @@
 package com.concertfinder.concertfinder.post.DTO;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 public class PostModifyDTO {
