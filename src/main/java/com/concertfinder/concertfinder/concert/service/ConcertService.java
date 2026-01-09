@@ -23,6 +23,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -235,5 +236,27 @@ public class ConcertService {
             concertList.add(concertFavoritesListDTO);
         }
         return concertList;
+    }
+
+    // 콘서트 아이디 리스트 반환
+    public List<Concert> getConcertList() {
+
+        return concertRepository.findAll();
+
+    }
+
+    public void deleteConcert(Concert concert) {
+
+
+
+        if(concert == null) {
+            throw new NoSuchElementException("정보 없음");
+        }
+
+        try {
+            concertRepository.delete(concert);
+        } catch(DataAccessException e) {
+            throw new RuntimeException("서버 에러");
+        }
     }
 }

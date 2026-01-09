@@ -13,6 +13,8 @@ public interface FavoritesRepository extends JpaRepository<Favorites, FavoritesI
 
     public boolean existsByUserIdAndConcertId(long userId, String concertId);
 
+    public boolean existsByConcertId(String concertId);
+
     public Optional<Favorites> findByUserIdAndConcertId(long userId, String concertId);
 
     public List<Favorites> findAllByUserId(long userId);
