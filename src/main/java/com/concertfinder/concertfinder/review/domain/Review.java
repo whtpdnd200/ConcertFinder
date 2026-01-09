@@ -10,7 +10,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -26,7 +26,7 @@ public class Review {
 
     private String areaCode;
 
-    private double point;
+    private Double point;
 
     private String review;
 

@@ -78,5 +78,5 @@ public class InfoDTO {
 
     private int reviewCount;
 
-    private double averageReview;
+    private Double averageReview;
 }

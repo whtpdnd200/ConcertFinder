@@ -125,6 +125,7 @@ public class ConcertService {
                 .block();
 
         String areaId = responsesInfoDTO.getInfoDTO().getAreaCode();
+
         responsesInfoDTO.getInfoDTO().setAverageReview(reviewService.getAveragePoint(areaId));
         responsesInfoDTO.getInfoDTO().setReviewCount(reviewService.getReviewCounts(areaId));
         responsesInfoDTO.getInfoDTO().setFavorites(favoritesService.isFavorites(concertId, userId));
