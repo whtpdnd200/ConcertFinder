@@ -27,6 +27,7 @@ public class BasicService {
         favoritesService.addFavorites(concertId, userId);
     }
 
+    @Transactional
     @Scheduled(cron = "0 0 5 * * *", zone = "Asia/Seoul")
     public void concertDeleteByCron() {
         List<Concert> concerts = concertService.getConcertList();

@@ -396,3 +396,51 @@
     border-color: #222;
     cursor: not-allowed;
 }
+
+
+/* 1. 컨테이너: 자식 요소들이 빈틈없이 붙도록 gap을 0으로 설정 */
+.star-rating {
+    display: inline-flex;
+    position: relative;
+    flex-direction: row;
+    justify-content: center;
+    padding: 5px;
+    gap: 0; /* 별 조각 사이의 미세한 간격 제거 */
+}
+
+/* 2. 별 조각 라벨: 너비를 정확히 아이콘의 절반으로 설정 */
+.star-label {
+    width: 15px;      /* 별 반 개의 너비 */
+    height: 35px;     /* 높이 넉넉히 유지 */
+    overflow: hidden; /* 영역 밖은 절대 안 보이게 */
+    cursor: pointer;
+    position: relative;
+    margin: 0;        /* 브라우저 기본 마진 제거 */
+    padding: 0;
+}
+
+/* 3. 아이콘 설정: 너비를 30px로 고정하는 것이 핵심! */
+.star-label i {
+    font-size: 30px;
+    width: 30px;      /* 👈 아이콘 너비를 30px로 고정 */
+    display: block;   /* 너비 적용을 위해 block 설정 */
+    text-align: center;
+    position: absolute;
+    left: 0;
+    line-height: 35px; /* height와 맞춰서 세로 중앙 정렬 */
+    transition: color 0.2s;
+}
+
+/* 1. 홀수 번째 조각 (0.5, 1.5, 2.5...) -> 별의 왼쪽 반 */
+.star-label:nth-child(odd) i {
+    left: 0; /* 아이콘을 밀지 않고 왼쪽 그대로 보여줌 */
+}
+
+/* 2. 짝수 번째 조각 (1.0, 2.0, 3.0...) -> 별의 오른쪽 반 */
+.star-label:nth-child(even) i {
+    left: -15px; /* 아이콘을 왼쪽으로 15px 밀어서 오른쪽 반만 노출 */
+}
+
+/* 색상 설정 */
+.text-warning { color: #ffc107 !important; }
+.text-muted { color: #e4e5e9 !important; }
