@@ -55,7 +55,7 @@ public class CommentRestController {
 
         commentService.updateComment(commentId, loginUserDTO.getId(), comment);
 
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.success("댓글 수정 성공"));
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.success("댓글 수정 성공"));
     }
 
     // 댓글 삭제 API
@@ -66,6 +66,6 @@ public class CommentRestController {
 
         commentService.deleteComment(commentId, loginUserDTO.getId());
 
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.success("댓글 삭제 성공"));
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.success("댓글 삭제 성공"));
     }
 }

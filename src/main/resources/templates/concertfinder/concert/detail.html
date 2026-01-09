@@ -189,12 +189,8 @@
                                         <div class="star-rating-wrapper">
                                             <div class="star-rating">
                                                 <template x-for="i in [0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0]" :key="i">
-                                                    <label class="star-label" @mouseenter="hoverRating = i" @mouseleave="hoverRating = 0">
-
-                                                        <input type="radio" name="rating" :value="i"
-                                                               x-model="rating" class="d-none">
-
-                                                        <i class="bi" :class="getStarClass(i)"></i>
+                                                    <label class="star-label">
+                                                        <input type="radio" name="rating" :value="i">
                                                     </label>
                                                 </template>
                                             </div>
@@ -364,29 +360,9 @@
                 customOverlay.setMap(null);
             }
 
-            // 리뷰 등록시 별점 선택하는 클릭 이벤트
-            $('.star-rating-input i').on('click', function() {
-                let val = $(this).data('value');
-                $('#ratingValue').val(val);
-                $(this).parent().find('i').removeClass('bi-star-fill').addClass('bi-star');
-                $(this).prevAll().addBack().removeClass('bi-star').addClass('bi-star-fill');
-            });
+
         });
 
-        function ratingComponent() {
-            return {
-                rating: 0,        // 클릭한 확정 점수
-                hoverRating: 0,   // 마우스 올린 임시 점수
-
-                getStarClass(i) {
-                    // 마우스가 올라가 있으면 hoverRating 기준, 아니면 확정된 rating 기준
-                    let current = this.hoverRating || this.rating;
-
-                    // i(해당 조각의 값)가 현재 점수보다 작거나 같으면 꽉 찬 별
-                    return i <= current ? 'bi-star-fill text-warning' : 'bi-star text-muted';
-                }
-            }
-        }
 
 
         $("#unlikeBtn").on("click", function(e) {
