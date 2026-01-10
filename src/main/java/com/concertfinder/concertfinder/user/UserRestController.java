@@ -38,16 +38,16 @@ public class UserRestController {
     }
 
     // 로그인 : 로그인 기능
-    @PostMapping("/login")
-    public ResponseEntity<ApiResponseDTO<Void>> login(@RequestParam String userId
-                                    , @RequestParam String password
-                                    , HttpSession session) {
-
-        LoginUserDTO loginUserDTO = userService.loginUser(userId, password);
-
-        session.setAttribute("userInfo", loginUserDTO);
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.success("로그인 성공"));
-    }
+//    @PostMapping("/login")
+//    public ResponseEntity<ApiResponseDTO<Void>> login(@RequestParam String userId
+//                                    , @RequestParam String password
+//                                    , HttpSession session) {
+//
+//        LoginUserDTO loginUserDTO = userService.loginUser(userId, password);
+//
+//        session.setAttribute("userInfo", loginUserDTO);
+//        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.success("로그인 성공"));
+//    }
 
     // 회원정보 수정 기능
     @PutMapping()

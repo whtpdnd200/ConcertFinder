@@ -154,6 +154,9 @@
 
             let email = frontEmail + '@' + backEmail;
 
+            let token = $("meta[name='_csrf']").attr("content");
+            let header = $("meta[name='_csrf_header']").attr("content");
+
             $.ajax({
                 type : "post"
                 , url : "/user"
@@ -164,6 +167,9 @@
                             , "email" : email
                             , "attentionAreaCode" : attentionAreaCode
                          }
+                , beforeSend: function(xhr) {
+                    xhr.setRequestHeader(header, token);
+                }
                 , success : function(response) {
 
                     location.href = "/user/login";
