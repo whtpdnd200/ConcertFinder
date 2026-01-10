@@ -4,6 +4,7 @@ import com.concertfinder.concertfinder.common.DTO.ApiResponseDTO;
 import com.concertfinder.concertfinder.exception.custom_exception.UnAuthorizedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -54,6 +55,15 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponseDTO<Void>> RuntimeException(RuntimeException e) {
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponseDTO.fail(e.getMessage()));
+    }
+
+    // 유저의 아이디가 조회 되지 않을때
+    // 404로 반환
+    // 스프링 시큐리티 예외
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<ApiResponseDTO<Void>> UsernameNotFoundException(UsernameNotFoundException e) {
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponseDTO.fail(e.getMessage()));
     }
 
     // 데이터가 조회 되지 않을때

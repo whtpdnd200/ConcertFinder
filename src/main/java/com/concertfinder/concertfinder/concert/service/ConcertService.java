@@ -9,7 +9,7 @@ import com.concertfinder.concertfinder.concert.DTO.concertListDTO.ResponsesListD
 import com.concertfinder.concertfinder.concert.DTO.infoDTO.ResponsesInfoDTO;
 import com.concertfinder.concertfinder.concert.domain.Concert;
 import com.concertfinder.concertfinder.concert.repository.ConcertRepository;
-import com.concertfinder.concertfinder.configuration.properties.KopisProperties;
+import com.concertfinder.concertfinder.config.properties.KopisProperties;
 import com.concertfinder.concertfinder.favorites.service.FavoritesService;
 import com.concertfinder.concertfinder.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;

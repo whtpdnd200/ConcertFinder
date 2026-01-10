@@ -15,5 +15,5 @@ public class LoginUserDTO {
     private String email;
     private String attentionAreaCode;
     private String attentionAreaName;
-
+    private String role;
 }

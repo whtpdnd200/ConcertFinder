@@ -23,10 +23,10 @@ public class User {
     private long id;
     private String userId;
     private String password;
-    private String salt;
     private String nickname;
     private String email;
     private String attentionAreaCode;
+    private String role;
 
     @CreationTimestamp
     private LocalDateTime createdAt;

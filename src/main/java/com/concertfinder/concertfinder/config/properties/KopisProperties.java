@@ -1,4 +1,4 @@
-package com.concertfinder.concertfinder.configuration.properties;
+package com.concertfinder.concertfinder.config.properties;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

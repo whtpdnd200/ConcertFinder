@@ -1,4 +1,4 @@
-package com.concertfinder.concertfinder.configuration;
+package com.concertfinder.concertfinder.config;
 
 import com.concertfinder.concertfinder.interceptor.PermissionInterceptor;
 import lombok.RequiredArgsConstructor;

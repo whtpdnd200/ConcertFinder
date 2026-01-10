@@ -1,5 +1,6 @@
 package com.concertfinder.concertfinder.user.service;
 
+import com.concertfinder.concertfinder.config.SecurityConfig;
 import com.concertfinder.concertfinder.sidoCode.service.SidoCodeService;
 import com.concertfinder.concertfinder.common.SHA256HashingEncoder;
 import com.concertfinder.concertfinder.concert.DTO.ConcertFavoritesListDTO;
@@ -11,6 +12,7 @@ import com.concertfinder.concertfinder.user.domain.User;
 import com.concertfinder.concertfinder.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,6 +26,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final SidoCodeService sidoCodeService;
     private final ConcertService concertService;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     // LoginUserDTO에 User 정보 담아주는 함수
     public LoginUserDTO addDTO(Optional<User> oUser) {
@@ -36,6 +39,7 @@ public class UserService {
                 .email(user.getEmail())
                 .attentionAreaCode(user.getAttentionAreaCode())
                 .attentionAreaName(sidoCodeService.getSidoName(user.getAttentionAreaCode()))
+                .role(user.getRole())
                 .build();
 
         return loginUserDTO;
@@ -54,14 +58,13 @@ public class UserService {
             throw new IllegalArgumentException("닉네임은 16글자 이하로 작성해야 합니다!");
         }
 
-        String salt = SHA256HashingEncoder.getSalt();
         User user = User.builder()
                 .userId(joinUserDTO.getUserId())
-                .password(SHA256HashingEncoder.encode(joinUserDTO.getPassword(), salt))
-                .salt(salt)
+                .password(bCryptPasswordEncoder.encode(joinUserDTO.getPassword()))
                 .nickname(joinUserDTO.getNickname())
                 .email(joinUserDTO.getEmail())
                 .attentionAreaCode(joinUserDTO.getAttentionAreaCode())
+                .role("ROLE_USER")
                 .build();
 
         try {
@@ -94,11 +97,11 @@ public class UserService {
 
         Optional<User> optionalUser = userRepository.findByUserId(userId);
 
-        if(optionalUser.isPresent()) {
-            User user = optionalUser.get();
-
-            return user.getSalt();
-        }
+//        if(optionalUser.isPresent()) {
+//            User user = optionalUser.get();
+//
+//            return user.getSalt();
+//        }
 
         return null;
     }
@@ -118,7 +121,7 @@ public class UserService {
         if(optionalUser.isPresent()) {
             User user = optionalUser.get();
             password = user.getPassword();
-            salt = user.getSalt();
+            // salt = user.getSalt();
 
             if(modifyUserDTO.getPassword() != null && !modifyUserDTO.getPassword().equals("")) {
                 salt = SHA256HashingEncoder.getSalt();
@@ -130,7 +133,7 @@ public class UserService {
                     .email(modifyUserDTO.getEmail())
                     .attentionAreaCode(modifyUserDTO.getAttentionAreaCode())
                     .password(password)
-                    .salt(salt)
+                    .role("ROLE_USER")
                     .build();
 
             try {

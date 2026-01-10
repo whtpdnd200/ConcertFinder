@@ -4,6 +4,7 @@ import com.concertfinder.concertfinder.common.DTO.ApiResponseDTO;
 import com.concertfinder.concertfinder.user.DTO.JoinUserDTO;
 import com.concertfinder.concertfinder.user.DTO.LoginUserDTO;
 import com.concertfinder.concertfinder.user.DTO.ModifyUserDTO;
+import com.concertfinder.concertfinder.user.service.PrincipalDetailsService;
 import com.concertfinder.concertfinder.user.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
