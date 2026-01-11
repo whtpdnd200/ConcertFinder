@@ -16,6 +16,7 @@ import java.util.Optional;
 public class PrincipalDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
+    private final UserService userService;
 
     @Override
     public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
@@ -27,6 +28,6 @@ public class PrincipalDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("아이디가 존재하지 않습니다!");
         }
 
-        return new PrincipalDetails(optionalUser.get());
+        return new PrincipalDetails(userService.addDTO(optionalUser), optionalUser.get().getPassword());
     }
 }

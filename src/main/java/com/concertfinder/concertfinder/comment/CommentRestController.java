@@ -5,14 +5,14 @@ import com.concertfinder.concertfinder.comment.DTO.CommentModifyDTO;
 import com.concertfinder.concertfinder.comment.service.CommentService;
 import com.concertfinder.concertfinder.common.DTO.ApiResponseDTO;
 import com.concertfinder.concertfinder.user.DTO.LoginUserDTO;
-import jakarta.servlet.http.HttpSession;
+import com.concertfinder.concertfinder.user.DTO.PrincipalDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpServerErrorException;
 
 @RestController
 @RequestMapping("/comment")
@@ -25,9 +25,9 @@ public class CommentRestController {
     @PostMapping("/{postId}")
     public ResponseEntity<ApiResponseDTO<Void>> createComment(@PathVariable long postId
                                              , @RequestParam String comment
-                                             , HttpSession session) {
+                                             , @AuthenticationPrincipal PrincipalDetails principal) {
 
-        LoginUserDTO loginUserDTO = (LoginUserDTO)session.getAttribute("userInfo");
+        LoginUserDTO loginUserDTO = principal.getLoginUserDTO();
 
         commentService.insertComment(postId, comment, loginUserDTO.getId());
 
@@ -49,9 +49,9 @@ public class CommentRestController {
     @PutMapping("/{commentId}")
     public ResponseEntity<ApiResponseDTO<Void>> modifyComment(@PathVariable long commentId
                                                               , @RequestBody CommentModifyDTO comment
-                                                              , HttpSession session) {
+                                                              , @AuthenticationPrincipal PrincipalDetails principal) {
 
-        LoginUserDTO loginUserDTO = (LoginUserDTO)session.getAttribute("userInfo");
+        LoginUserDTO loginUserDTO = principal.getLoginUserDTO();
 
         commentService.updateComment(commentId, loginUserDTO.getId(), comment);
 
@@ -61,8 +61,8 @@ public class CommentRestController {
     // 댓글 삭제 API
     @DeleteMapping("/{commentId}")
     public ResponseEntity<ApiResponseDTO<Void>> removeComment(@PathVariable long commentId
-                                                             , HttpSession session) {
-        LoginUserDTO loginUserDTO = (LoginUserDTO)session.getAttribute("userInfo");
+                                                             , @AuthenticationPrincipal PrincipalDetails principal) {
+        LoginUserDTO loginUserDTO = principal.getLoginUserDTO();
 
         commentService.deleteComment(commentId, loginUserDTO.getId());
 

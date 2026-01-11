@@ -1,6 +1,5 @@
 package com.concertfinder.concertfinder.user.DTO;
 
-import com.concertfinder.concertfinder.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -12,25 +11,31 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PrincipalDetails implements UserDetails {
 
-    private final User user;
+    private final LoginUserDTO loginUserDTO;
+    private final String password;
 
     // 유저의 권한 정보를 담는 리스트를 리턴
     @Override
     public Collection <? extends GrantedAuthority> getAuthorities() {
 
-        return List.of(new SimpleGrantedAuthority(user.getRole()));
+        return List.of(new SimpleGrantedAuthority(loginUserDTO.getRole()));
+    }
+
+    public LoginUserDTO getLoginUserDTO() {
+
+        return this.loginUserDTO;
     }
 
     @Override
     public String getPassword() {
 
-        return user.getPassword();
+        return this.password;
     }
 
     @Override
     public String getUsername() {
 
-        return user.getUserId();
+        return loginUserDTO.getUserId();
     }
 
     // 계정이 만료 되었는지 확인하는 메서드

@@ -37,7 +37,7 @@
                 <div class="container">
                     <h2 class="preference-title">
                         <div th:if="${areaCode == '' || areaCode == null}" >
-                            <i class="fas fa-map-marker-alt"></i> 선호 지역 <span th:text="${session.userInfo.getAttentionAreaName()}" class="highlight-area">서울</span>의 콘서트 목록
+                            <i class="fas fa-map-marker-alt"></i> 선호 지역 <span th:text="${#authentication.principal.loginUserDTO.attentionAreaName}" class="highlight-area">서울</span>의 콘서트 목록
                         </div>
                         <div th:if="${areaCode != '' && areaCode != null}">
                             <i class="fas fa-map-marker-alt"></i> 검색 지역 <span th:text="${areaName}" class="highlight-area">서울</span>의 콘서트 목록
@@ -79,7 +79,7 @@
                 <div class="empty-icon">
                     <i class="fas fa-calendar-times"></i> </div>
                 <h3 th:if="${areaCode == '' || areaCode == null}" class="empty-message">
-                    현재 <span class="target-area" th:text="${session.userInfo.getAttentionAreaName()}">서울</span> 지역에 등록된 공연이 없습니다.
+                    현재 <span class="target-area" th:text="${#authentication.principal.loginUserDTO.attentionAreaName}">서울</span> 지역에 등록된 공연이 없습니다.
                 </h3>
                 <h3 th:if="${areaCode != '' && areaCode != null}" class="empty-message">
                     현재 <span class="target-area" th:text="${areaName}">서울</span> 지역에 등록된 공연이 없습니다.
@@ -105,6 +105,10 @@
     </section>
     <script layout:fragment="script">
 
+        var token = $("meta[name='_csrf']").attr("content");
+
+        var header = $("meta[name='_csrf_header']").attr("content");
+
         window.onload = function() {
 
             $(".concertUnFavorites").on("click", function(e) {
@@ -115,6 +119,9 @@
                 $.ajax({
                     type: "delete"
                     , url: "/favorites/" + concertId
+                    , beforeSend: function(xhr) {
+                        xhr.setRequestHeader(header, token);
+                    }
                     , success: function() {
                         location.reload();
                     }
@@ -132,7 +139,10 @@
                 $.ajax({
                     type: "post"
                     , url: "/favorites/" + concertId
-                    ,success: function(response) {
+                    , beforeSend: function(xhr) {
+                        xhr.setRequestHeader(header, token);
+                    }
+                    , success: function() {
 
                         location.reload();
                     }

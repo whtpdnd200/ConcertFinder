@@ -388,7 +388,14 @@
 
     <script layout:fragment="script">
 
+        var token = $("meta[name='_csrf']").attr("content");
+
+        var header = $("meta[name='_csrf_header']").attr("content");
+
         $(document).ready(function() {
+
+
+
             var latitude = $("#map").data("la");
 
             var longitude = $("#map").data("lo");
@@ -471,6 +478,9 @@
                 type: "post"
                 , url: "/review/" + areaCode
                 , data: {"review" : review, "point" : reviewPoint}
+                , beforeSend: function(xhr) {
+                    xhr.setRequestHeader(header, token);
+                }
                 , success: function() {
                     location.reload();
                 }
@@ -487,6 +497,9 @@
             $.ajax({
                 type: "delete"
                 , url: "/review/" + reviewId
+                , beforeSend: function(xhr) {
+                    xhr.setRequestHeader(header, token);
+                }
                 , success: function() {
                     location.reload();
                 }
@@ -516,6 +529,9 @@
                 type: "put"
                 , url: "/review/" + reviewId
                 , contentType: 'application/json'
+                , beforeSend: function(xhr) {
+                    xhr.setRequestHeader(header, token);
+                }
                 , data: JSON.stringify(data)
                 , success: function() {
                     location.reload();
@@ -547,6 +563,9 @@
             $.ajax({
                 type: "delete"
                 , url: "/favorites/" + concertId
+                , beforeSend: function(xhr) {
+                    xhr.setRequestHeader(header, token);
+                }
                 , success: function() {
                     location.reload();
                 }
@@ -564,7 +583,10 @@
             $.ajax({
                 type: "post"
                 , url: "/favorites/" + concertId
-                ,success: function(response) {
+                , beforeSend: function(xhr) {
+                    xhr.setRequestHeader(header, token);
+                }
+                ,success: function() {
 
                     location.reload();
                 }

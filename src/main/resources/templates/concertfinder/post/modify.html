@@ -65,6 +65,10 @@
 
         var postUserId = $("#idStorageTag").data("post-user-id");
 
+        var token = $("meta[name='_csrf']").attr("content");
+
+        var header = $("meta[name='_csrf_header']").attr("content");
+
         if(userId != postUserId) {
             alert("비정상적인 접근 입니다!");
             location.href = "/concert/list";
@@ -111,6 +115,9 @@
                 type : "put"
                 , url: "/post/" + postId
                 , contentType : "application/json"
+                , beforeSend: function(xhr) {
+                    xhr.setRequestHeader(header, token);
+                }
                 , data : JSON.stringify(data)
                 , success : function(response) {
 

@@ -2,9 +2,11 @@ package com.concertfinder.concertfinder.user;
 
 import com.concertfinder.concertfinder.sidoCode.service.SidoCodeService;
 import com.concertfinder.concertfinder.user.DTO.LoginUserDTO;
+import com.concertfinder.concertfinder.user.DTO.PrincipalDetails;
 import com.concertfinder.concertfinder.user.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,9 +38,9 @@ public class UserController {
     // 마이 페이지
     @GetMapping("/mypage")
     public String myPage(Model model
-                        , HttpSession session) {
+                        , @AuthenticationPrincipal PrincipalDetails principal) {
 
-        LoginUserDTO loginUserDTO = (LoginUserDTO)session.getAttribute("userInfo");
+        LoginUserDTO loginUserDTO = principal.getLoginUserDTO();
 
         model.addAttribute("concertList", userService.getConcertListTop3(loginUserDTO.getId()));
         return "concertfinder/user/mypage";
@@ -46,8 +48,8 @@ public class UserController {
 
     // 로그아웃 기능
     @GetMapping("/logout")
-    public String logout(HttpSession session) {
-        session.invalidate();
+    public String logout() {
+        // session.invalidate();
 
         return "redirect:/user/login";
     }

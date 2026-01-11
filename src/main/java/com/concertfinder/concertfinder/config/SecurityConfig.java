@@ -3,6 +3,8 @@ package com.concertfinder.concertfinder.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -35,6 +37,11 @@ public class SecurityConfig {
                             response.getWriter().write("{\"message\":\"아이디 또는 비밀번호가 틀렸습니다.\"}");
                         })
                         .permitAll())
+                // 로그아웃 설정
+                .logout(logout -> logout
+                        .logoutUrl("/user/logout")
+                        .logoutSuccessUrl("/user/login")
+                        .permitAll())
                 // url 요청 권한 설정
                 .authorizeHttpRequests(request ->
                 request.anyRequest().permitAll());
@@ -46,4 +53,5 @@ public class SecurityConfig {
 
         return new BCryptPasswordEncoder();
     }
+
 }

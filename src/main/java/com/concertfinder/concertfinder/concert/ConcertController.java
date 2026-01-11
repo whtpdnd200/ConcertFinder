@@ -3,8 +3,10 @@ package com.concertfinder.concertfinder.concert;
 import com.concertfinder.concertfinder.sidoCode.service.SidoCodeService;
 import com.concertfinder.concertfinder.concert.service.ConcertService;
 import com.concertfinder.concertfinder.user.DTO.LoginUserDTO;
+import com.concertfinder.concertfinder.user.DTO.PrincipalDetails;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,11 +26,12 @@ public class ConcertController {
     @GetMapping("/list")
     public String list(Model model
                        , Integer page
-                       , HttpSession session
+                       , @AuthenticationPrincipal PrincipalDetails principal
                        , @RequestParam(required = false) String keyword
                        , @RequestParam(name = "code", required = false) String areaCode) {
 
-        LoginUserDTO loginUserDTO = (LoginUserDTO)session.getAttribute("userInfo");
+        LoginUserDTO loginUserDTO = principal.getLoginUserDTO();
+
         model.addAttribute("sidoList", sidoCodeService.getAllCode());
         model.addAttribute("concertList", concertService.getList(loginUserDTO.getAttentionAreaCode()
                                                                                     , page
@@ -44,12 +47,11 @@ public class ConcertController {
     // 콘서트 상세 페이지
     @GetMapping("/{id}")
     public String detail(@PathVariable String id
-                         , HttpSession session
+                         , @AuthenticationPrincipal PrincipalDetails principal
                          , Model model) {
-        LoginUserDTO loginUserDTO = (LoginUserDTO)session.getAttribute("userInfo");
+        LoginUserDTO loginUserDTO = principal.getLoginUserDTO();
+
         model.addAttribute("concertInfo", concertService.getConcertInfo(id, loginUserDTO.getId()).getInfoDTO());
         return "concertfinder/concert/detail";
     }
-
-
 }
