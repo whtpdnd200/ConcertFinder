@@ -67,7 +67,7 @@ public class UserRestController {
         // 스프링 시큐리티에 넣을 객체 새로 생성
         PrincipalDetails updatedPrincipal = new PrincipalDetails(updatedDTO, null);
 
-        // 인증 정보 객체 생성??
+        // 유저 객체와 인증 정보 저장 할 객체 생성
         Authentication authentication = new UsernamePasswordAuthenticationToken(
                 updatedPrincipal
                 , null

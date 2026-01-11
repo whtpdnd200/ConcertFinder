@@ -270,7 +270,7 @@
         $("#commentSubmitBtn").on("click", function(e) {
             e.preventDefault();
 
-            let postId = $("#deleteModalBtn").data("post-id");
+            let postId = $("#postIdTag").data("id");
             let comment = $("#commentInput").val();
 
             if(comment == '') {

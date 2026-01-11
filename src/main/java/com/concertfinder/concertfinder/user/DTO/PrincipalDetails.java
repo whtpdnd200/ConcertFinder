@@ -1,5 +1,6 @@
 package com.concertfinder.concertfinder.user.DTO;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -9,6 +10,7 @@ import java.util.Collection;
 import java.util.List;
 
 @RequiredArgsConstructor
+@Getter
 public class PrincipalDetails implements UserDetails {
 
     private final LoginUserDTO loginUserDTO;
@@ -21,10 +23,6 @@ public class PrincipalDetails implements UserDetails {
         return List.of(new SimpleGrantedAuthority(loginUserDTO.getRole()));
     }
 
-    public LoginUserDTO getLoginUserDTO() {
-
-        return this.loginUserDTO;
-    }
 
     @Override
     public String getPassword() {
