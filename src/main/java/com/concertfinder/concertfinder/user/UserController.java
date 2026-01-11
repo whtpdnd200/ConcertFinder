@@ -47,12 +47,12 @@ public class UserController {
     }
 
     // 로그아웃 기능
-    @GetMapping("/logout")
-    public String logout() {
-        // session.invalidate();
-
-        return "redirect:/user/login";
-    }
+//    @GetMapping("/logout")
+//    public String logout() {
+//        // session.invalidate();
+//
+//        return "redirect:/user/login";
+//    }
 
     // 회원정보 수정 페이지
     @GetMapping("/modify")
