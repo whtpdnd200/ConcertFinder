@@ -1,8 +1,6 @@
 package com.concertfinder.concertfinder.user.service;
 
-import com.concertfinder.concertfinder.config.SecurityConfig;
 import com.concertfinder.concertfinder.sidoCode.service.SidoCodeService;
-import com.concertfinder.concertfinder.common.SHA256HashingEncoder;
 import com.concertfinder.concertfinder.concert.DTO.ConcertFavoritesListDTO;
 import com.concertfinder.concertfinder.concert.service.ConcertService;
 import com.concertfinder.concertfinder.user.DTO.JoinUserDTO;
@@ -75,27 +73,27 @@ public class UserService {
     }
 
     // 로그인 : 로그인 시도 유저 정보 조회 메서드
-    public LoginUserDTO loginUser(String userId, String password) {
-
-        String salt = getSalt(userId);
-
-        if(salt == null) {
-            throw new NoSuchElementException("일치하는 아이디가 존재하지 않습니다!");
-        }
-
-        Optional<User> optionalUser = userRepository.findByUserIdAndPassword(userId, SHA256HashingEncoder.encode(password, salt));
-        if(!optionalUser.isPresent()) {
-
-            throw new NoSuchElementException("비밀번호가 일치하지 않습니다!");
-        }
-
-        return addDTO(optionalUser);
-    }
+//    public LoginUserDTO loginUser(String userId, String password) {
+//
+//        String salt = getSalt(userId);
+//
+//        if(salt == null) {
+//            throw new NoSuchElementException("일치하는 아이디가 존재하지 않습니다!");
+//        }
+//
+//        Optional<User> optionalUser = userRepository.findByUserIdAndPassword(userId, SHA256HashingEncoder.encode(password, salt));
+//        if(!optionalUser.isPresent()) {
+//
+//            throw new NoSuchElementException("비밀번호가 일치하지 않습니다!");
+//        }
+//
+//        return addDTO(optionalUser);
+//    }
 
     // 로그인 : id를 통해 salt를 얻어오는 메서드
     public String getSalt(String userId) {
 
-        Optional<User> optionalUser = userRepository.findByUserId(userId);
+        // Optional<User> optionalUser = userRepository.findByUserId(userId);
 
 //        if(optionalUser.isPresent()) {
 //            User user = optionalUser.get();
@@ -116,7 +114,7 @@ public class UserService {
         Optional<User> optionalUser = userRepository.findById(id);
 
         String password = null;
-        String salt = null;
+
 
         if(optionalUser.isPresent()) {
             User user = optionalUser.get();
@@ -124,8 +122,8 @@ public class UserService {
             // salt = user.getSalt();
 
             if(modifyUserDTO.getPassword() != null && !modifyUserDTO.getPassword().equals("")) {
-                salt = SHA256HashingEncoder.getSalt();
-                password = SHA256HashingEncoder.encode(modifyUserDTO.getPassword(), salt);
+
+                password = bCryptPasswordEncoder.encode(modifyUserDTO.getPassword());
 
             }
             user = user.toBuilder()

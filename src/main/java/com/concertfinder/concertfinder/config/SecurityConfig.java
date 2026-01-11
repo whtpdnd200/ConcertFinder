@@ -26,11 +26,13 @@ public class SecurityConfig {
                         .usernameParameter("userId") // 유저가 입력한 아이디의 파라미터 이름
                         .passwordParameter("password") // 유저가 입력한 비밀번호의 파라미터 이름
                         // .defaultSuccessUrl("/concert/list") // 로그인 성공시 리다이렉트 시킬 주소
+                        // ajax success 처럼 로그인 성공시 실행 할 내용
                         .successHandler((request, response, authentication) -> {
-                            response.setStatus(HttpStatus.OK.value());
-                            response.setContentType("application/json;charset=UTF-8");
-                            response.getWriter().write("{\"message\":\"로그인 성공\"}");
+                            response.setStatus(HttpStatus.OK.value()); // http 상태코드 200 설정
+                            response.setContentType("application/json;charset=UTF-8"); // 응답 타입 JSON, 인코딩 utf8
+                            response.getWriter().write("{\"message\":\"로그인 성공\"}"); // 보낼 메세지
                         })
+                        // ajax error 처럼 로그인 실패시 실행 할 내용
                         .failureHandler((request, response, exception) -> {
                             response.setStatus(HttpStatus.UNAUTHORIZED.value());
                             response.setContentType("application/json;charset=UTF-8");
