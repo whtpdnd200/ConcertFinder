@@ -3,10 +3,11 @@ package com.concertfinder.concertfinder.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -20,9 +21,15 @@ public class SecurityConfig {
 
 
         security
+                // url 요청 권한 설정
+                .authorizeHttpRequests(request ->
+                        request.requestMatchers("/css/**", "/js/**", "/favicon.ico").permitAll()
+                                .requestMatchers("/user/login", "/user/join", "/user/id-check").permitAll()
+                                .requestMatchers("/user/**", "/concert/**", "/post/**", "/review/**", "/comment/**", "/favorites/**").hasRole("USER")
+                                .anyRequest().authenticated())
                 .formLogin(login -> login // 로그인 관련 설정
                         .loginPage("/user/login") // 유저컨트롤러와 연결되는 html 매핑주소
-                        .loginProcessingUrl("/user/login") // 컨트롤러의 요청을 처리 할 restController 주소
+                        .loginProcessingUrl("/user/login") // 스프링 시큐리티로 매핑 할 주소
                         .usernameParameter("userId") // 유저가 입력한 아이디의 파라미터 이름
                         .passwordParameter("password") // 유저가 입력한 비밀번호의 파라미터 이름
                         // .defaultSuccessUrl("/concert/list") // 로그인 성공시 리다이렉트 시킬 주소
@@ -36,17 +43,26 @@ public class SecurityConfig {
                         .failureHandler((request, response, exception) -> {
                             response.setStatus(HttpStatus.UNAUTHORIZED.value());
                             response.setContentType("application/json;charset=UTF-8");
-                            response.getWriter().write("{\"message\":\"아이디 또는 비밀번호가 틀렸습니다.\"}");
+                            String errorMessage = "로그인에 실패했습니다.";
+
+                            // 💡 예외 종류에 따른 메시지 설정
+                            if (exception instanceof InternalAuthenticationServiceException) {
+
+                                errorMessage = "존재하지 않는 아이디입니다.";
+                            } else if (exception instanceof BadCredentialsException) {
+                                // 비밀번호가 틀렸을 때
+                                errorMessage = "비밀번호가 일치하지 않습니다.";
+                            } else if (exception instanceof UsernameNotFoundException) {
+                                errorMessage = "계정을 찾을 수 없습니다.";
+                            }
+                            response.getWriter().write("{\"message\":\"" + errorMessage + "\"}");
                         })
                         .permitAll())
                 // 로그아웃 설정
                 .logout(logout -> logout
-                        .logoutUrl("/user/logout")
+                        .logoutUrl("/user/logout") // 스프링 시큐리티로 매핑 될 주소
                         .logoutSuccessUrl("/user/login")
-                        .permitAll())
-                // url 요청 권한 설정
-                .authorizeHttpRequests(request ->
-                request.anyRequest().permitAll());
+                        .permitAll());
         return security.build();
     }
 

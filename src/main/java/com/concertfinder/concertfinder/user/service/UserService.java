@@ -1,5 +1,6 @@
 package com.concertfinder.concertfinder.user.service;
 
+import com.concertfinder.concertfinder.exception.custom_exception.DuplicateException;
 import com.concertfinder.concertfinder.sidoCode.service.SidoCodeService;
 import com.concertfinder.concertfinder.concert.DTO.ConcertFavoritesListDTO;
 import com.concertfinder.concertfinder.concert.service.ConcertService;
@@ -46,7 +47,11 @@ public class UserService {
     // 회원가입 : 아이디 중복검사 메서드
     public boolean isDuplicate(String userId) {
 
-        return userRepository.existsByUserId(userId);
+        boolean isDuplicate = userRepository.existsByUserId(userId);
+        if(isDuplicate) {
+            throw new DuplicateException("중복된 아이디 입니다");
+        }
+        return isDuplicate;
     }
 
     // 회원가입 : 유저 정보 DB 저장 메서드

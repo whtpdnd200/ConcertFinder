@@ -32,6 +32,8 @@ function reviewData() {
         concertId: $("#reviewSubmitBtn").data("area-code"),
 
         loadReviews(page = 0) {
+            let token = $("meta[name='_csrf']").attr("content");
+            let header = $("meta[name='_csrf_header']").attr("content");
             let size = 5;
             fetch('/review/' + this.concertId + '?page=' + page + '&size=' + size + '&orderType=' + this.orderType)
                 .then(res => {

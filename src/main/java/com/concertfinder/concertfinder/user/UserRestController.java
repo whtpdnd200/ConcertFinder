@@ -27,9 +27,10 @@ public class UserRestController {
     @GetMapping("/id-check")
     public ResponseEntity<ApiResponseDTO<Boolean>> isDuplicate(@RequestParam String userId) {
 
+        boolean isDuplicate = userService.isDuplicate(userId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponseDTO
-                        .isDuplicate("", userService.isDuplicate(userId)));
+                        .isDuplicate("", isDuplicate));
     }
 
     // 회원가입 : 회원가입 기능

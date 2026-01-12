@@ -15,11 +15,17 @@ function postData() {
         pageRange: [], // 페이지 블럭이 들어갈 리스트
         // 파라미터에 default값 명시해서 첫 페이지에서도 잘 동작 하도록 설정
         loadPosts(page = 0, category = this.currentCategory) {
+            let token = $("meta[name='_csrf']").attr("content");
+            let header = $("meta[name='_csrf_header']").attr("content");
+
             this.currentCategory = category; // 파라미터로 들어온 카테고리 값으로 선택된 카테고리 값 변경
             let size = 5; // 한 페이지당 보여줄 게시글의 갯수
             let concertId = $("#idStorageTag").data("concert-id"); // 해당 하는 콘서트 페이지에서 작성된 게시글만 보여주기 위해 콘서트 id값 저장
             // 자바스크립트의 fetch 메서드를 사용해 비동기 통신으로 API 데이터 가져옴
-            fetch('/post/' + concertId + '/list?page=' + page + '&size=' + size + '&category=' + category)
+            fetch('/post/' + concertId + '/list?page=' + page + '&size=' + size + '&category=' + category, {
+                [header]: token,
+                "Content-Type": "application/json"
+            })
                 .then(res => {
                     if(!res.ok) {
                         return res.json().then(err => {

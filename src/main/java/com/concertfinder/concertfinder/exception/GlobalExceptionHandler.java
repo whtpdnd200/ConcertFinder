@@ -1,6 +1,7 @@
 package com.concertfinder.concertfinder.exception;
 
 import com.concertfinder.concertfinder.common.DTO.ApiResponseDTO;
+import com.concertfinder.concertfinder.exception.custom_exception.DuplicateException;
 import com.concertfinder.concertfinder.exception.custom_exception.UnAuthorizedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,6 +48,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponseDTO<Void>> IllegalStateException(IllegalStateException e) {
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponseDTO.fail(e.getMessage()));
+    }
+
+    // 아이디 중복검사시 중복된 아이디 일때
+    // 409
+    @ExceptionHandler(DuplicateException.class)
+    public ResponseEntity<ApiResponseDTO<Void>> DuplicateException(DuplicateException e) {
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiResponseDTO.fail(e.getMessage()));
     }
 
     // 서버 내부 에러
