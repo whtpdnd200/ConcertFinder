@@ -19,5 +19,7 @@ public class AccompanyInfoDTO {
 
     private String place;
 
+    private boolean isFull;
+
     private int currentCount;
 }

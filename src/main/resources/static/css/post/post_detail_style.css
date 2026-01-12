@@ -188,3 +188,32 @@
     background-color: #fff1f1;
     border-radius: 4px;
 }
+
+.accompany-section .card {
+    border-radius: 12px;
+}
+
+/* 정보 요약 박스 스타일 */
+.accompany-section .bg-white.border {
+    border: 1px dashed #ced4da !important;
+}
+
+.accompany-section .badge {
+    font-size: 0.85rem;
+}
+
+.accompany-section .form-control {
+    border: none;
+    border-bottom: 2px solid #eee;
+    border-radius: 0;
+}
+
+.accompany-section .form-control:focus {
+    background-color: #fff !important;
+    border-bottom-color: #0d6efd;
+    box-shadow: none;
+}
+
+.accompany-section .btn-primary {
+    transition: all 0.3s;
+}

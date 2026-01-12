@@ -23,7 +23,7 @@ public class AccompanyService {
     private final AccompanyCountService accompanyCountService;
 
     @Transactional
-    public void insertAccompany(AccompanyAddDTO accompanyAddDTO) {
+    public long insertAccompany(AccompanyAddDTO accompanyAddDTO) {
 
         if(accompanyAddDTO.getHeadCount() <= 1) {
             throw new IllegalArgumentException("동행 인원은 최소 2명부터 가능 합니다!");
@@ -49,9 +49,7 @@ public class AccompanyService {
                 .build();
 
         try {
-            Accompany accompanyEntity = accompanyRepository.save(accompany);
-
-            accompanyCountService.insertAccompanyCount(accompanyEntity.getId(), accompanyEntity.getUserId());
+            return accompanyRepository.save(accompany).getId();
 
         } catch(DataAccessException e) {
 
@@ -80,6 +78,7 @@ public class AccompanyService {
                 .currentCount(accompanyCountService.getAccompanyCount(accompany.getId()))
                 .headCount(accompany.getHeadCount())
                 .place(accompany.getPlace())
+                .isFull(accompany.isFull())
                 .sDateTime(accompany.getSDateTime())
                 .build();
 
@@ -100,10 +99,16 @@ public class AccompanyService {
 
         try {
             accompanyRepository.delete(accompany);
-            accompanyCountService.deleteAllAccompanyCount(accompanyId);
+
         } catch(DataAccessException e) {
 
             throw new RuntimeException("서버 에러로 인해 동행 정보를 삭제 하지 못했습니다 잠시 후 다시 시도 해주세요!");
         }
+    }
+
+    public boolean isFull(Accompany accompany) {
+
+
+        return accompany.getHeadCount() == accompanyCountService.getAccompanyCount(accompany.getId());
     }
 }

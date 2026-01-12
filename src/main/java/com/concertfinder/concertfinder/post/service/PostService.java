@@ -6,6 +6,7 @@ import com.concertfinder.concertfinder.accompany.service.AccompanyService;
 import com.concertfinder.concertfinder.comment.service.CommentService;
 import com.concertfinder.concertfinder.exception.GlobalExceptionHandler;
 import com.concertfinder.concertfinder.exception.custom_exception.UnAuthorizedException;
+import com.concertfinder.concertfinder.ladder.service.AccompanyAndAccompanyCountLadderService;
 import com.concertfinder.concertfinder.post.DTO.PostDetailDTO;
 import com.concertfinder.concertfinder.post.DTO.PostListDTO;
 import com.concertfinder.concertfinder.post.DTO.PostModifyDTO;
@@ -38,7 +39,7 @@ public class PostService {
 
     private final CommentService commentService;
 
-    private final AccompanyService accompanyService;
+    private final AccompanyAndAccompanyCountLadderService accompanyAndAccompanyCountLadderService;
 
     // 게시글 DTO에 담기
     @Transactional
@@ -47,7 +48,7 @@ public class PostService {
         AccompanyInfoDTO accompanyInfoDTO = null;
 
         if(post.getCategory().equals('R')) {
-            accompanyInfoDTO = accompanyService.getAccompanyInfo(post.getId());
+            accompanyInfoDTO = accompanyAndAccompanyCountLadderService.getAccompanyInfo(post.getId());
         }
 
         PostDetailDTO postDetailDTO = PostDetailDTO.builder()
@@ -94,7 +95,7 @@ public class PostService {
                         .sDateTime(postWriteDTO.getSDateTime())
                         .build();
 
-                accompanyService.insertAccompany(accompanyAddDTO);
+                accompanyAndAccompanyCountLadderService.insertAccompanyAndAccompanyCount(accompanyAddDTO);
             }
         } catch(DataAccessException e) {
             throw new RuntimeException("서버 에러로 인해 게시글 작성이 실패 하였습니다 잠시 후 다시 시도해주세요!");
@@ -157,7 +158,7 @@ public class PostService {
             try {
                 postRepository.delete(post);
                 if(post.getCategory().equals('R')) {
-                    accompanyService.deleteAccompany(accompanyService.getAccompanyId(postId));
+                    accompanyAndAccompanyCountLadderService.deleteAccompanyAndAccompanyCount(post.getId());
                 }
             } catch(DataAccessException e) {
                 throw new RuntimeException("서버 에러로 인해 게시글 삭제가 실패 하였습니다 잠시 후 다시 시도해주세요!");
