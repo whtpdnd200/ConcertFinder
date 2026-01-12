@@ -2,6 +2,7 @@ package com.concertfinder.concertfinder.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
@@ -21,16 +22,16 @@ public class SecurityConfig {
         security
                 // url 요청 권한 설정
                 .authorizeHttpRequests(request ->
-                        request.requestMatchers("/css/**", "/js/**", "/favicon.ico").permitAll()
-                                .requestMatchers("/user/login", "/user/join", "/user/id-check").permitAll()
-                                .requestMatchers("/user/**", "/concert/**", "/post/**", "/review/**", "/comment/**", "/favorites/**").hasRole("USER")
-                                .anyRequest().authenticated())
+                        request.requestMatchers("/css/**", "/js/**", "/favicon.ico").permitAll() // 기본 css js도 권한에 상관 없이 실행 되게
+                                .requestMatchers(HttpMethod.POST, "/user").permitAll() // 회원가입 API 메서드는 누구나 실행 되게
+                                .requestMatchers("/user/login", "/user/join", "/user/id-check").permitAll() // 로그인 없이 이동 가능한 페이지 및 API
+                                .anyRequest().authenticated()) // 그외의 모든 기능은 로그인 해야 이용 가능
                 .formLogin(login -> login // 로그인 관련 설정
                         .loginPage("/user/login") // 유저컨트롤러와 연결되는 html 매핑주소
                         .loginProcessingUrl("/user/login") // 스프링 시큐리티로 매핑 할 주소
                         .usernameParameter("userId") // 유저가 입력한 아이디의 파라미터 이름
                         .passwordParameter("password") // 유저가 입력한 비밀번호의 파라미터 이름
-                        // .defaultSuccessUrl("/concert/list") // 로그인 성공시 리다이렉트 시킬 주소
+                        .defaultSuccessUrl("/concert/list") // 로그인 성공시 리다이렉트 시킬 주소
                         // ajax success 처럼 로그인 성공시 실행 할 내용
                         .successHandler((request, response, authentication) -> {
                             response.setStatus(HttpStatus.OK.value()); // http 상태코드 200 설정

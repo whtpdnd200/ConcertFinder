@@ -6,6 +6,7 @@ import com.concertfinder.concertfinder.user.DTO.PrincipalDetails;
 import com.concertfinder.concertfinder.user.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,16 +23,25 @@ public class UserController {
 
     // 회원가입 페이지
     @GetMapping("/join")
-    public String join(Model model) {
+    public String join(Authentication authentication
+            , Model model) {
 
+        // 유저 인증 정보 객체가 있고 인증된 유저라면 페이지 강제 이동
+        if(authentication != null && authentication.isAuthenticated()) {
+            return "redirect:/concert/list";
+        }
         model.addAttribute("sidoList", sidoCodeService.getAllCode());
         return "concertfinder/user/join";
     }
 
     // 로그인 페이지
     @GetMapping("/login")
-    public String login() {
+    public String login(Authentication authentication) {
 
+        // 유저 인증 정보 객체가 있고 인증된 유저라면 페이지 강제 이동
+        if(authentication != null && authentication.isAuthenticated()) {
+            return "redirect:/concert/list";
+        }
         return "concertfinder/user/login";
     }
 
