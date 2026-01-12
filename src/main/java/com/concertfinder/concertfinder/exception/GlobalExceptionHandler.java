@@ -6,8 +6,10 @@ import com.concertfinder.concertfinder.exception.custom_exception.UnAuthorizedEx
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
 import java.util.NoSuchElementException;
 
@@ -32,6 +34,20 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponseDTO<Void>> IllegalArgumentException(IllegalArgumentException e) {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponseDTO.fail(e.getMessage()));
+    }
+
+    @ExceptionHandler(HandlerMethodValidationException.class)
+    public ResponseEntity<ApiResponseDTO<Void>> HandlerMethodValidationException(HandlerMethodValidationException e) {
+
+        String massage = e.getValueResults().get(0).getResolvableErrors().get(0).getDefaultMessage();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponseDTO.fail(massage));
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiResponseDTO<Void>> MethodArgumentNotValidException(MethodArgumentNotValidException e) {
+
+        String massage = e.getBindingResult().getFieldErrors().get(0).getDefaultMessage();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponseDTO.fail(massage));
     }
 
     // 다른 사람의 글 댓글을 수정 삭제 하려 할 때

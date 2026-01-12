@@ -10,6 +10,7 @@ import com.concertfinder.concertfinder.post.DTO.PostWriteDTO;
 import com.concertfinder.concertfinder.post.domain.Post;
 import com.concertfinder.concertfinder.post.repository.PostRepository;
 import com.concertfinder.concertfinder.user.service.UserService;
+import groovy.util.logging.Slf4j;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.*;
@@ -23,6 +24,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PostService {
 
     private final PostRepository postRepository;
@@ -30,6 +32,7 @@ public class PostService {
     private final UserService userService;
 
     private final CommentService commentService;
+
 
 
     // 게시글 DTO에 담기
@@ -66,7 +69,8 @@ public class PostService {
                 .build();
 
         try {
-            postRepository.save(post);
+            Post postEntity = postRepository.save(post);
+
         } catch(DataAccessException e) {
             throw new RuntimeException("서버 에러로 인해 게시글 작성이 실패 하였습니다 잠시 후 다시 시도해주세요!");
         }
@@ -134,7 +138,6 @@ public class PostService {
 
     // 게시글 목록 조회 메서드
     public Page<PostListDTO> getPosts(String concertId, int page, int size, char category, Pageable pageable) {
-
 
         Page<Post> posts = null;
         Long count = null;

@@ -6,6 +6,9 @@ import com.concertfinder.concertfinder.user.DTO.LoginUserDTO;
 import com.concertfinder.concertfinder.user.DTO.ModifyUserDTO;
 import com.concertfinder.concertfinder.user.DTO.PrincipalDetails;
 import com.concertfinder.concertfinder.user.service.UserService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +29,9 @@ public class UserRestController {
 
     // 회원가입 : 중복검사 기능
     @GetMapping("/id-check")
-    public ResponseEntity<ApiResponseDTO<Boolean>> isDuplicate(@RequestParam String userId) {
+    public ResponseEntity<ApiResponseDTO<Boolean>> isDuplicate(@RequestParam
+                                                               @NotNull(message = "아이디는 비어 있을 수 없습니다!")
+                                                               String userId) {
 
         boolean isDuplicate = userService.isDuplicate(userId);
         return ResponseEntity.status(HttpStatus.OK)
@@ -36,7 +41,7 @@ public class UserRestController {
 
     // 회원가입 : 회원가입 기능
     @PostMapping
-    public ResponseEntity<ApiResponseDTO<Void>> createUser(@ModelAttribute JoinUserDTO joinUserDTO) {
+    public ResponseEntity<ApiResponseDTO<Void>> createUser(@ModelAttribute @Valid JoinUserDTO joinUserDTO) {
 
         userService.insertUser(joinUserDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDTO.success("회원가입 성공"));
