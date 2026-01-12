@@ -42,19 +42,7 @@ public class SecurityConfig {
                         .failureHandler((request, response, exception) -> {
                             response.setStatus(HttpStatus.UNAUTHORIZED.value());
                             response.setContentType("application/json;charset=UTF-8");
-                            String errorMessage = "";
-
-                            // 💡 예외 종류에 따른 메시지 설정
-                            if (exception instanceof InternalAuthenticationServiceException) {
-
-                                errorMessage = "존재하지 않는 아이디입니다.";
-                            } else if (exception instanceof BadCredentialsException) {
-                                // 비밀번호가 틀렸을 때
-                                errorMessage = "비밀번호가 일치하지 않습니다.";
-                            } else if (exception instanceof UsernameNotFoundException) {
-                                errorMessage = "계정을 찾을 수 없습니다.";
-                            }
-                            response.getWriter().write("{\"message\":\"" + errorMessage + "\"}");
+                            response.getWriter().write("{\"message\":\"" + "아이디 혹은 비밀번호가 일치하지 않습니다!" + "\"}");
                         })
                         .permitAll())
                 // 로그아웃 설정

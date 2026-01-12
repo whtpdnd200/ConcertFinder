@@ -26,7 +26,7 @@ public class PrincipalDetailsService implements UserDetailsService {
 
         if(!optionalUser.isPresent()) {
 
-            throw new InternalAuthenticationServiceException("아이디가 존재하지 않습니다!");
+            throw new UsernameNotFoundException("아이디가 존재하지 않습니다!");
         }
 
         return new PrincipalDetails(userService.addDTO(optionalUser), optionalUser.get().getPassword());

@@ -75,7 +75,7 @@
                 , beforeSend: function(xhr) {
                     xhr.setRequestHeader(header, token);
                 }
-                , success : function(response) {
+                , success : function() {
                     location.href = "/concert/list";
                 }
                 , error : function(xhr) {
