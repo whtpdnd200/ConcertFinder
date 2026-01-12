@@ -36,7 +36,7 @@
                                 </div>
                             </div>
 
-                            <div id="idStorageTag" th:data-post-id="${postModifyInfo.id}" th:data-post-user-id="${postModifyInfo.userId}" th:data-user-id="${session.userInfo.id}" class="form-group mb-4">
+                            <div id="idStorageTag" th:data-post-id="${postModifyInfo.id}" th:data-post-user-id="${postModifyInfo.userId}" th:data-user-id="${#authentication.principal.loginUserDTO.id}" class="form-group mb-4">
                                 <label for="titleInput" class="form-label font-weight-bold">제목</label>
                                 <input th:value="${postModifyInfo.title}" type="text" id="titleInput" name="title" class="form-control custom-input"
                                        placeholder="제목을 입력해 주세요 (최대 50자)">
@@ -64,6 +64,10 @@
         var userId = $("#idStorageTag").data("user-id");
 
         var postUserId = $("#idStorageTag").data("post-user-id");
+
+        var token = $("meta[name='_csrf']").attr("content");
+
+        var header = $("meta[name='_csrf_header']").attr("content");
 
         if(userId != postUserId) {
             alert("비정상적인 접근 입니다!");
@@ -111,6 +115,9 @@
                 type : "put"
                 , url: "/post/" + postId
                 , contentType : "application/json"
+                , beforeSend: function(xhr) {
+                    xhr.setRequestHeader(header, token);
+                }
                 , data : JSON.stringify(data)
                 , success : function(response) {
 

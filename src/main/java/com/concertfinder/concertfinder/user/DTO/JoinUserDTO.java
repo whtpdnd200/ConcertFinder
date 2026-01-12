@@ -14,4 +14,5 @@ public class JoinUserDTO {
     private String nickname;
     private String email;
     private String attentionAreaCode;
+    private String role;
 }

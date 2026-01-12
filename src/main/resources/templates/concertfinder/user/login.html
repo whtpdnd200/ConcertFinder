@@ -20,7 +20,7 @@
 
                     <form id="loginForm">
                         <div class="form-group mb-4">
-                            <input value="whtpdnd200" id="idInput" type="text" class="form-control" name="loginId" placeholder="아이디를 입력하세요">
+                            <input value="test1" id="idInput" type="text" class="form-control" name="loginId" placeholder="아이디를 입력하세요">
                         </div>
 
                         <div class="form-group mb-4">
@@ -65,11 +65,17 @@
                 return;
             }
 
+            let token = $("meta[name='_csrf']").attr("content");
+            let header = $("meta[name='_csrf_header']").attr("content");
+
             $.ajax({
                 type : "post"
                 , url : "/user/login"
                 , data : {"userId" : userId, "password" : password}
-                , success : function(response) {
+                , beforeSend: function(xhr) {
+                    xhr.setRequestHeader(header, token);
+                }
+                , success : function() {
                     location.href = "/concert/list";
                 }
                 , error : function(xhr) {

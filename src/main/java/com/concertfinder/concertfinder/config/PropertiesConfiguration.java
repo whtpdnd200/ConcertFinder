@@ -1,6 +1,6 @@
-package com.concertfinder.concertfinder.configuration;
+package com.concertfinder.concertfinder.config;
 
-import com.concertfinder.concertfinder.configuration.properties.KopisProperties;
+import com.concertfinder.concertfinder.config.properties.KopisProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;

@@ -2,9 +2,12 @@ package com.concertfinder.concertfinder.user;
 
 import com.concertfinder.concertfinder.sidoCode.service.SidoCodeService;
 import com.concertfinder.concertfinder.user.DTO.LoginUserDTO;
+import com.concertfinder.concertfinder.user.DTO.PrincipalDetails;
 import com.concertfinder.concertfinder.user.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,37 +23,46 @@ public class UserController {
 
     // 회원가입 페이지
     @GetMapping("/join")
-    public String join(Model model) {
+    public String join(Authentication authentication
+            , Model model) {
 
+        // 유저 인증 정보 객체가 있고 인증된 유저라면 페이지 강제 이동
+        if(authentication != null && authentication.isAuthenticated()) {
+            return "redirect:/concert/list";
+        }
         model.addAttribute("sidoList", sidoCodeService.getAllCode());
         return "concertfinder/user/join";
     }
 
     // 로그인 페이지
     @GetMapping("/login")
-    public String login() {
+    public String login(Authentication authentication) {
 
+        // 유저 인증 정보 객체가 있고 인증된 유저라면 페이지 강제 이동
+        if(authentication != null && authentication.isAuthenticated()) {
+            return "redirect:/concert/list";
+        }
         return "concertfinder/user/login";
     }
 
     // 마이 페이지
     @GetMapping("/mypage")
     public String myPage(Model model
-                        , HttpSession session) {
+                        , @AuthenticationPrincipal PrincipalDetails principal) {
 
-        LoginUserDTO loginUserDTO = (LoginUserDTO)session.getAttribute("userInfo");
+        LoginUserDTO loginUserDTO = principal.getLoginUserDTO();
 
         model.addAttribute("concertList", userService.getConcertListTop3(loginUserDTO.getId()));
         return "concertfinder/user/mypage";
     }
 
     // 로그아웃 기능
-    @GetMapping("/logout")
-    public String logout(HttpSession session) {
-        session.invalidate();
-
-        return "redirect:/user/login";
-    }
+//    @GetMapping("/logout")
+//    public String logout() {
+//        // session.invalidate();
+//
+//        return "redirect:/user/login";
+//    }
 
     // 회원정보 수정 페이지
     @GetMapping("/modify")

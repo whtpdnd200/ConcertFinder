@@ -7,12 +7,13 @@ import com.concertfinder.concertfinder.review.DTO.ReviewModifyDTO;
 import com.concertfinder.concertfinder.review.DTO.ReviewWriteDTO;
 import com.concertfinder.concertfinder.review.service.ReviewService;
 import com.concertfinder.concertfinder.user.DTO.LoginUserDTO;
-import jakarta.servlet.http.HttpSession;
+import com.concertfinder.concertfinder.user.DTO.PrincipalDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,9 +29,9 @@ public class ReviewRestController {
     @PostMapping("/{areaCode}")
     public ResponseEntity<ApiResponseDTO<Void>> writeReview(@PathVariable String areaCode
                                                            , @ModelAttribute ReviewWriteDTO reviewWriteDTO
-                                                           , HttpSession session) {
+                                                           , @AuthenticationPrincipal PrincipalDetails principal) {
 
-        LoginUserDTO loginUserDTO = (LoginUserDTO)session.getAttribute("userInfo");
+        LoginUserDTO loginUserDTO = principal.getLoginUserDTO();
         reviewService.insertReview(areaCode, loginUserDTO.getId(), reviewWriteDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDTO.success("리뷰 작성 성공"));
     }
@@ -49,17 +50,18 @@ public class ReviewRestController {
     @PutMapping("/{reviewId}")
     public ResponseEntity<ApiResponseDTO<Void>> modifyReview(@PathVariable long reviewId
                                                             , @RequestBody ReviewModifyDTO reviewModifyDTO
-                                                            , HttpSession session) {
+                                                            , @AuthenticationPrincipal PrincipalDetails principal) {
 
-        LoginUserDTO loginUserDTO = (LoginUserDTO)session.getAttribute("userInfo");
+        LoginUserDTO loginUserDTO = principal.getLoginUserDTO();
         reviewService.updateReview(reviewId, reviewModifyDTO, loginUserDTO.getId());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.success("리뷰 수정 완료"));
     }
 
     @DeleteMapping("{reviewId}")
     public ResponseEntity<ApiResponseDTO<Void>> removeReview(@PathVariable long reviewId
-                                                            , HttpSession session) {
-        LoginUserDTO loginUserDTO = (LoginUserDTO)session.getAttribute("userInfo");
+                                                            , @AuthenticationPrincipal PrincipalDetails principal) {
+
+        LoginUserDTO loginUserDTO = principal.getLoginUserDTO();
         reviewService.deleteReview(reviewId, loginUserDTO.getId());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.success("리뷰 삭제 완료"));
     }

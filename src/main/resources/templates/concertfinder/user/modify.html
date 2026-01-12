@@ -23,16 +23,16 @@
 
                             <div class="form-group mb-4">
                                 <label class="form-label"><i class="bi bi-person mr-1"></i> 아이디</label>
-                                <div th:text="${session.userInfo.userId}" class="form-control-plaintext">jamini_user</div>
+                                <div th:text="${#authentication.principal.loginUserDTO.userId}" class="form-control-plaintext">jamini_user</div>
                                 <p class="helper-text">아이디는 변경할 수 없습니다.</p>
                             </div>
 
                             <div class="form-group mb-4">
                                 <label class="form-label" for="frontEmailInput"><i class="bi bi-envelope mr-1"></i> 이메일 주소</label>
                                 <div class="d-flex align-items-center">
-                                    <input type="text" id="frontEmailInput" class="form-control col-6 modify-input" th:value="${session.userInfo.email.split('@')[0]}" placeholder="이메일을 입력하세요">
+                                    <input type="text" id="frontEmailInput" class="form-control col-6 modify-input" th:value="${#authentication.principal.loginUserDTO.email.split('@')[0]}" placeholder="이메일을 입력하세요">
                                     <span class="col-1">@</span>
-                                    <select th:with="val = ${session.userInfo.email.split('@')[1]}" id="emailSelect" class="form-control modify-input col-5">
+                                    <select th:with="val = ${#authentication.principal.loginUserDTO.email.split('@')[1]}" id="emailSelect" class="form-control modify-input col-5">
                                         <option value="self">직접 입력</option>
                                         <option th:value="${val}" th:utext="${val}" selected></option>
                                         <option th:if="${val != 'naver.com'}">naver.com</option>
@@ -46,15 +46,15 @@
 
                             <div class="form-group mb-4">
                                 <label class="form-label" for="nicknameInput"><i class="bi bi-tag mr-1"></i> 닉네임</label>
-                                <input type="text" id="nicknameInput" class="form-control modify-input" th:value="${session.userInfo.nickname}" placeholder="닉네임을 입력하세요">
+                                <input type="text" id="nicknameInput" class="form-control modify-input" th:value="${#authentication.principal.loginUserDTO.nickname}" placeholder="닉네임을 입력하세요">
                                 <div id="nicknameLengthOver" class="text-danger small d-none">닉네임은 16글자 이하로만 가능합니다!</div>
                             </div>
 
                             <div class="form-group mb-4">
                                 <label class="form-label" for="areaSelect"><i class="bi bi-geo-alt mr-1"></i> 관심 지역</label>
                                 <select id="areaSelect" class="form-control modify-input">
-                                    <option th:value="${session.userInfo.attentionAreaCode}" th:utext="${session.userInfo.attentionAreaName}" selected></option>
-                                    <option th:if="${session.userInfo.attentionAreaCode != sido.sidoCode}" th:each="sido : ${sidoList}" th:value="${sido.sidoCode}" th:utext="${sido.sidoName}">서울특별시</option>
+                                    <option th:value="${#authentication.principal.loginUserDTO.attentionAreaCode}" th:utext="${#authentication.principal.loginUserDTO.attentionAreaName}" selected></option>
+                                    <option th:if="${#authentication.principal.loginUserDTO.attentionAreaCode != sido.sidoCode}" th:each="sido : ${sidoList}" th:value="${sido.sidoCode}" th:utext="${sido.sidoName}">서울특별시</option>
                                 </select>
                             </div>
 
@@ -178,11 +178,17 @@
                         , "attentionAreaCode" : attentionAreaCode
             }
 
+            let token = $("meta[name='_csrf']").attr("content");
+            let header = $("meta[name='_csrf_header']").attr("content");
+
             $.ajax({
                 type : "put"
                 , url : `/user`
                 , contentType: 'application/json'
                 , data : JSON.stringify(data)
+                , beforeSend: function(xhr) {
+                    xhr.setRequestHeader(header, token);
+                }
                 , success : function(response) {
 
                     location.href = "/user/mypage";

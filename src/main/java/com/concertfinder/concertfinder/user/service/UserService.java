@@ -1,7 +1,7 @@
 package com.concertfinder.concertfinder.user.service;
 
+import com.concertfinder.concertfinder.exception.custom_exception.DuplicateException;
 import com.concertfinder.concertfinder.sidoCode.service.SidoCodeService;
-import com.concertfinder.concertfinder.common.SHA256HashingEncoder;
 import com.concertfinder.concertfinder.concert.DTO.ConcertFavoritesListDTO;
 import com.concertfinder.concertfinder.concert.service.ConcertService;
 import com.concertfinder.concertfinder.user.DTO.JoinUserDTO;
@@ -11,6 +11,7 @@ import com.concertfinder.concertfinder.user.domain.User;
 import com.concertfinder.concertfinder.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,6 +25,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final SidoCodeService sidoCodeService;
     private final ConcertService concertService;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     // LoginUserDTO에 User 정보 담아주는 함수
     public LoginUserDTO addDTO(Optional<User> oUser) {
@@ -36,6 +38,7 @@ public class UserService {
                 .email(user.getEmail())
                 .attentionAreaCode(user.getAttentionAreaCode())
                 .attentionAreaName(sidoCodeService.getSidoName(user.getAttentionAreaCode()))
+                .role(user.getRole())
                 .build();
 
         return loginUserDTO;
@@ -44,7 +47,11 @@ public class UserService {
     // 회원가입 : 아이디 중복검사 메서드
     public boolean isDuplicate(String userId) {
 
-        return userRepository.existsByUserId(userId);
+        boolean isDuplicate = userRepository.existsByUserId(userId);
+        if(isDuplicate) {
+            throw new DuplicateException("중복된 아이디 입니다");
+        }
+        return isDuplicate;
     }
 
     // 회원가입 : 유저 정보 DB 저장 메서드
@@ -54,14 +61,13 @@ public class UserService {
             throw new IllegalArgumentException("닉네임은 16글자 이하로 작성해야 합니다!");
         }
 
-        String salt = SHA256HashingEncoder.getSalt();
         User user = User.builder()
                 .userId(joinUserDTO.getUserId())
-                .password(SHA256HashingEncoder.encode(joinUserDTO.getPassword(), salt))
-                .salt(salt)
+                .password(bCryptPasswordEncoder.encode(joinUserDTO.getPassword()))
                 .nickname(joinUserDTO.getNickname())
                 .email(joinUserDTO.getEmail())
                 .attentionAreaCode(joinUserDTO.getAttentionAreaCode())
+                .role("ROLE_USER")
                 .build();
 
         try {
@@ -72,33 +78,33 @@ public class UserService {
     }
 
     // 로그인 : 로그인 시도 유저 정보 조회 메서드
-    public LoginUserDTO loginUser(String userId, String password) {
-
-        String salt = getSalt(userId);
-
-        if(salt == null) {
-            throw new NoSuchElementException("일치하는 아이디가 존재하지 않습니다!");
-        }
-
-        Optional<User> optionalUser = userRepository.findByUserIdAndPassword(userId, SHA256HashingEncoder.encode(password, salt));
-        if(!optionalUser.isPresent()) {
-
-            throw new NoSuchElementException("비밀번호가 일치하지 않습니다!");
-        }
-
-        return addDTO(optionalUser);
-    }
+//    public LoginUserDTO loginUser(String userId, String password) {
+//
+//        String salt = getSalt(userId);
+//
+//        if(salt == null) {
+//            throw new NoSuchElementException("일치하는 아이디가 존재하지 않습니다!");
+//        }
+//
+//        Optional<User> optionalUser = userRepository.findByUserIdAndPassword(userId, SHA256HashingEncoder.encode(password, salt));
+//        if(!optionalUser.isPresent()) {
+//
+//            throw new NoSuchElementException("비밀번호가 일치하지 않습니다!");
+//        }
+//
+//        return addDTO(optionalUser);
+//    }
 
     // 로그인 : id를 통해 salt를 얻어오는 메서드
     public String getSalt(String userId) {
 
-        Optional<User> optionalUser = userRepository.findByUserId(userId);
+        // Optional<User> optionalUser = userRepository.findByUserId(userId);
 
-        if(optionalUser.isPresent()) {
-            User user = optionalUser.get();
-
-            return user.getSalt();
-        }
+//        if(optionalUser.isPresent()) {
+//            User user = optionalUser.get();
+//
+//            return user.getSalt();
+//        }
 
         return null;
     }
@@ -113,16 +119,16 @@ public class UserService {
         Optional<User> optionalUser = userRepository.findById(id);
 
         String password = null;
-        String salt = null;
+
 
         if(optionalUser.isPresent()) {
             User user = optionalUser.get();
             password = user.getPassword();
-            salt = user.getSalt();
+            // salt = user.getSalt();
 
             if(modifyUserDTO.getPassword() != null && !modifyUserDTO.getPassword().equals("")) {
-                salt = SHA256HashingEncoder.getSalt();
-                password = SHA256HashingEncoder.encode(modifyUserDTO.getPassword(), salt);
+
+                password = bCryptPasswordEncoder.encode(modifyUserDTO.getPassword());
 
             }
             user = user.toBuilder()
@@ -130,7 +136,7 @@ public class UserService {
                     .email(modifyUserDTO.getEmail())
                     .attentionAreaCode(modifyUserDTO.getAttentionAreaCode())
                     .password(password)
-                    .salt(salt)
+                    .role("ROLE_USER")
                     .build();
 
             try {

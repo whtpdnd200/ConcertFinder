@@ -62,6 +62,9 @@
 
         var isLengthOver = false;
 
+        var token = $("meta[name='_csrf']").attr("content");
+        var header = $("meta[name='_csrf_header']").attr("content");
+
         $("#nicknameInput").on("input", function() {
             let nickname = $(this).val();
 
@@ -154,6 +157,8 @@
 
             let email = frontEmail + '@' + backEmail;
 
+
+
             $.ajax({
                 type : "post"
                 , url : "/user"
@@ -164,6 +169,9 @@
                             , "email" : email
                             , "attentionAreaCode" : attentionAreaCode
                          }
+                , beforeSend: function(xhr) {
+                    xhr.setRequestHeader(header, token);
+                }
                 , success : function(response) {
 
                     location.href = "/user/login";
@@ -219,21 +227,22 @@
             $.ajax({
                 type : "get"
                 , url : "/user/id-check"
+                , beforeSend: function(xhr) {
+                    xhr.setRequestHeader(header, token);
+                }
                 , data : {"userId" : userId}
                 , success : function(response) {
+
                     isDuplicateChecked = true;
                     isDuplicate = response.data;
 
-                    if(response.data) {
-                        $("#idDuplicate").removeClass("d-none");
-                        $("#idNotDuplicate").addClass("d-none");
-                    } else {
-                        $("#idDuplicate").addClass("d-none");
-                        $("#idNotDuplicate").removeClass("d-none");
-                    }
+                    $("#idDuplicate").addClass("d-none");
+                    $("#idNotDuplicate").removeClass("d-none");
+
                 }
                 , error : function() {
-                    alert("중복검사 에러!");
+                    $("#idDuplicate").removeClass("d-none");
+                    $("#idNotDuplicate").addClass("d-none");
                 }
             });
         });

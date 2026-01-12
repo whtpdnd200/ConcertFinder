@@ -1,9 +1,11 @@
 package com.concertfinder.concertfinder.exception;
 
 import com.concertfinder.concertfinder.common.DTO.ApiResponseDTO;
+import com.concertfinder.concertfinder.exception.custom_exception.DuplicateException;
 import com.concertfinder.concertfinder.exception.custom_exception.UnAuthorizedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -48,12 +50,29 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponseDTO.fail(e.getMessage()));
     }
 
+    // 아이디 중복검사시 중복된 아이디 일때
+    // 409
+    @ExceptionHandler(DuplicateException.class)
+    public ResponseEntity<ApiResponseDTO<Void>> DuplicateException(DuplicateException e) {
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiResponseDTO.fail(e.getMessage()));
+    }
+
     // 서버 내부 에러
     // 500으로 반환
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ApiResponseDTO<Void>> RuntimeException(RuntimeException e) {
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponseDTO.fail(e.getMessage()));
+    }
+
+    // 유저의 아이디가 조회 되지 않을때
+    // 404로 반환
+    // 스프링 시큐리티 예외
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<ApiResponseDTO<Void>> UsernameNotFoundException(UsernameNotFoundException e) {
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponseDTO.fail(e.getMessage()));
     }
 
     // 데이터가 조회 되지 않을때

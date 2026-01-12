@@ -32,8 +32,6 @@ public class PostService {
     private final CommentService commentService;
 
 
-
-
     // 게시글 DTO에 담기
     public PostDetailDTO addDto(Post post) {
         PostDetailDTO postDetailDTO = PostDetailDTO.builder()

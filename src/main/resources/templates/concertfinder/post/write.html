@@ -64,6 +64,10 @@
 
       var titleLength;
 
+      var token = $("meta[name='_csrf']").attr("content");
+
+      var header = $("meta[name='_csrf_header']").attr("content");
+
       $("#titleInput").on("input", function() {
           titleLength = $("#titleInput").val().length;
       });
@@ -100,6 +104,9 @@
           $.ajax({
               type : "post"
               , url: "/post/" + concertId
+              , beforeSend: function(xhr) {
+                  xhr.setRequestHeader(header, token);
+              }
               , data : {"category" : category
                         , "title" : title
                         , "content" : content}
