@@ -18,8 +18,6 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity security) throws Exception {
 
-
-
         security
                 // url 요청 권한 설정
                 .authorizeHttpRequests(request ->
@@ -43,7 +41,7 @@ public class SecurityConfig {
                         .failureHandler((request, response, exception) -> {
                             response.setStatus(HttpStatus.UNAUTHORIZED.value());
                             response.setContentType("application/json;charset=UTF-8");
-                            String errorMessage = "로그인에 실패했습니다.";
+                            String errorMessage = "";
 
                             // 💡 예외 종류에 따른 메시지 설정
                             if (exception instanceof InternalAuthenticationServiceException) {

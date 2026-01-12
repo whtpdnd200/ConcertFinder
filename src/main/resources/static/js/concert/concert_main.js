@@ -74,8 +74,10 @@ function reviewData() {
         },
 
         renderStars(rating) {
+            
             let starsHtml = '';
             let head = Math.floor(rating);
+
             let hasHalf = (rating % 1 !== 0);
 
             // 꽉 찬 별
@@ -87,7 +89,9 @@ function reviewData() {
                 starsHtml += '<i class="bi bi-star-half"></i>';
             }
             // 빈 별 (5개 기준)
-            let emptyCount = 5 - head - (hasHalf ? 1 : 0);
+            let currentStars = head + (hasHalf ? 1 : 0);
+            let emptyCount = 5 - currentStars;
+
             for (let i = 0; i < emptyCount; i++) {
                 starsHtml += '<i class="bi bi-star"></i>';
             }

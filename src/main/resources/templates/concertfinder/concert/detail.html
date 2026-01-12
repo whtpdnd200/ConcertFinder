@@ -140,7 +140,7 @@
                             </div>
                             <div th:with="maxNum = 5, head = ${T(java.lang.Math).floor(concertInfo.averageReview.intValue())}" class="rating-stars-visual text-warning d-flex justify-content-center">
                                 <i th:each="num : ${#numbers.sequence(1, #numbers.formatInteger(T(java.lang.Math).floor(concertInfo.averageReview), 0))}"  class="bi bi-star-fill"></i>
-                                <i th:if="${concertInfo.averageReview % 1 != 0}" class="bi bi-star-half"></i><i th:each="num : ${#numbers.sequence(1, maxNum - head - (concertInfo.averageReview % 1 != 0 ? 1 : 0))}" class="bi bi-star"></i>
+                                <i th:if="${concertInfo.averageReview % 1 != 0}" class="bi bi-star-half"></i><i th:if="${maxNum - head - (concertInfo.averageReview % 1 != 0 ? 1 : 0)} > 0" th:each="num : ${#numbers.sequence(1, maxNum - head - (concertInfo.averageReview % 1 != 0 ? 1 : 0))}" class="bi bi-star"></i>
                             </div>
                         </div>
                         <div th:unless="${concertInfo.reviewCount != 0}"  class="col-md-6 border-right no-review-display">
