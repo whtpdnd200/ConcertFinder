@@ -1,5 +1,8 @@
 package com.concertfinder.concertfinder.post.service;
 
+import com.concertfinder.concertfinder.accompany.DTO.AccompanyAddDTO;
+import com.concertfinder.concertfinder.accompany.DTO.AccompanyInfoDTO;
+import com.concertfinder.concertfinder.accompany.service.AccompanyService;
 import com.concertfinder.concertfinder.comment.service.CommentService;
 import com.concertfinder.concertfinder.exception.GlobalExceptionHandler;
 import com.concertfinder.concertfinder.exception.custom_exception.UnAuthorizedException;
@@ -15,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.ArrayList;
@@ -22,6 +26,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+@lombok.extern.slf4j.Slf4j
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -33,10 +38,18 @@ public class PostService {
 
     private final CommentService commentService;
 
-
+    private final AccompanyService accompanyService;
 
     // 게시글 DTO에 담기
+    @Transactional
     public PostDetailDTO addDto(Post post) {
+
+        AccompanyInfoDTO accompanyInfoDTO = null;
+
+        if(post.getCategory().equals('R')) {
+            accompanyInfoDTO = accompanyService.getAccompanyInfo(post.getId());
+        }
+
         PostDetailDTO postDetailDTO = PostDetailDTO.builder()
                 .id(post.getId())
                 .concertId(post.getConcertId())
@@ -46,6 +59,7 @@ public class PostService {
                 .title(post.getTitle())
                 .content(post.getContent())
                 .commentCount(commentService.getCommentCount(post.getId()))
+                .accompanyInfoDTO(accompanyInfoDTO)
                 .createdAt(post.getCreatedAt())
                 .updatedAt(post.getUpdatedAt())
                 .build();
@@ -54,6 +68,7 @@ public class PostService {
     }
 
     // 게시글 DB 저장
+    @Transactional
     public void postInsert(String concertId
                              , PostWriteDTO postWriteDTO
                              , Long userId) {
@@ -70,7 +85,17 @@ public class PostService {
 
         try {
             Post postEntity = postRepository.save(post);
+            if(postEntity.getCategory().equals('R')) {
+                AccompanyAddDTO accompanyAddDTO = AccompanyAddDTO.builder()
+                        .postId(postEntity.getId())
+                        .userId(userId)
+                        .headCount(postWriteDTO.getHeadCount())
+                        .place(postWriteDTO.getPlace())
+                        .sDateTime(postWriteDTO.getSDateTime())
+                        .build();
 
+                accompanyService.insertAccompany(accompanyAddDTO);
+            }
         } catch(DataAccessException e) {
             throw new RuntimeException("서버 에러로 인해 게시글 작성이 실패 하였습니다 잠시 후 다시 시도해주세요!");
         }
@@ -117,6 +142,7 @@ public class PostService {
     }
 
     // 게시글 삭제 메서드
+    @Transactional
     public void postDelete(long postId, Long userId) {
 
         GlobalExceptionHandler.loginException(userId);
@@ -130,6 +156,9 @@ public class PostService {
             }
             try {
                 postRepository.delete(post);
+                if(post.getCategory().equals('R')) {
+                    accompanyService.deleteAccompany(accompanyService.getAccompanyId(postId));
+                }
             } catch(DataAccessException e) {
                 throw new RuntimeException("서버 에러로 인해 게시글 삭제가 실패 하였습니다 잠시 후 다시 시도해주세요!");
             }

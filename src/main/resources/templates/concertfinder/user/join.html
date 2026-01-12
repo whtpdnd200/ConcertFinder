@@ -97,64 +97,64 @@
             }
 
 
-            // if(userId == "") {
-            //     alert("아이디를 입력하세요");
-            //     $("#idInput").focus();
-            //     return;
-            // }
-            //
-            // if(!isDuplicateChecked) {
-            //     alert("아이디 중복 검사를 진행 해주세요!");
-            //     return;
-            // }
-            //
-            // if(isDuplicate) {
-            //     alert("아이디가 중복 되었습니다! 다시 입력해주세요!");
-            //     $("#idInput").focus();
-            //     return;
-            // }
-            //
-            // if(password == "") {
-            //     alert("비밀번호를 입력하세요");
-            //     $("#passwordInput").focus();
-            //     return;
-            // }
-            //
-            // if(password != passwordConfirm) {
-            //     alert("비밀번호가 일치하지 않습니다");
-            //     $("#passwordConfirmInput").focus();
-            //     return;
-            // }
-            //
-            // if(nickname == "") {
-            //     alert("닉네임을 입력하세요");
-            //     $("#nicknameInput").focus();
-            //     return;
-            // }
-            //
-            // if(frontEmail == '') {
-            //     alert("이메일을 입력 해주세요!");
-            //     $("#frontEmailInput").focus();
-            //     return;
-            // }
-            //
-            // if(backEmail == '') {
-            //     alert("이메일을 입력 해주세요!");
-            //     $("#backEmailInput").focus();
-            //     return;
-            // }
-            //
-            // if(backEmail == 'self') {
-            //     alert("이메일을 선택 해주세요!");
-            //     return;
-            // }
-            //
-            // if(isLengthOver) {
-            //     alert("닉네임은 16글자 이하로 작성 해주세요!");
-            //     $("#nicknameInput").focus();
-            //     return;
-            // }
-            //
+            if(userId == "") {
+                alert("아이디를 입력하세요");
+                $("#idInput").focus();
+                return;
+            }
+
+            if(!isDuplicateChecked) {
+                alert("아이디 중복 검사를 진행 해주세요!");
+                return;
+            }
+
+            if(isDuplicate) {
+                alert("아이디가 중복 되었습니다! 다시 입력해주세요!");
+                $("#idInput").focus();
+                return;
+            }
+
+            if(password == "") {
+                alert("비밀번호를 입력하세요");
+                $("#passwordInput").focus();
+                return;
+            }
+
+            if(password != passwordConfirm) {
+                alert("비밀번호가 일치하지 않습니다");
+                $("#passwordConfirmInput").focus();
+                return;
+            }
+
+            if(nickname == "") {
+                alert("닉네임을 입력하세요");
+                $("#nicknameInput").focus();
+                return;
+            }
+
+            if(frontEmail == '') {
+                alert("이메일을 입력 해주세요!");
+                $("#frontEmailInput").focus();
+                return;
+            }
+
+            if(backEmail == '') {
+                alert("이메일을 입력 해주세요!");
+                $("#backEmailInput").focus();
+                return;
+            }
+
+            if(backEmail == 'self') {
+                alert("이메일을 선택 해주세요!");
+                return;
+            }
+
+            if(isLengthOver) {
+                alert("닉네임은 16글자 이하로 작성 해주세요!");
+                $("#nicknameInput").focus();
+                return;
+            }
+
             let email = frontEmail + '@' + backEmail;
 
 
@@ -241,8 +241,7 @@
                     $("#idNotDuplicate").removeClass("d-none");
 
                 }
-                , error : function(xhr) {
-                    alert(xhr.responseJSON.message);
+                , error : function() {
                     $("#idDuplicate").removeClass("d-none");
                     $("#idNotDuplicate").addClass("d-none");
                 }

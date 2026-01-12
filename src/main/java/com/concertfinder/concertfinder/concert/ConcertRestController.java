@@ -2,12 +2,9 @@ package com.concertfinder.concertfinder.concert;
 
 import com.concertfinder.concertfinder.common.DTO.ApiResponseDTO;
 import com.concertfinder.concertfinder.concert.DTO.ConcertFavoritesListDTO;
-import com.concertfinder.concertfinder.concert.DTO.areaDTO.ResponsesAreaDTO;
-import com.concertfinder.concertfinder.concert.DTO.infoDTO.ResponsesInfoDTO;
 import com.concertfinder.concertfinder.concert.service.ConcertService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

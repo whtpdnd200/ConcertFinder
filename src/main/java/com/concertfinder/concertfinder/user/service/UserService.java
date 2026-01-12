@@ -57,10 +57,6 @@ public class UserService {
     // 회원가입 : 유저 정보 DB 저장 메서드
     public void insertUser(JoinUserDTO joinUserDTO) {
 
-        if(joinUserDTO.getNickname().length() > 16) {
-            throw new IllegalArgumentException("닉네임은 16글자 이하로 작성해야 합니다!");
-        }
-
         User user = User.builder()
                 .userId(joinUserDTO.getUserId())
                 .password(bCryptPasswordEncoder.encode(joinUserDTO.getPassword()))
@@ -110,11 +106,8 @@ public class UserService {
     }
 
     // 회원 정보 수정 메서드
-    public void userModify(long id, ModifyUserDTO modifyUserDTO) {
+    public void userModify(Long id, ModifyUserDTO modifyUserDTO) {
 
-        if(modifyUserDTO.getNickname().length() > 16) {
-            throw new IllegalArgumentException("닉네임은 16글자 이하로 작성해야 합니다!");
-        }
 
         Optional<User> optionalUser = userRepository.findById(id);
 

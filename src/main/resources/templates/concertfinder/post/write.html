@@ -177,6 +177,23 @@
               return;
           }
 
+          if(category == 'R') {
+              if(headCount <= 1) {
+                  alert("동행 인원은 최소 두명부터 가능합니다!");
+                  return;
+              }
+
+              if(sDate == '') {
+                  alert("동행 날짜는 필수로 선택 해야 합니다!");
+                  return;
+              }
+
+              if(sPlace == '') {
+                  alert("동행 장소는 필수로 선택 해야 합니다!");
+                  return;
+              }
+          }
+
           $.ajax({
               type : "post"
               , url: "/post/" + concertId
@@ -185,7 +202,11 @@
               }
               , data : {"category" : category
                         , "title" : title
-                        , "content" : content}
+                        , "content" : content
+                        , "headCount" : headCount
+                        , "place" : sPlace
+                        , "sDateTime" : sDate
+              }
               , success : function() {
 
                   location.href = "/concert/" + concertId;

@@ -8,6 +8,8 @@ import com.concertfinder.concertfinder.post.service.PostService;
 import com.concertfinder.concertfinder.user.DTO.LoginUserDTO;
 import com.concertfinder.concertfinder.user.DTO.PrincipalDetails;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,7 +30,7 @@ public class PostRestController {
     // 게시글 생성 API
     @PostMapping("/{concertId}")
     public ResponseEntity<ApiResponseDTO<Void>> createPost(@PathVariable String concertId
-                                    , @ModelAttribute PostWriteDTO postWriteDTO
+                                    , @ModelAttribute @Valid PostWriteDTO postWriteDTO
                                     , @AuthenticationPrincipal PrincipalDetails principal) {
 
         LoginUserDTO loginUserDTO = principal.getLoginUserDTO();
@@ -39,8 +41,8 @@ public class PostRestController {
 
     // 게시글 수정 API
     @PutMapping("/{postId}")
-    public ResponseEntity<ApiResponseDTO<Void>> updatePost(@PathVariable long postId
-                                          , @RequestBody PostModifyDTO postModifyDTO
+    public ResponseEntity<ApiResponseDTO<Void>> updatePost(@PathVariable @NotNull(message = "수정 할 게시글이 존재 하지 않습니다!") Long postId
+                                          , @RequestBody @Valid PostModifyDTO postModifyDTO
                                           , @AuthenticationPrincipal PrincipalDetails principal) {
 
         LoginUserDTO loginUserDTO = principal.getLoginUserDTO();
@@ -51,7 +53,7 @@ public class PostRestController {
 
     // 게시글 삭제 API
     @DeleteMapping("{postId}")
-    public ResponseEntity<ApiResponseDTO<Void>> removePost(@PathVariable long postId
+    public ResponseEntity<ApiResponseDTO<Void>> removePost(@PathVariable @NotNull(message = "삭제 할 게시글이 존재 하지 않습니다!") Long postId
                                          , @AuthenticationPrincipal PrincipalDetails principal) {
         LoginUserDTO loginUserDTO = principal.getLoginUserDTO();
         postService.postDelete(postId, loginUserDTO.getId());

@@ -27,9 +27,6 @@ public class ReviewService {
                             , long userId
                             , ReviewWriteDTO reviewWriteDTO) {
 
-        if(reviewWriteDTO.getReview().trim().isEmpty()) {
-            throw new IllegalArgumentException("리뷰는 비어있을 수 없습니다!");
-        }
 
         Review review = Review.builder()
                 .areaCode(areaCode)

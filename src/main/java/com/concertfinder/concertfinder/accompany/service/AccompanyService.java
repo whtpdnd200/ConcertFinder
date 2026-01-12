@@ -1,12 +1,18 @@
 package com.concertfinder.concertfinder.accompany.service;
 
 import com.concertfinder.concertfinder.accompany.DTO.AccompanyAddDTO;
+import com.concertfinder.concertfinder.accompany.DTO.AccompanyInfoDTO;
 import com.concertfinder.concertfinder.accompany.domain.Accompany;
 import com.concertfinder.concertfinder.accompany.repository.AccompanyRepository;
+import com.concertfinder.concertfinder.accompany_count.service.AccompanyCountService;
 import groovy.util.logging.Slf4j;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -14,14 +20,28 @@ import org.springframework.stereotype.Service;
 public class AccompanyService {
 
     private final AccompanyRepository accompanyRepository;
+    private final AccompanyCountService accompanyCountService;
 
-    public void insertAccompany(AccompanyAddDTO accompanyAddDTO
-                                , long postId
-                                , long userId) {
+    @Transactional
+    public void insertAccompany(AccompanyAddDTO accompanyAddDTO) {
+
+        if(accompanyAddDTO.getHeadCount() <= 1) {
+            throw new IllegalArgumentException("동행 인원은 최소 2명부터 가능 합니다!");
+        }
+
+        if(accompanyAddDTO.getSDateTime() == null || accompanyAddDTO.getSDateTime().equals("")) {
+
+            throw new IllegalArgumentException("동행 날짜는 필수로 선택 하셔야 합니다!");
+        }
+
+        if(accompanyAddDTO.getPlace() == null || accompanyAddDTO.getPlace().equals("")) {
+
+            throw new IllegalArgumentException("모임 장소는 필수로 입력 하셔야 합니다!");
+        }
 
         Accompany accompany = Accompany.builder()
-                .postId(postId)
-                .userId(userId)
+                .postId(accompanyAddDTO.getPostId())
+                .userId(accompanyAddDTO.getUserId())
                 .headCount(accompanyAddDTO.getHeadCount())
                 .place(accompanyAddDTO.getPlace())
                 .sDateTime(accompanyAddDTO.getSDateTime())
@@ -29,11 +49,61 @@ public class AccompanyService {
                 .build();
 
         try {
-            accompanyRepository.save(accompany);
+            Accompany accompanyEntity = accompanyRepository.save(accompany);
+
+            accompanyCountService.insertAccompanyCount(accompanyEntity.getId(), accompanyEntity.getUserId());
 
         } catch(DataAccessException e) {
 
             throw new RuntimeException("서버 에러로 인해 동행 정보를 저장 하지 못했습니다 잠시 후 다시 시도 해주세요!");
+        }
+    }
+
+    public long getAccompanyId(long postId) {
+
+        return accompanyRepository.findByPostId(postId).get().getId();
+    }
+
+    public AccompanyInfoDTO getAccompanyInfo(long postId) {
+
+        Optional<Accompany> optionalAccompany = accompanyRepository.findByPostId(postId);
+
+        if(!optionalAccompany.isPresent()) {
+
+            throw new NoSuchElementException("동행 정보를 불어오지 못했습니다!");
+        }
+
+        Accompany accompany = optionalAccompany.get();
+
+        AccompanyInfoDTO accompanyInfoDTO = AccompanyInfoDTO.builder()
+                .id(accompany.getId())
+                .currentCount(accompanyCountService.getAccompanyCount(accompany.getId()))
+                .headCount(accompany.getHeadCount())
+                .place(accompany.getPlace())
+                .sDateTime(accompany.getSDateTime())
+                .build();
+
+        return accompanyInfoDTO;
+    }
+
+    // 동행 정보 삭제 메서드
+    public void deleteAccompany(long accompanyId) {
+
+        Optional<Accompany> optionalAccompany = accompanyRepository.findById(accompanyId);
+
+        if(!optionalAccompany.isPresent()) {
+
+            throw new NoSuchElementException("동행 정보를 찾을 수 없습니다!");
+        }
+
+        Accompany accompany = optionalAccompany.get();
+
+        try {
+            accompanyRepository.delete(accompany);
+            accompanyCountService.deleteAllAccompanyCount(accompanyId);
+        } catch(DataAccessException e) {
+
+            throw new RuntimeException("서버 에러로 인해 동행 정보를 삭제 하지 못했습니다 잠시 후 다시 시도 해주세요!");
         }
     }
 }

@@ -30,10 +30,6 @@ public class CommentService {
 
         GlobalExceptionHandler.loginException(userId);
 
-        if (comment == null || comment.trim().isEmpty()) {
-            throw new IllegalArgumentException("댓글 내용은 비어있을 수 없습니다!");
-        }
-
         Comment commentEntity = Comment.builder()
                 .postId(postId)
                 .userId(userId)

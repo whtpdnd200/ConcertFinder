@@ -30,7 +30,7 @@ public class UserRestController {
     // 회원가입 : 중복검사 기능
     @GetMapping("/id-check")
     public ResponseEntity<ApiResponseDTO<Boolean>> isDuplicate(@RequestParam
-                                                               @NotNull(message = "아이디는 비어 있을 수 없습니다!")
+                                                               @NotBlank(message = "아이디는 비어 있을 수 없습니다!")
                                                                String userId) {
 
         boolean isDuplicate = userService.isDuplicate(userId);
@@ -61,7 +61,7 @@ public class UserRestController {
 
     // 회원정보 수정 기능
     @PutMapping
-    public ResponseEntity<ApiResponseDTO<Void>> modify(@RequestBody ModifyUserDTO modifyUserDTO
+    public ResponseEntity<ApiResponseDTO<Void>> modify(@RequestBody @Valid ModifyUserDTO modifyUserDTO
                                      , @AuthenticationPrincipal PrincipalDetails principal) {
 
         LoginUserDTO loginUserDTO = principal.getLoginUserDTO();
@@ -82,7 +82,6 @@ public class UserRestController {
 
         // 스프링 시큐리티의 세션 같은곳에 정보 업데이트
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        // session.setAttribute("userInfo", userService.getUser(loginUserDTO.getId()));
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.success("회원 정보 수정 성공"));
     }
 }

@@ -1,5 +1,6 @@
 package com.concertfinder.concertfinder.comment.DTO;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 @Builder
@@ -9,6 +10,7 @@ import lombok.*;
 @Setter
 public class CommentWriteDTO {
 
+    @NotBlank(message = "댓글은 비어 있을 수 없습니다!")
     private String comment;
 
 
