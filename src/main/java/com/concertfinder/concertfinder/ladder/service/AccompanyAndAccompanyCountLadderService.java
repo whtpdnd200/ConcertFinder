@@ -48,8 +48,8 @@ public class AccompanyAndAccompanyCountLadderService {
     }
     
 
-    public AccompanyInfoDTO getAccompanyInfo(long postId) {
+    public AccompanyInfoDTO getAccompanyInfo(long postId, long userId) {
 
-        return accompanyService.getAccompanyInfo(postId);
+        return accompanyService.getAccompanyInfo(postId, userId);
     }
 }

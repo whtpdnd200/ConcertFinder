@@ -67,4 +67,9 @@ public class AccompanyCountService {
             throw new RuntimeException("서버 에러로 인해 동행 인원 정보를 삭제하지 못했습니다 잠시 후 다시 시도해주세요!");
         }
     }
+
+    public boolean isAccompanyChecked(long accompanyId, long userId) {
+
+        return accompanyCountRepository.existsByAccompanyIdAndUserId(accompanyId, userId);
+    }
 }

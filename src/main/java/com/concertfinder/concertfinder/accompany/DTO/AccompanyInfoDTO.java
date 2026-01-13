@@ -23,5 +23,7 @@ public class AccompanyInfoDTO {
 
     private boolean isFull;
 
+    private boolean isAccompanyChecked;
+
     private int currentCount;
 }

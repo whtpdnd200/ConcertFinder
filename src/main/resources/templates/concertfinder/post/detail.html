@@ -116,7 +116,7 @@
                     <form th:if="${#authentication.principal.loginUserDTO.id != postInfo.accompanyInfoDTO.userId}" id="accompanyApplyForm">
                         <div class="row align-items-end d-flex justify-content-end">
                             <div>
-                                <button th:data-accompany-id="${postInfo.accompanyInfoDTO.id}" id="accompanySubmitBtn" th:if="${!postInfo.accompanyInfoDTO.full}" type="submit" class="btn btn-primary btn-block w-100 py-2 font-weight-bold">
+                                <button th:if="${!postInfo.accompanyInfoDTO.full}" th:data-accompany-id="${postInfo.accompanyInfoDTO.id}" id="accompanySubmitBtn" type="submit" class="btn btn-primary btn-block w-100 py-2 font-weight-bold">
                                     <i class="bi bi-send-fill me-2"></i><span class="ml-2">동행 신청하기</span>
                                 </button>
                                 <div th:unless="${!postInfo.accompanyInfoDTO.full}">

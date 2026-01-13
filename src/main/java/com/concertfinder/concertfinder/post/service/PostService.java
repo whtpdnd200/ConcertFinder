@@ -43,12 +43,12 @@ public class PostService {
 
     // 게시글 DTO에 담기
     @Transactional
-    public PostDetailDTO addDto(Post post) {
+    public PostDetailDTO addDto(Post post, long userId) {
 
         AccompanyInfoDTO accompanyInfoDTO = null;
 
         if(post.getCategory().equals('R')) {
-            accompanyInfoDTO = accompanyAndAccompanyCountLadderService.getAccompanyInfo(post.getId());
+            accompanyInfoDTO = accompanyAndAccompanyCountLadderService.getAccompanyInfo(post.getId(), userId);
         }
 
         PostDetailDTO postDetailDTO = PostDetailDTO.builder()
@@ -104,12 +104,12 @@ public class PostService {
     }
 
     // 특정 게시글 조회
-    public PostDetailDTO getPost(long postId) {
+    public PostDetailDTO getPost(long postId, long userId) {
 
         Optional<Post> optionalPost = postRepository.findById(postId);
 
         if(optionalPost.isPresent()) {
-            PostDetailDTO postDetailDTO = addDto(optionalPost.get());
+            PostDetailDTO postDetailDTO = addDto(optionalPost.get(), userId);
             return postDetailDTO;
         }
 

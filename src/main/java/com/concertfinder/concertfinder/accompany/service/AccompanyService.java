@@ -62,7 +62,7 @@ public class AccompanyService {
         return accompanyRepository.findByPostId(postId).get().getId();
     }
 
-    public AccompanyInfoDTO getAccompanyInfo(long postId) {
+    public AccompanyInfoDTO getAccompanyInfo(long postId, long userId) {
 
         Optional<Accompany> optionalAccompany = accompanyRepository.findByPostId(postId);
 
@@ -80,6 +80,7 @@ public class AccompanyService {
                 .headCount(accompany.getHeadCount())
                 .place(accompany.getPlace())
                 .isFull(accompany.isFull())
+                .isAccompanyChecked(accompanyCountService.isAccompanyChecked(accompany.getId(), userId))
                 .sDateTime(accompany.getSDateTime())
                 .build();
 
