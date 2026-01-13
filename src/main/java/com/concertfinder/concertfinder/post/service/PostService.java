@@ -2,7 +2,6 @@ package com.concertfinder.concertfinder.post.service;
 
 import com.concertfinder.concertfinder.accompany.DTO.AccompanyAddDTO;
 import com.concertfinder.concertfinder.accompany.DTO.AccompanyInfoDTO;
-import com.concertfinder.concertfinder.accompany.service.AccompanyService;
 import com.concertfinder.concertfinder.comment.service.CommentService;
 import com.concertfinder.concertfinder.exception.GlobalExceptionHandler;
 import com.concertfinder.concertfinder.exception.custom_exception.UnAuthorizedException;
@@ -158,7 +157,8 @@ public class PostService {
             try {
                 postRepository.delete(post);
                 if(post.getCategory().equals('R')) {
-                    accompanyAndAccompanyCountLadderService.deleteAccompanyAndAccompanyCount(post.getId());
+                    
+                    accompanyAndAccompanyCountLadderService.deleteAccompanyAndAccompanyCount(postId);
                 }
             } catch(DataAccessException e) {
                 throw new RuntimeException("서버 에러로 인해 게시글 삭제가 실패 하였습니다 잠시 후 다시 시도해주세요!");

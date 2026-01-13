@@ -22,6 +22,7 @@ public class JoinUserDTO {
     @NotBlank(message = "닉네임은 비어 있을 수 없습니다!")
     @Size(max = 16, message = "닉네임은 16글자 이하로만 작성 가능 합니다!")
     private String nickname;
+
     @Email(message = "이메일 형식이 잘못 되었습니다!")
     private String email;
 

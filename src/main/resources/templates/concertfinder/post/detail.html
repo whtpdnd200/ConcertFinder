@@ -113,18 +113,22 @@
                         </div>
                     </div>
 
-                    <form th:if="${#authentication.principal.loginUserDTO.id != postInfo.accompanyInfoDTO.userId}" id="accompanyApplyForm">
-                        <div class="row align-items-end d-flex justify-content-end">
-                            <div>
-                                <button th:if="${!postInfo.accompanyInfoDTO.full}" th:data-accompany-id="${postInfo.accompanyInfoDTO.id}" id="accompanySubmitBtn" type="submit" class="btn btn-primary btn-block w-100 py-2 font-weight-bold">
-                                    <i class="bi bi-send-fill me-2"></i><span class="ml-2">동행 신청하기</span>
-                                </button>
-                                <div th:unless="${!postInfo.accompanyInfoDTO.full}">
-                                    동행 신청 마감
-                                </div>
-                            </div>
+                    <div th:if="${#authentication.principal.loginUserDTO.id != postInfo.accompanyInfoDTO.userId}"  class="row align-items-end d-flex justify-content-end">
+                        <div>
+                            <button th:if="${postInfo.accompanyInfoDTO.dateTimeAfter && !postInfo.accompanyInfoDTO.full && !postInfo.accompanyInfoDTO.accompanyChecked}" th:data-accompany-id="${postInfo.accompanyInfoDTO.id}" id="accompanySubmitBtn" type="button" class="btn btn-primary w-100 py-2 font-weight-bold">
+                                <i class="bi bi-send-fill me-2"></i><span class="ml-2">동행 신청하기</span>
+                            </button>
+                            <button th:if="${postInfo.accompanyInfoDTO.dateTimeAfter && postInfo.accompanyInfoDTO.accompanyChecked}" th:data-accompany-id="${postInfo.accompanyInfoDTO.id}" id="accompanyCancelBtn" type="button" class="btn btn-danger w-100 py-2 font-weight-bold">
+                                <i class="bi bi-send-x-fill me-2"></i><span class="ml-2">동행 취소하기</span>
+                            </button>
+                            <button th:if="${!postInfo.accompanyInfoDTO.dateTimeAfter}" class="btn btn-secondary w-100 py-2 font-weight-bold" disabled>
+                                신청 기간 종료
+                            </button>
+                            <button th:if="${postInfo.accompanyInfoDTO.dateTimeAfter && postInfo.accompanyInfoDTO.full && !postInfo.accompanyInfoDTO.accompanyChecked}" class="btn btn-danger w-100 py-2 font-weight-bold" disabled>
+                                동행 신청 마감
+                            </button>
                         </div>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -240,7 +244,27 @@
 
         var header = $("meta[name='_csrf_header']").attr("content");
 
-        $("#accompanyApplyForm").on("submit", function(e) {
+        $("#accompanyCancelBtn").on("click", function(e) {
+            e.preventDefault();
+
+            let accompanyId = $("#accompanyCancelBtn").data("accompany-id");
+
+            $.ajax({
+                type: "delete"
+                , url: "/accompany/" + accompanyId
+                , beforeSend: function(xhr) {
+                    xhr.setRequestHeader(header, token);
+                }
+                , success: function() {
+                    location.reload();
+                }
+                , error: function(xhr) {
+                    alert(xhr.responseJSON.message);
+                }
+            });
+        });
+
+        $("#accompanySubmitBtn").on("click", function(e) {
             e.preventDefault();
             let accompanyId = $("#accompanySubmitBtn").data("accompany-id");
 
@@ -378,7 +402,7 @@
                 , beforeSend: function(xhr) {
                     xhr.setRequestHeader(header, token);
                 }
-                , success : function(response) {
+                , success : function() {
 
                     location.href = "/concert/" + concertId;
                 }

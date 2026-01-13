@@ -9,20 +9,18 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/accompany")
-public class AccompanyRestController {
+public class AccompanyCountRestController {
 
     private final AccompanyCountService accompanyCountService;
 
     private final AccompanyAndAccompanyCountLadderService accompanyAndAccompanyCountLadderService;
 
+    // 동행 신청
     @PostMapping("/{accompanyId}")
     public ResponseEntity<ApiResponseDTO<Void>> addAccompany(@PathVariable long accompanyId
                                                              , @AuthenticationPrincipal PrincipalDetails principal) {
@@ -30,5 +28,16 @@ public class AccompanyRestController {
         accompanyAndAccompanyCountLadderService.insertAccompanyCountAndIsFullCheck(accompanyId, loginUserDTO.getId());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDTO.success("동행 신청 성공"));
+    }
+
+    // 동행 신청 취소
+    @DeleteMapping("/{accompanyId}")
+
+    public ResponseEntity<ApiResponseDTO<Void>> removeAccompany(@PathVariable long accompanyId
+                                                                , @AuthenticationPrincipal PrincipalDetails principal) {
+
+        LoginUserDTO loginUserDTO = principal.getLoginUserDTO();
+        accompanyAndAccompanyCountLadderService.deleteAccompanyCountAndIsFullCheck(accompanyId, loginUserDTO.getId());
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.success("동행 취소 성공"));
     }
 }

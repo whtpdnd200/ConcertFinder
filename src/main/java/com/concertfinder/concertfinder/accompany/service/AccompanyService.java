@@ -11,9 +11,11 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+@lombok.extern.slf4j.Slf4j
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -22,7 +24,7 @@ public class AccompanyService {
     private final AccompanyRepository accompanyRepository;
     private final AccompanyCountService accompanyCountService;
 
-    @Transactional
+    // 동행 모집 정보 생성
     public long insertAccompany(AccompanyAddDTO accompanyAddDTO) {
 
         if(accompanyAddDTO.getHeadCount() <= 1) {
@@ -57,11 +59,13 @@ public class AccompanyService {
         }
     }
 
+    // 동행 모집 PK 반환
     public long getAccompanyId(long postId) {
 
         return accompanyRepository.findByPostId(postId).get().getId();
     }
 
+    // 동행 정보 DTO 반환
     public AccompanyInfoDTO getAccompanyInfo(long postId, long userId) {
 
         Optional<Accompany> optionalAccompany = accompanyRepository.findByPostId(postId);
@@ -80,11 +84,20 @@ public class AccompanyService {
                 .headCount(accompany.getHeadCount())
                 .place(accompany.getPlace())
                 .isFull(accompany.isFull())
+                .isDateTimeAfter(compareDate(accompany.getSDateTime()))
                 .isAccompanyChecked(accompanyCountService.isAccompanyChecked(accompany.getId(), userId))
+
                 .sDateTime(accompany.getSDateTime())
                 .build();
 
         return accompanyInfoDTO;
+    }
+
+    // 동행 모집 날짜와 현재 날짜 비교 메서드
+    public boolean compareDate(LocalDateTime sDateTime) {
+
+
+        return LocalDateTime.now().isBefore(sDateTime);
     }
 
     // 동행 정보 삭제 메서드
@@ -108,12 +121,14 @@ public class AccompanyService {
         }
     }
 
-    public boolean isFull(Accompany accompany) {
+    // 동행 모집 인원 체크
+    public boolean isFull(int headCount, long accompanyId) {
 
 
-        return accompany.getHeadCount() == accompanyCountService.getAccompanyCount(accompany.getId());
+        return headCount == accompanyCountService.getAccompanyCount(accompanyId);
     }
 
+    // 동행 모집 엔티티 반환
     public Accompany getAccompany(long accompanyId) {
         Optional<Accompany> optionalAccompany = accompanyRepository.findById(accompanyId);
 
@@ -125,6 +140,7 @@ public class AccompanyService {
         return optionalAccompany.get();
     }
 
+    // 동행 모집 인원 상태 변경
     public void isFullChange(Accompany accompany, boolean isFull) {
 
         accompany = accompany.toBuilder()

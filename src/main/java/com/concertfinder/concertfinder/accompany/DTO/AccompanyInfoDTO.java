@@ -25,5 +25,7 @@ public class AccompanyInfoDTO {
 
     private boolean isAccompanyChecked;
 
+    private boolean isDateTimeAfter;
+
     private int currentCount;
 }
