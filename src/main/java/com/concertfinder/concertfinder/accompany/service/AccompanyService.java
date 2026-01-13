@@ -62,7 +62,14 @@ public class AccompanyService {
     // 동행 모집 PK 반환
     public long getAccompanyId(long postId) {
 
-        return accompanyRepository.findByPostId(postId).get().getId();
+        Optional<Accompany> optionalAccompany = accompanyRepository.findByPostId(postId);
+
+        if(!optionalAccompany.isPresent()) {
+
+            throw new NoSuchElementException("동행 정보를 찾을 수 없습니다!");
+        }
+        
+        return optionalAccompany.get().getId();
     }
 
     // 동행 정보 DTO 반환
