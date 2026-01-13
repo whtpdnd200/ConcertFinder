@@ -113,14 +113,15 @@
                         </div>
                     </div>
 
-                    <form id="accompanyApplyForm">
-                        <input type="hidden" name="postId" >
-
+                    <form th:if="${#authentication.principal.loginUserDTO.id != postInfo.accompanyInfoDTO.userId}" id="accompanyApplyForm">
                         <div class="row align-items-end d-flex justify-content-end">
-                            <div class="">
-                                <button type="button" class="btn btn-primary btn-block w-100 py-2 font-weight-bold">
+                            <div>
+                                <button th:data-accompany-id="${postInfo.accompanyInfoDTO.id}" id="accompanySubmitBtn" th:if="${!postInfo.accompanyInfoDTO.full}" type="submit" class="btn btn-primary btn-block w-100 py-2 font-weight-bold">
                                     <i class="bi bi-send-fill me-2"></i><span class="ml-2">동행 신청하기</span>
                                 </button>
+                                <div th:unless="${!postInfo.accompanyInfoDTO.full}">
+                                    동행 신청 마감
+                                </div>
                             </div>
                         </div>
                     </form>
@@ -238,6 +239,28 @@
         var token = $("meta[name='_csrf']").attr("content");
 
         var header = $("meta[name='_csrf_header']").attr("content");
+
+        $("#accompanyApplyForm").on("submit", function(e) {
+            e.preventDefault();
+            let accompanyId = $("#accompanySubmitBtn").data("accompany-id");
+
+            $.ajax({
+                type: "post"
+                , url: "/accompany/" + accompanyId
+                , beforeSend: function(xhr) {
+                    xhr.setRequestHeader(header, token);
+                }
+                , success: function() {
+
+                    location.reload();
+                }
+                , error: function(xhr) {
+
+                    alert(xhr.responseJSON.message);
+                }
+            });
+
+        });
 
         $(document).on("click", ".commentModifyBtn", function(e) {
             e.preventDefault();

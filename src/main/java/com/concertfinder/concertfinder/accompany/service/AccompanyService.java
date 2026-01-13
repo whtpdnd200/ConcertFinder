@@ -75,6 +75,7 @@ public class AccompanyService {
 
         AccompanyInfoDTO accompanyInfoDTO = AccompanyInfoDTO.builder()
                 .id(accompany.getId())
+                .userId(accompany.getUserId())
                 .currentCount(accompanyCountService.getAccompanyCount(accompany.getId()))
                 .headCount(accompany.getHeadCount())
                 .place(accompany.getPlace())
@@ -110,5 +111,30 @@ public class AccompanyService {
 
 
         return accompany.getHeadCount() == accompanyCountService.getAccompanyCount(accompany.getId());
+    }
+
+    public Accompany getAccompany(long accompanyId) {
+        Optional<Accompany> optionalAccompany = accompanyRepository.findById(accompanyId);
+
+        if(!optionalAccompany.isPresent()) {
+
+            throw new NoSuchElementException("동행 정보를 찾을 수 없습니다! 잠시 후 다시 시도해주세요!");
+        }
+
+        return optionalAccompany.get();
+    }
+
+    public void isFullChange(Accompany accompany, boolean isFull) {
+
+        accompany = accompany.toBuilder()
+                .isFull(isFull)
+                .build();
+
+        try {
+            accompanyRepository.save(accompany);
+        } catch(DataAccessException e) {
+
+            throw new RuntimeException("서버 에러로인해 동행 신청 정보를 저장하지 못했습니다 잠시 후 다시 시도해주세요!");
+        }
     }
 }

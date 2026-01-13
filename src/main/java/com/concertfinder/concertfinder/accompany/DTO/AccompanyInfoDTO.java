@@ -13,6 +13,8 @@ public class AccompanyInfoDTO {
 
     private long id;
 
+    private long userId;
+
     private byte headCount;
 
     private LocalDateTime sDateTime;

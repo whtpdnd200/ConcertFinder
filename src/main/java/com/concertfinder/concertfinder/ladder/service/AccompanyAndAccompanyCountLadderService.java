@@ -2,6 +2,7 @@ package com.concertfinder.concertfinder.ladder.service;
 
 import com.concertfinder.concertfinder.accompany.DTO.AccompanyAddDTO;
 import com.concertfinder.concertfinder.accompany.DTO.AccompanyInfoDTO;
+import com.concertfinder.concertfinder.accompany.domain.Accompany;
 import com.concertfinder.concertfinder.accompany.service.AccompanyService;
 import com.concertfinder.concertfinder.accompany_count.service.AccompanyCountService;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,19 @@ public class AccompanyAndAccompanyCountLadderService {
         accompanyCountService.deleteAllAccompanyCount(accompanyId);
     }
 
+    @Transactional
+    public void insertAccompanyCountAndIsFullCheck(long accompanyId, long userId) {
+        Accompany accompany = accompanyService.getAccompany(accompanyId);
+
+        accompanyCountService.insertAccompanyCount(accompanyId, userId);
+
+        if(accompanyService.isFull(accompany)) {
+
+            accompanyService.isFullChange(accompany, true);
+        } else {
+            accompanyService.isFullChange(accompany, false);
+        }
+    }
     
 
     public AccompanyInfoDTO getAccompanyInfo(long postId) {
