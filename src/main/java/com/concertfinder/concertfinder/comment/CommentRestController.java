@@ -6,6 +6,7 @@ import com.concertfinder.concertfinder.comment.service.CommentService;
 import com.concertfinder.concertfinder.common.DTO.ApiResponseDTO;
 import com.concertfinder.concertfinder.user.DTO.LoginUserDTO;
 import com.concertfinder.concertfinder.user.DTO.PrincipalDetails;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,7 +24,7 @@ public class CommentRestController {
 
     // 댓글 작성 API
     @PostMapping("/{postId}")
-    public ResponseEntity<ApiResponseDTO<Void>> createComment(@PathVariable long postId
+    public ResponseEntity<ApiResponseDTO<Void>> createComment(@PathVariable @NotNull(message = "작성 할 게시글이 존재 하지 않습니다!") Long postId
                                              , @RequestParam String comment
                                              , @AuthenticationPrincipal PrincipalDetails principal) {
 
@@ -47,7 +48,7 @@ public class CommentRestController {
 
     // 댓글 수정 API
     @PutMapping("/{commentId}")
-    public ResponseEntity<ApiResponseDTO<Void>> modifyComment(@PathVariable long commentId
+    public ResponseEntity<ApiResponseDTO<Void>> modifyComment(@PathVariable @NotNull(message = "수정 할 댓글이 존재 하지 않습니다!") Long commentId
                                                               , @RequestBody CommentModifyDTO comment
                                                               , @AuthenticationPrincipal PrincipalDetails principal) {
 
@@ -60,7 +61,7 @@ public class CommentRestController {
 
     // 댓글 삭제 API
     @DeleteMapping("/{commentId}")
-    public ResponseEntity<ApiResponseDTO<Void>> removeComment(@PathVariable long commentId
+    public ResponseEntity<ApiResponseDTO<Void>> removeComment(@PathVariable @NotNull(message = "삭제 할 댓글이 존재 하지않습니다!") Long commentId
                                                              , @AuthenticationPrincipal PrincipalDetails principal) {
         LoginUserDTO loginUserDTO = principal.getLoginUserDTO();
 

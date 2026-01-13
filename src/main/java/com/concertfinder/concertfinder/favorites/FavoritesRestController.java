@@ -6,6 +6,7 @@ import com.concertfinder.concertfinder.ladder.service.ConcertAndFavoritesLadderS
 import com.concertfinder.concertfinder.user.DTO.LoginUserDTO;
 import com.concertfinder.concertfinder.user.DTO.PrincipalDetails;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ public class FavoritesRestController {
 
 
     @PostMapping("/{concertId}")
-    public ResponseEntity<ApiResponseDTO<Void>> addFavorites(@PathVariable String concertId
+    public ResponseEntity<ApiResponseDTO<Void>> addFavorites(@PathVariable @NotBlank(message = "저장 할 콘서트를 찾지 못했습니다!") String concertId
                                                             , @AuthenticationPrincipal PrincipalDetails principal) {
 
         LoginUserDTO loginUserDTO = principal.getLoginUserDTO();
@@ -31,7 +32,7 @@ public class FavoritesRestController {
     }
 
     @DeleteMapping("{concertId}")
-    public ResponseEntity<ApiResponseDTO<Void>> removeFavorites(@PathVariable String concertId
+    public ResponseEntity<ApiResponseDTO<Void>> removeFavorites(@PathVariable @NotBlank(message = "삭제 할 콘서트를 찾지 못했습니다!") String concertId
                                                                 , @AuthenticationPrincipal PrincipalDetails principal) {
 
         LoginUserDTO loginUserDTO = principal.getLoginUserDTO();

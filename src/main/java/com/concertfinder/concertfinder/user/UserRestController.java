@@ -6,6 +6,9 @@ import com.concertfinder.concertfinder.user.DTO.LoginUserDTO;
 import com.concertfinder.concertfinder.user.DTO.ModifyUserDTO;
 import com.concertfinder.concertfinder.user.DTO.PrincipalDetails;
 import com.concertfinder.concertfinder.user.service.UserService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +29,9 @@ public class UserRestController {
 
     // 회원가입 : 중복검사 기능
     @GetMapping("/id-check")
-    public ResponseEntity<ApiResponseDTO<Boolean>> isDuplicate(@RequestParam String userId) {
+    public ResponseEntity<ApiResponseDTO<Boolean>> isDuplicate(@RequestParam
+                                                               @NotBlank(message = "아이디는 비어 있을 수 없습니다!")
+                                                               String userId) {
 
         boolean isDuplicate = userService.isDuplicate(userId);
         return ResponseEntity.status(HttpStatus.OK)
@@ -36,7 +41,7 @@ public class UserRestController {
 
     // 회원가입 : 회원가입 기능
     @PostMapping
-    public ResponseEntity<ApiResponseDTO<Void>> createUser(@ModelAttribute JoinUserDTO joinUserDTO) {
+    public ResponseEntity<ApiResponseDTO<Void>> createUser(@ModelAttribute @Valid JoinUserDTO joinUserDTO) {
 
         userService.insertUser(joinUserDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDTO.success("회원가입 성공"));
@@ -56,7 +61,7 @@ public class UserRestController {
 
     // 회원정보 수정 기능
     @PutMapping
-    public ResponseEntity<ApiResponseDTO<Void>> modify(@RequestBody ModifyUserDTO modifyUserDTO
+    public ResponseEntity<ApiResponseDTO<Void>> modify(@RequestBody @Valid ModifyUserDTO modifyUserDTO
                                      , @AuthenticationPrincipal PrincipalDetails principal) {
 
         LoginUserDTO loginUserDTO = principal.getLoginUserDTO();
@@ -77,7 +82,6 @@ public class UserRestController {
 
         // 스프링 시큐리티의 세션 같은곳에 정보 업데이트
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        // session.setAttribute("userInfo", userService.getUser(loginUserDTO.getId()));
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.success("회원 정보 수정 성공"));
     }
 }

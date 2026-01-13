@@ -1,7 +1,10 @@
 package com.concertfinder.concertfinder.post;
 
 import com.concertfinder.concertfinder.post.service.PostService;
+import com.concertfinder.concertfinder.user.DTO.LoginUserDTO;
+import com.concertfinder.concertfinder.user.DTO.PrincipalDetails;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,18 +30,21 @@ public class PostController {
     // 글 상세 페이지
     @GetMapping("/{postId}")
     public String detail(@PathVariable long postId
+                         , @AuthenticationPrincipal PrincipalDetails principal
                         , Model model) {
 
-        model.addAttribute("postInfo", postService.getPost(postId));
+        LoginUserDTO loginUserDTO = principal.getLoginUserDTO();
+        model.addAttribute("postInfo", postService.getPost(postId, loginUserDTO.getId()));
         return "concertfinder/post/detail";
     }
 
     // 게시글 수정 페이지
     @GetMapping("/modify/{postId}")
     public String modify(@PathVariable long postId
+            , @AuthenticationPrincipal PrincipalDetails principal
             , Model model) {
-
-        model.addAttribute("postModifyInfo", postService.getPost(postId));
+        LoginUserDTO loginUserDTO = principal.getLoginUserDTO();
+        model.addAttribute("postModifyInfo", postService.getPost(postId, loginUserDTO.getId()));
         return "concertfinder/post/modify";
     }
 }

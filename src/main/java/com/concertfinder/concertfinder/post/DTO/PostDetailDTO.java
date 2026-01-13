@@ -1,5 +1,6 @@
 package com.concertfinder.concertfinder.post.DTO;
 
+import com.concertfinder.concertfinder.accompany.DTO.AccompanyInfoDTO;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -26,6 +27,9 @@ public class PostDetailDTO {
     private String content;
 
     private int commentCount;
+
+    // 동행 정보 객체
+    private AccompanyInfoDTO accompanyInfoDTO;
 
     private LocalDateTime createdAt;
 
