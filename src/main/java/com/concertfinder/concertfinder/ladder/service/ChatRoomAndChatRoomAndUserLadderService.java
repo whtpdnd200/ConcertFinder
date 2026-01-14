@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @lombok.extern.slf4j.Slf4j
 @Service
 @RequiredArgsConstructor
@@ -15,7 +17,7 @@ public class ChatRoomAndChatRoomAndUserLadderService {
 
     private final ChatRoomService chatRoomService;
 
-    private final ChatRoomAndUserService cHatRoomAndUserService;
+    private final ChatRoomAndUserService chatRoomAndUserService;
 
     // 동행 글 작성한 유저의 채팅방 생성 및 입장 메서드
     @Transactional
@@ -23,19 +25,19 @@ public class ChatRoomAndChatRoomAndUserLadderService {
 
         long chatRoomId = chatRoomService.insertChatRoom(accompanyId, roomName);
 
-        cHatRoomAndUserService.insertChatRoomAndUser(userId, chatRoomId);
+        chatRoomAndUserService.insertChatRoomAndUser(userId, chatRoomId);
     }
 
     // 동행 신청유저 채팅방 입장 메서드
     public void insertChatRoomAndUser(long userId, long roomId) {
 
-        cHatRoomAndUserService.insertChatRoomAndUser(userId, roomId);
+        chatRoomAndUserService.insertChatRoomAndUser(userId, roomId);
     }
 
     // 동행 신청 유저 채팅방 퇴장 메서드
     public void deleteChatRoomAndUser(long userId, long roomId) {
 
-        cHatRoomAndUserService.deleteChatRoomAndUser(userId, roomId);
+        chatRoomAndUserService.deleteChatRoomAndUser(userId, roomId);
     }
 
     // 동행 신청시 입장 할 채팅방의 번호 반환 메서드
@@ -51,6 +53,11 @@ public class ChatRoomAndChatRoomAndUserLadderService {
 
     public void deleteAllChatRoomAndUser(long roomId) {
 
-        cHatRoomAndUserService.deleteAllChatRoomAndUser(roomId);
+        chatRoomAndUserService.deleteAllChatRoomAndUser(roomId);
+    }
+
+    public String getChatName(long roomId) {
+
+        return chatRoomService.getChatRoomName(roomId);
     }
 }

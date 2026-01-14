@@ -19,4 +19,8 @@ public interface AccompanyCountRepository extends JpaRepository<AccompanyCount, 
     public List<AccompanyCount> findAllByAccompanyId(long accompanyId);
 
     public boolean existsByAccompanyIdAndUserId(long accompanyId, long userId);
+
+    public List<AccompanyCount> findAllTop3ByUserId(long userId);
+
+    public List<AccompanyCount> findAllByUserId(long userId);
 }

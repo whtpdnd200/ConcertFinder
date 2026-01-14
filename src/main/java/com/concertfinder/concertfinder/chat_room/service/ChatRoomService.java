@@ -63,4 +63,17 @@ public class ChatRoomService {
             throw new RuntimeException("서버 에러로인해 채팅방을 삭제 할 수 없습니다! 잠시 후 다시 시도해주세요!");
         }
     }
+
+    public String getChatRoomName(long roomId) {
+
+        Optional<ChatRoom> optionalChatRoom = chatRoomRepository.findById(roomId);
+
+        if(!optionalChatRoom.isPresent()) {
+
+            throw new NoSuchElementException("채팅방 정보를 불러 올 수 없습니다!");
+        }
+
+        return optionalChatRoom.get().getRoomName();
+    }
+
 }

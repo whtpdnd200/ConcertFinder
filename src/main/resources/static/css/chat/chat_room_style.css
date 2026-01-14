@@ -1,0 +1,132 @@
+/* 전체 레이아웃 가로 사이즈 제약 (모바일 친화적) */
+.chat-detail-wrapper {
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: #f5f7fb;
+    height: calc(100vh - 60px); /* 메인 레이아웃 헤더 제외 높이 */
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+/* 상단 헤더 */
+.chat-header {
+    background: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 10;
+}
+
+/* 메시지 컨테이너 */
+.chat-message-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* 메시지 그룹 공통 */
+.message-group {
+    display: flex;
+    flex-direction: column;
+    max-width: 80%;
+}
+
+.message-content-wrapper {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+}
+
+.message-bubble {
+    padding: 10px 14px;
+    border-radius: 18px;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    word-break: break-all;
+}
+
+.message-time {
+    font-size: 0.7rem;
+    color: #999;
+    min-width: fit-content;
+}
+
+/* 상대방 메시지 */
+.opponent {
+    align-self: flex-start;
+}
+.opponent .sender-name {
+    font-size: 0.8rem;
+    color: #666;
+    margin-bottom: 4px;
+    margin-left: 4px;
+}
+.opponent .message-bubble {
+    background-color: white;
+    color: #333;
+    border-bottom-left-radius: 2px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* 내 메시지 */
+.me {
+    align-self: flex-end;
+}
+.me .message-bubble {
+    background-color: #4A90E2;
+    color: white;
+    border-bottom-right-radius: 2px;
+}
+
+/* 시스템 메시지 & 날짜 */
+.system-message, .chat-date-divider {
+    align-self: center;
+    font-size: 0.8rem;
+    color: #888;
+    background: rgba(0,0,0,0.05);
+    padding: 4px 12px;
+    border-radius: 12px;
+    margin: 10px 0;
+}
+
+/* 하단 입력바 */
+.chat-input-area {
+    background: white;
+    padding: 10px 15px 30px 15px; /* 하단 여백은 모바일 배려 */
+}
+
+.input-wrapper {
+    display: flex;
+    align-items: center;
+    background: #f0f2f5;
+    padding: 8px 12px;
+    border-radius: 25px;
+    gap: 10px;
+}
+
+#messageInput {
+    flex: 1;
+    border: none;
+    background: transparent;
+    outline: none;
+    resize: none;
+    max-height: 100px;
+    padding: 5px 0;
+}
+
+.btn-plus, .btn-send {
+    border: none;
+    background: transparent;
+    color: #4A90E2;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.btn-send:hover { color: #357ABD; }

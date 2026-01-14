@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -70,4 +71,6 @@ public class ChatRoomAndUserService {
             deleteChatRoomAndUser(c.getUserId(), c.getRoomId());
         }
     }
+
+
 }
