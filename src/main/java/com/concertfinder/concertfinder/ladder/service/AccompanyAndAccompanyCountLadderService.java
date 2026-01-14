@@ -20,23 +20,32 @@ public class AccompanyAndAccompanyCountLadderService {
 
     private final AccompanyCountService accompanyCountService;
 
+    private final ChatRoomAndChatRoomAndUserLadderService chatRoomAndChatRoomAndUserLadderService;
+
     // 동행 모집 정보 생성 및 동행 모집 인원 추가
     @Transactional
-    public void insertAccompanyAndAccompanyCount(AccompanyAddDTO accompanyAddDTO) {
+    public void insertAccompanyAndAccompanyCount(AccompanyAddDTO accompanyAddDTO, long userId, String roomName) {
 
         long accompanyId = accompanyService.insertAccompany(accompanyAddDTO);
 
         accompanyCountService.insertAccompanyCount(accompanyId, accompanyAddDTO.getUserId());
+
+        chatRoomAndChatRoomAndUserLadderService.insertChatRoomAndChatAndUser(accompanyId, userId, roomName);
     }
 
     // 동행 모집 정보 삭제 및 동행 모집 인원 전체 삭제
     @Transactional
     public void deleteAccompanyAndAccompanyCount(long postId) {
-        log.info("중간 서비스 게시글 PK : {}", postId);
+
         long accompanyId = accompanyService.getAccompanyId(postId);
-        log.info("동행 모집 PK : {} ", accompanyId);
+
         accompanyService.deleteAccompany(accompanyId);
         accompanyCountService.deleteAllAccompanyCount(accompanyId);
+
+        long roomId = chatRoomAndChatRoomAndUserLadderService.getRoomId(accompanyId);
+
+        chatRoomAndChatRoomAndUserLadderService.deleteChatRoom(roomId);
+        chatRoomAndChatRoomAndUserLadderService.deleteAllChatRoomAndUser(roomId);
     }
 
     // 동행 인원 신청 및 동행 모집 인원 체크
@@ -50,6 +59,10 @@ public class AccompanyAndAccompanyCountLadderService {
 
             accompanyService.isFullChange(accompany, true);
         }
+
+        long roomId = chatRoomAndChatRoomAndUserLadderService.getRoomId(accompanyId);
+
+        chatRoomAndChatRoomAndUserLadderService.insertChatRoomAndUser(userId, roomId);
     }
     
 
@@ -70,5 +83,9 @@ public class AccompanyAndAccompanyCountLadderService {
         if(!accompanyService.isFull(accompany.getHeadCount(), accompany.getId())) {
             accompanyService.isFullChange(accompany, false);
         }
+
+        long roomId = chatRoomAndChatRoomAndUserLadderService.getRoomId(accompanyId);
+
+        chatRoomAndChatRoomAndUserLadderService.deleteChatRoomAndUser(userId, roomId);
     }
 }

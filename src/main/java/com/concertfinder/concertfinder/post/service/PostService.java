@@ -94,7 +94,7 @@ public class PostService {
                         .sDateTime(postWriteDTO.getSDateTime())
                         .build();
 
-                accompanyAndAccompanyCountLadderService.insertAccompanyAndAccompanyCount(accompanyAddDTO);
+                accompanyAndAccompanyCountLadderService.insertAccompanyAndAccompanyCount(accompanyAddDTO, userId , postWriteDTO.getTitle());
             }
         } catch(DataAccessException e) {
             throw new RuntimeException("서버 에러로 인해 게시글 작성이 실패 하였습니다 잠시 후 다시 시도해주세요!");

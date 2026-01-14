@@ -1,4 +1,4 @@
-package com.concertfinder.concertfinder.chat;
+package com.concertfinder.concertfinder.chat_test;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
