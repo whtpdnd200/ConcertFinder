@@ -1,7 +1,9 @@
 package com.concertfinder.concertfinder.chat_room_and_user.service;
 
+import com.concertfinder.concertfinder.chat_room.DTO.ChatUserInfoDTO;
 import com.concertfinder.concertfinder.chat_room_and_user.domain.ChatRoomAndUser;
 import com.concertfinder.concertfinder.chat_room_and_user.repository.ChatRoomAndUserRepository;
+import com.concertfinder.concertfinder.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,8 @@ import java.util.Optional;
 public class ChatRoomAndUserService {
 
     private final ChatRoomAndUserRepository chatRoomAndUserRepository;
+
+    private final UserService userService;
 
     // 동행 신청 및 동행 글 생성한 사용자의 채팅방 입장 메서드
     public void insertChatRoomAndUser(long userId, long roomId) {
@@ -73,4 +77,20 @@ public class ChatRoomAndUserService {
     }
 
 
+    public boolean isHost(long userId, long roomId) {
+
+        Optional<ChatRoomAndUser> optionalChatRoomAndUser = chatRoomAndUserRepository.findByUserIdAndRoomId(userId, roomId);
+
+        if(!optionalChatRoomAndUser.isPresent()) {
+
+            throw new NoSuchElementException("유저 정보를 찾을 수 없습니다!");
+        }
+
+        return optionalChatRoomAndUser.get().isHost();
+    }
+
+    public int getCurrentCount(long roomId) {
+
+        return chatRoomAndUserRepository.countByRoomId(roomId);
+    }
 }

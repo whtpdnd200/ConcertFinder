@@ -13,5 +13,11 @@ public class ChatRoomInfoDTO {
 
     private long chatRoomId;
 
-    private List<ChatUserInfoDTO> userInfoList;
+    private long accompanyId;
+
+    private String roomName;
+
+    private boolean isHost;
+
+    private int currentCount;
 }

@@ -5,6 +5,7 @@ import com.concertfinder.concertfinder.accompany.DTO.AccompanyInfoDTO;
 import com.concertfinder.concertfinder.accompany.domain.Accompany;
 import com.concertfinder.concertfinder.accompany.repository.AccompanyRepository;
 import com.concertfinder.concertfinder.accompany_count.service.AccompanyCountService;
+import com.concertfinder.concertfinder.post.service.PostService;
 import groovy.util.logging.Slf4j;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
@@ -160,5 +161,18 @@ public class AccompanyService {
 
             throw new RuntimeException("서버 에러로인해 동행 신청 정보를 저장하지 못했습니다 잠시 후 다시 시도해주세요!");
         }
+    }
+
+    // 동행 모집 테이블에서 게시글 PK 반환 메서드
+    public long getPostId(long accompanyId) {
+
+        Optional<Accompany> optionalAccompany = accompanyRepository.findById(accompanyId);
+
+        if(!optionalAccompany.isPresent()) {
+
+            throw new NoSuchElementException("게시글 정보를 조회 할 수 없습니다!");
+        }
+
+        return optionalAccompany.get().getPostId();
     }
 }

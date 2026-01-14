@@ -130,3 +130,36 @@
 }
 
 .btn-send:hover { color: #357ABD; }
+
+/* 드롭다운 메뉴 스타일 보정 */
+.header-actions .dropdown-menu {
+    min-width: 160px;
+    border-radius: 12px;
+    margin-top: 10px;
+}
+
+.header-actions .dropdown-item {
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.header-actions .dropdown-item:active {
+    background-color: #f8f9fa;
+    color: inherit;
+}
+
+/* 나가기 아이콘 색상 보정 */
+.bi-box-arrow-right {
+    color: #6c757d;
+}
+
+/* 삭제 아이콘 색상 보정 (강조) */
+.text-danger .bi-trash3-fill {
+    color: #dc3545;
+}
+
+/* 호버 시 부드러운 효과 */
+.header-actions .dropdown-item:hover {
+    background-color: #f1f3f5;
+}

@@ -1,7 +1,11 @@
 package com.concertfinder.concertfinder.chat_room.service;
 
+import com.concertfinder.concertfinder.chat_room.DTO.ChatRoomInfoDTO;
 import com.concertfinder.concertfinder.chat_room.domain.ChatRoom;
 import com.concertfinder.concertfinder.chat_room.repository.ChatRoomRepository;
+import com.concertfinder.concertfinder.chat_room_and_user.domain.ChatRoomAndUser;
+import com.concertfinder.concertfinder.chat_room_and_user.service.ChatRoomAndUserService;
+import com.concertfinder.concertfinder.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
@@ -14,6 +18,9 @@ import java.util.Optional;
 public class ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
+
+    private final ChatRoomAndUserService chatRoomAndUserService;
+
 
     // 채팅방 번호 유저 번호 저장 메서드
     public long insertChatRoom(long accompanyId, String roomName) {
@@ -76,4 +83,26 @@ public class ChatRoomService {
         return optionalChatRoom.get().getRoomName();
     }
 
+    // 채팅방 정보 및 참여중인 유저 정보 DTO 반환 메서드
+    public ChatRoomInfoDTO getChatRoomInfo(long roomId, long userId) {
+
+        Optional<ChatRoom> optionalChatRoom = chatRoomRepository.findById(roomId);
+
+        if(!optionalChatRoom.isPresent()) {
+
+            throw new NoSuchElementException("채팅방 정보를 불러오지 못했습니다!");
+        }
+
+        ChatRoom chatRoom = optionalChatRoom.get();
+
+        ChatRoomInfoDTO chatRoomInfoDTO = ChatRoomInfoDTO.builder()
+                .chatRoomId(roomId)
+                .accompanyId(chatRoom.getAccompanyId())
+                .roomName(chatRoom.getRoomName())
+                .isHost(chatRoomAndUserService.isHost(userId, roomId))
+                .currentCount(chatRoomAndUserService.getCurrentCount(roomId))
+                .build();
+
+        return chatRoomInfoDTO;
+    }
 }

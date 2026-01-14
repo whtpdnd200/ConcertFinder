@@ -13,5 +13,5 @@ public class ChatUserInfoDTO {
 
     private String nickName;
 
-    private boolean isHost;
+
 }

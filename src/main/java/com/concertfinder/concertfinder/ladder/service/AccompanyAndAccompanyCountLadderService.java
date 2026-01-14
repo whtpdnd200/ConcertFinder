@@ -6,6 +6,7 @@ import com.concertfinder.concertfinder.accompany.domain.Accompany;
 import com.concertfinder.concertfinder.accompany.service.AccompanyService;
 import com.concertfinder.concertfinder.accompany_count.service.AccompanyCountService;
 import com.concertfinder.concertfinder.chat_room.DTO.ChatRoomListDTO;
+import com.concertfinder.concertfinder.exception.custom_exception.UnAuthorizedException;
 import groovy.util.logging.Slf4j;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -37,7 +38,7 @@ public class AccompanyAndAccompanyCountLadderService {
         chatRoomAndChatRoomAndUserLadderService.insertChatRoomAndChatAndUser(accompanyId, userId, roomName);
     }
 
-    // 동행 모집 정보 삭제 및 동행 모집 인원 전체 삭제
+    // 게시글 PK로 동행 모집 정보 삭제 및 동행 모집 인원 전체 삭제
     @Transactional
     public void deleteAccompanyAndAccompanyCount(long postId) {
 
@@ -47,6 +48,21 @@ public class AccompanyAndAccompanyCountLadderService {
         accompanyCountService.deleteAllAccompanyCount(accompanyId);
 
         long roomId = chatRoomAndChatRoomAndUserLadderService.getRoomId(accompanyId);
+
+        chatRoomAndChatRoomAndUserLadderService.deleteChatRoom(roomId);
+        chatRoomAndChatRoomAndUserLadderService.deleteAllChatRoomAndUser(roomId);
+    }
+
+    // 동행 모집 PK로 동행 모집 정보 삭제 및 동행 모집 인원 전체 삭제
+    @Transactional
+    public void deleteAccompanyAndAccompanyCountByAccompanyId(long accompanyId, long roomId, long userId) {
+
+        if(!chatRoomAndChatRoomAndUserLadderService.isHost(userId, roomId)) {
+
+            throw new UnAuthorizedException("관리자만 채팅방을 삭제 할 수 있습니다!");
+        }
+        accompanyService.deleteAccompany(accompanyId);
+        accompanyCountService.deleteAllAccompanyCount(accompanyId);
 
         chatRoomAndChatRoomAndUserLadderService.deleteChatRoom(roomId);
         chatRoomAndChatRoomAndUserLadderService.deleteAllChatRoomAndUser(roomId);
@@ -145,5 +161,10 @@ public class AccompanyAndAccompanyCountLadderService {
             allChatRoomList.add(chatRoomListDTO);
         }
         return allChatRoomList;
+    }
+
+    public long getPostId(long accompanyId) {
+
+        return accompanyService.getPostId(accompanyId);
     }
 }

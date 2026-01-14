@@ -60,4 +60,9 @@ public class ChatRoomAndChatRoomAndUserLadderService {
 
         return chatRoomService.getChatRoomName(roomId);
     }
+
+    public boolean isHost(long userId, long roomId) {
+
+        return chatRoomAndUserService.isHost(userId, roomId);
+    }
 }

@@ -8,63 +8,126 @@
     <title>채팅</title>
   <link layout:fragment="css" rel="stylesheet" th:href="@{/css/chat/chat_room_style.css}">
 </head>
-  <section layout:fragment="contents">
-    <div class="chat-detail-wrapper">
-      <div class="chat-header shadow-sm">
-        <div class="d-flex align-items-center">
-          <a href="javascript:history.back()" class="text-dark mr-3">
-            <i class="bi bi-chevron-left" style="font-size: 1.2rem;"></i>
-          </a>
-          <div>
-            <h5  class="mb-0 font-weight-bold text-truncate" style="max-width: 200px;">채팅방 이름</h5>
-            <small class="text-muted">
-              <i class="bi bi-people-fill"></i> 참여 인원 <span >0</span>명
-            </small>
-          </div>
-        </div>
-        <div class="header-actions">
-          <button class="btn btn-link text-muted p-0"><i class="bi bi-info-circle"></i></button>
-        </div>
-      </div>
-
-      <div id="chatMessageArea" class="chat-message-container">
-        <div class="chat-date-divider">
-          <span>2026년 1월 14일</span>
-        </div>
-
-        <div class="message-group opponent">
-          <div class="sender-name">상대방닉네임</div>
-          <div class="message-content-wrapper">
-            <div class="message-bubble">
-              안녕하세요! 이번 콘서트 같이 가기로 한 분 맞으시죠? 😊
+    <section layout:fragment="contents">
+        <div class="chat-detail-wrapper">
+          <div class="chat-header shadow-sm">
+            <div class="d-flex align-items-center">
+              <a href="javascript:history.back()" class="text-dark mr-3">
+                <i class="bi bi-chevron-left" style="font-size: 1.2rem;"></i>
+              </a>
+              <div>
+                <h5 th:text="${chatRoomInfo.roomName}" class="mb-0 font-weight-bold text-truncate" style="max-width: 200px;">채팅방 이름</h5>
+                <small class="text-muted">
+                  <i class="bi bi-people-fill"></i> 참여 인원 <span th:text="${chatRoomInfo.currentCount}" >0</span>명
+                </small>
+              </div>
             </div>
-            <span class="message-time">오후 2:30</span>
-          </div>
-        </div>
+            <div class="header-actions">
+                <div class="dropdown">
+                    <button class="btn btn-link text-muted p-2" type="button" id="chatMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="bi bi-three-dots-vertical" style="font-size: 1.2rem;"></i>
+                    </button>
 
-        <div class="message-group me">
-          <div class="message-content-wrapper">
-            <span class="message-time">오후 2:31</span>
-            <div class="message-bubble">
-              네 맞아요! 티켓팅 성공하셨나요?
+                    <div id="exitDropDown" th:data-room-id="${chatRoomInfo.chatRoomId}" th:data-accompany-id="${chatRoomInfo.accompanyId}" class="dropdown-menu dropdown-menu-right shadow border-0" aria-labelledby="chatMenuButton">
+                        <a th:if="${!chatRoomInfo.host}" id="roomExitBtn" class="dropdown-item py-2 text-secondary" href="javascript:void(0)" >
+                            <i class="bi bi-box-arrow-right mr-2"></i> 채팅방 나가기
+                        </a>
+                        <a th:unless="${!chatRoomInfo.host}" id="roomDeleteBtn" class="dropdown-item py-2 text-danger" href="javascript:void(0)" >
+                            <i class="bi bi-trash3-fill mr-2"></i> 채팅방 삭제하기
+                        </a>
+                    </div>
+                </div>
             </div>
           </div>
-        </div>
 
-        <div class="system-message">
-          <span>'재미니'님이 입장하셨습니다.</span>
-        </div>
-      </div>
+          <div id="chatMessageArea" class="chat-message-container">
+            <div class="chat-date-divider">
+              <span>2026년 1월 14일</span>
+            </div>
 
-      <div class="chat-input-area shadow-lg">
-        <div class="input-wrapper">
-          <button class="btn-plus"><i class="bi bi-plus-lg"></i></button>
-          <textarea id="messageInput" placeholder="메시지를 입력하세요..." rows="1"></textarea>
-          <button id="sendBtn" class="btn-send">
-            <i class="bi bi-send-fill"></i>
-          </button>
+            <div class="message-group opponent">
+              <div class="sender-name">상대방닉네임</div>
+              <div class="message-content-wrapper">
+                <div class="message-bubble">
+                  안녕하세요! 이번 콘서트 같이 가기로 한 분 맞으시죠? 😊
+                </div>
+                <span class="message-time">오후 2:30</span>
+              </div>
+            </div>
+
+            <div class="message-group me">
+              <div class="message-content-wrapper">
+                <span class="message-time">오후 2:31</span>
+                <div class="message-bubble">
+                  네 맞아요! 티켓팅 성공하셨나요?
+                </div>
+              </div>
+            </div>
+
+            <div class="system-message">
+              <span>'재미니'님이 입장하셨습니다.</span>
+            </div>
+          </div>
+
+          <div class="chat-input-area shadow-lg">
+            <div class="input-wrapper">
+              <button class="btn-plus"><i class="bi bi-plus-lg"></i></button>
+              <textarea id="messageInput" placeholder="메시지를 입력하세요..." rows="1"></textarea>
+              <button id="sendBtn" class="btn-send">
+                <i class="bi bi-send-fill"></i>
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-  </section>
+    </section>
+    <script layout:fragment="script">
+
+        var token = $("meta[name='_csrf']").attr("content");
+        var header = $("meta[name='_csrf_header']").attr("content");
+
+        $("#roomDeleteBtn").on("click", function() {
+            let accompanyId = $("#exitDropDown").data("accompany-id");
+            let roomId = $("#exitDropDown").data("room-id");
+
+            if(confirm("채팅방 삭제시 동행 모집 게시글도 삭제 됩니다 삭제 하시겠습니까?")) {
+                $.ajax({
+                    type: "delete"
+                    , url: "/chat/" + accompanyId + "/" + roomId
+                    , beforeSend: function(xhr) {
+                        xhr.setRequestHeader(header, token);
+                    }
+                    , success: function() {
+                        location.href = "/user/mypage";
+                    }
+                    , error: function(xhr) {
+
+                        alert(xhr.responseJSON.message);
+                    }
+                });
+            }
+
+        });
+
+        $("#roomExitBtn").on("click", function() {
+
+            let accompanyId = $("#exitDropDown").data("accompany-id");
+
+            $.ajax({
+                type: "delete"
+                , url: "/chat/" + accompanyId
+                , beforeSend: function(xhr) {
+                    xhr.setRequestHeader(header, token);
+                }
+                , success: function() {
+                    location.href = "/user/mypage";
+                }
+                , error: function(xhr) {
+
+                    alert(xhr.responseJSON.message);
+                }
+            });
+        });
+
+    </script>
+
 </html>
