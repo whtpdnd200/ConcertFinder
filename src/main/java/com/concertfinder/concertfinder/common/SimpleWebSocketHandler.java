@@ -20,7 +20,7 @@ public class SimpleWebSocketHandler extends TextWebSocketHandler {
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
 
         sessions.add(session);
-        log.info("connected : {} ", session.getId());
+        log.info("connected : {} ", session);
     }
 
     @Override
@@ -28,7 +28,7 @@ public class SimpleWebSocketHandler extends TextWebSocketHandler {
 
         String payload = message.getPayload();
 
-        log.info("message : {} ", payload);
+        log.info("message : {} ", message);
 
         for(WebSocketSession s : sessions) {
 
@@ -41,6 +41,6 @@ public class SimpleWebSocketHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         sessions.remove(session);
-        System.out.println("disconnected!!");
+
     }
 }
