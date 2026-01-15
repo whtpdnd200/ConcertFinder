@@ -274,8 +274,10 @@
                 , beforeSend: function(xhr) {
                     xhr.setRequestHeader(header, token);
                 }
-                , success: function() {
+                , success: function(response) {
 
+                    console.log(response);
+                    return;
                     location.reload();
                     if(confirm("동행 신청이 완료 되었습니다 마이페이지로 이동해서 채팅방에 입장하시겠습니까?")) {
                         location.href = "/user/mypage";

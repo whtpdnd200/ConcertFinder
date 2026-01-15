@@ -60,16 +60,16 @@
 
         // 규격 : 채팅방 번호|타입|닉네임|메세지
 
-        const socket = new WebSocket("ws://localhost:8080/ws/chat");
-
         var roomId = $("#chatRoomData").data("room-id");
 
         var userNickname = $("#chatRoomData").data("user-nickname");
 
+        const socket = new WebSocket("ws://localhost:8080/ws/chat/" + roomId);
+
+
+
         socket.onopen = () => {
             console.log("웹소켓 연결 성공!");
-            let sendMsg = roomId + "|" + "CONNECT" + "|" + userNickname + "|";
-            socket.send(sendMsg);
         };
 
 
@@ -166,7 +166,7 @@
 
         function replaceMessage(message) {
 
-            return message.replace("|", "│")
+            return message.replace("|", "│");
         }
 
 

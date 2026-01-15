@@ -22,10 +22,10 @@ public class AccompanyCountRestController {
 
     // 동행 신청
     @PostMapping("/{accompanyId}")
-    public ResponseEntity<ApiResponseDTO<Void>> addAccompany(@PathVariable long accompanyId
+    public ResponseEntity<ApiResponseDTO<Long>> addAccompany(@PathVariable long accompanyId
                                                              , @AuthenticationPrincipal PrincipalDetails principal) {
         LoginUserDTO loginUserDTO = principal.getLoginUserDTO();
-        accompanyAndAccompanyCountLadderService.insertAccompanyCountAndIsFullCheck(accompanyId, loginUserDTO.getId());
+        accompanyAndAccompanyCountLadderService.insertAccompanyCountAndIsFullCheck(accompanyId, loginUserDTO.getId(), loginUserDTO.getNickname());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDTO.success("동행 신청 성공"));
     }

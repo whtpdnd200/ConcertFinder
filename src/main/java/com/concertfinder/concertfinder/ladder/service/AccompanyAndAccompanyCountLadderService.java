@@ -6,6 +6,7 @@ import com.concertfinder.concertfinder.accompany.domain.Accompany;
 import com.concertfinder.concertfinder.accompany.service.AccompanyService;
 import com.concertfinder.concertfinder.accompany_count.service.AccompanyCountService;
 import com.concertfinder.concertfinder.chat_room.DTO.ChatRoomListDTO;
+import com.concertfinder.concertfinder.common.SimpleWebSocketHandler;
 import com.concertfinder.concertfinder.exception.custom_exception.UnAuthorizedException;
 import groovy.util.logging.Slf4j;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,8 @@ public class AccompanyAndAccompanyCountLadderService {
     private final AccompanyCountService accompanyCountService;
 
     private final ChatRoomAndChatRoomAndUserLadderService chatRoomAndChatRoomAndUserLadderService;
+
+    private final SimpleWebSocketHandler simpleWebSocketHandler;
 
     // 동행 모집 정보 생성 및 동행 모집 인원 추가
     @Transactional
@@ -70,7 +73,7 @@ public class AccompanyAndAccompanyCountLadderService {
 
     // 동행 인원 신청 및 동행 모집 인원 체크
     @Transactional
-    public void insertAccompanyCountAndIsFullCheck(long accompanyId, long userId) {
+    public void insertAccompanyCountAndIsFullCheck(long accompanyId, long userId, String nickName) {
         Accompany accompany = accompanyService.getAccompany(accompanyId);
 
         accompanyCountService.insertAccompanyCount(accompanyId, userId);
@@ -83,6 +86,13 @@ public class AccompanyAndAccompanyCountLadderService {
         long roomId = chatRoomAndChatRoomAndUserLadderService.getRoomId(accompanyId);
 
         chatRoomAndChatRoomAndUserLadderService.insertChatRoomAndUser(userId, roomId);
+
+        try {
+            simpleWebSocketHandler.sendEnterMessage(roomId, nickName);
+        } catch(Exception e) {
+
+            throw new RuntimeException("서버에러로 인해 채팅방에 입장하지 못했습니다!");
+        }
     }
     
 
