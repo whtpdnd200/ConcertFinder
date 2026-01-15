@@ -25,6 +25,7 @@ public class ChatRoomController {
                           , Model model) {
 
         LoginUserDTO loginUserDTO = principal.getLoginUserDTO();
+        model.addAttribute("roomId", roomId);
         model.addAttribute("chatRoomInfo", chatRoomService.getChatRoomInfo(roomId, loginUserDTO.getId()));
 
         return "concertfinder/chat/chat_room";

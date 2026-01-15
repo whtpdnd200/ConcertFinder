@@ -56,6 +56,8 @@
         // 메시지 전송 함수
         function sendMessage() {
             const input = document.getElementById('messageInput');
+            console.log(input.value);
+
             if (input.value) {
                 socket.send(input.value); // 서버로 전송!
                 input.value = '';

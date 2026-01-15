@@ -9,7 +9,7 @@
   <link layout:fragment="css" rel="stylesheet" th:href="@{/css/chat/chat_room_style.css}">
 </head>
     <section layout:fragment="contents">
-        <div class="chat-detail-wrapper">
+        <div th:data-room-id="${roomId}" th:data-user-nickname="${#authentication.principal.loginUserDTO.nickname}" id="chatRoomData" class="chat-detail-wrapper">
           <div class="chat-header shadow-sm">
             <div class="d-flex align-items-center">
               <a href="javascript:history.back()" class="text-dark mr-3">
@@ -41,39 +41,15 @@
           </div>
 
           <div id="chatMessageArea" class="chat-message-container">
-            <div class="chat-date-divider">
-              <span>2026년 1월 14일</span>
-            </div>
 
-            <div class="message-group opponent">
-              <div class="sender-name">상대방닉네임</div>
-              <div class="message-content-wrapper">
-                <div class="message-bubble">
-                  안녕하세요! 이번 콘서트 같이 가기로 한 분 맞으시죠? 😊
-                </div>
-                <span class="message-time">오후 2:30</span>
-              </div>
-            </div>
 
-            <div class="message-group me">
-              <div class="message-content-wrapper">
-                <span class="message-time">오후 2:31</span>
-                <div class="message-bubble">
-                  네 맞아요! 티켓팅 성공하셨나요?
-                </div>
-              </div>
-            </div>
-
-            <div class="system-message">
-              <span>'재미니'님이 입장하셨습니다.</span>
-            </div>
           </div>
 
           <div class="chat-input-area shadow-lg">
             <div class="input-wrapper">
               <button class="btn-plus"><i class="bi bi-plus-lg"></i></button>
               <textarea id="messageInput" placeholder="메시지를 입력하세요..." rows="1"></textarea>
-              <button id="sendBtn" class="btn-send">
+              <button id="sendBtn" class="btn-send" onclick="sendMessage()">
                 <i class="bi bi-send-fill"></i>
               </button>
             </div>
@@ -81,6 +57,133 @@
         </div>
     </section>
     <script layout:fragment="script">
+
+        // 규격 : 채팅방 번호|타입|닉네임|메세지
+
+        const socket = new WebSocket("ws://localhost:8080/ws/chat");
+
+        var roomId = $("#chatRoomData").data("room-id");
+
+        var userNickname = $("#chatRoomData").data("user-nickname");
+
+        socket.onopen = () => {
+            console.log("웹소켓 연결 성공!");
+            let sendMsg = roomId + "|" + "CONNECT" + "|" + userNickname + "|";
+            socket.send(sendMsg);
+        };
+
+
+        socket.onmessage = (event) => {
+
+            const rawData = event.data;
+            const parts = rawData.split("|");
+
+            // 규격: [0]방번호 | [1]타입 | [2]닉네임 | [3]메시지
+            let currentRoomId   = parts[0];
+            let type     = parts[1];
+            let nickname = parts[2];
+            let message  = parts[3];
+
+            // 2. 메시지 그리기 함수 호출
+            appendMessageToArea(type, nickname, message);
+        };
+
+        function appendMessageToArea(type, senderNickname, message) {
+            let chatArea = $("#chatMessageArea");
+            let messageTag;
+
+            if (type === "CONNECT" || type === "DISCONNECT") {
+                // 시스템 메시지
+                messageTag = $("<div>").addClass("system-message")
+                    .append($("<span>").text(senderNickname + message));
+
+            } else {
+                //일반 채팅
+                let isMe = (senderNickname === userNickname); // 내가 보낸 건지 확인
+                let groupClass = isMe ? "me" : "opponent";
+                let currentTime = getCurrentTime();
+
+                // 메인 태그 영역
+                messageTag = $("<div>").addClass("message-group").addClass(groupClass);
+
+                // 상대방일 때만 닉네임 표시
+                if (!isMe) {
+                    messageTag.append($("<div>").addClass("sender-name").text(senderNickname));
+                }
+
+                // 내용물 생성
+                let contentWrapper = $("<div>").addClass("message-content-wrapper");
+                let bubble = $("<div>").addClass("message-bubble").text(message);
+                let time = $("<span>").addClass("message-time").text(currentTime);
+
+                if (isMe) {
+                    // 내가 보낸 경우: 시간, 말풍선 순서
+                    contentWrapper.append(time).append(bubble);
+                } else {
+                    // 상대방이 보낸 경우: 말풍선, 시간 순서
+                    contentWrapper.append(bubble).append(time);
+                }
+
+                messageTag.append(contentWrapper);
+            }
+
+            // 화면에 추가 후 스크롤 하단 고정
+            chatArea.append(messageTag);
+            chatArea.scrollTop(chatArea[0].scrollHeight);
+        }
+
+
+        function getCurrentTime() {
+            return new Date().toLocaleTimeString('ko-KR', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+            });
+        }
+
+        socket.onclose = () => {
+            console.log("웹소켓 연결 종료");
+        };
+
+
+        function sendMessage() {
+            let input = $("#messageInput");
+            let message = input.val();
+
+            if(message.includes("|")) {
+
+                message = replaceMessage(message);
+            }
+
+            let messageProtocol = roomId + "|" + "message" + "|" + userNickname + "|" + message;
+
+            if (message.trim()) {
+                socket.send(messageProtocol);
+                input.val('');
+                input.focus();
+            }
+        }
+
+        function replaceMessage(message) {
+
+            return message.replace("|", "│")
+        }
+
+
+        $(document).ready(function() {
+            // 전송 버튼 클릭
+            $("#sendBtn").on("click", function() {
+                sendMessage();
+            });
+
+
+            $("#messageInput").on("keypress", function(e) {
+                if (e.key === 'Enter' || e.keyCode === 13) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+        });
 
         var token = $("meta[name='_csrf']").attr("content");
         var header = $("meta[name='_csrf_header']").attr("content");
@@ -119,6 +222,9 @@
                     xhr.setRequestHeader(header, token);
                 }
                 , success: function() {
+                    let exitMessage = roomId + "|DISCONNECT|" + userNickname + "|";
+                    socket.send(exitMessage);
+
                     location.href = "/user/mypage";
                 }
                 , error: function(xhr) {
