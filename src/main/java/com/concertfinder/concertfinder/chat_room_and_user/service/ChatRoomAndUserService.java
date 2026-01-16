@@ -1,6 +1,6 @@
 package com.concertfinder.concertfinder.chat_room_and_user.service;
 
-import com.concertfinder.concertfinder.chat_room.DTO.ChatUserInfoDTO;
+import com.concertfinder.concertfinder.chat_room_and_user.DTO.ChatUserInfoDTO;
 import com.concertfinder.concertfinder.chat_room_and_user.domain.ChatRoomAndUser;
 import com.concertfinder.concertfinder.chat_room_and_user.repository.ChatRoomAndUserRepository;
 import com.concertfinder.concertfinder.user.service.UserService;
@@ -34,6 +34,23 @@ public class ChatRoomAndUserService {
                 .userId(userId)
                 .roomId(roomId)
                 .isHost(isHost)
+                .build();
+
+        try {
+            chatRoomAndUserRepository.save(chatRoomAndUser);
+        } catch(DataAccessException e) {
+
+            throw new RuntimeException("서버 에러로 인해 채팅방을 생성하지 못했습니다 잠시 후 다시 시도해주세요!");
+        }
+    }
+
+    // 1 : 1 채팅방 유저 저장 메서드
+    public void insertPrivateChatRoomAndUser(long userId, long roomId) {
+
+        ChatRoomAndUser chatRoomAndUser = ChatRoomAndUser.builder()
+                .userId(userId)
+                .roomId(roomId)
+                .isHost(false)
                 .build();
 
         try {
@@ -92,5 +109,30 @@ public class ChatRoomAndUserService {
     public int getCurrentCount(long roomId) {
 
         return chatRoomAndUserRepository.countByRoomId(roomId);
+    }
+
+    public List<ChatUserInfoDTO> getUserInfoList(Long roomId) {
+
+        if(roomId == null) {
+            throw new IllegalStateException("채팅방 번호가 비어있습니다!");
+        }
+
+        List<ChatRoomAndUser> chatRoomAndUsers = chatRoomAndUserRepository.findAllByRoomId(roomId);
+
+        List<ChatUserInfoDTO> userInfoList = new ArrayList<>();
+
+        for(ChatRoomAndUser c : chatRoomAndUsers) {
+
+            ChatUserInfoDTO chatUserInfoDTO = ChatUserInfoDTO.builder()
+                    .id(c.getUserId())
+                    .roomId(roomId)
+                    .nickname(userService.getNickname(c.getUserId()))
+                    .isHost(isHost(c.getUserId(), roomId))
+                    .build();
+
+            userInfoList.add(chatUserInfoDTO);
+        }
+
+        return userInfoList;
     }
 }

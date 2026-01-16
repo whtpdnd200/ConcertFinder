@@ -35,7 +35,7 @@ public class ChatRoomRestController {
     public ResponseEntity<ApiResponseDTO<Void>> exitChatRoom(@PathVariable long accompanyId
                                                             , @AuthenticationPrincipal PrincipalDetails principal) {
         LoginUserDTO loginUserDTO = principal.getLoginUserDTO();
-        accompanyAndAccompanyCountLadderService.deleteAccompanyCountAndIsFullCheck(accompanyId, loginUserDTO.getId());
+        accompanyAndAccompanyCountLadderService.deleteAccompanyCountAndIsFullCheck(accompanyId, loginUserDTO.getId(), "exit");
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.success("퇴장 성공"));
     }
 
@@ -48,4 +48,6 @@ public class ChatRoomRestController {
         postService.postDeleteByAccompanyId(accompanyId, loginUserDTO.getId(), roomId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.success("삭제 성공"));
     }
+
+    
 }

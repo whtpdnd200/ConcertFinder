@@ -69,6 +69,7 @@ public class AccompanyAndAccompanyCountLadderService {
 
         chatRoomAndChatRoomAndUserLadderService.deleteChatRoom(roomId);
         chatRoomAndChatRoomAndUserLadderService.deleteAllChatRoomAndUser(roomId);
+        simpleWebSocketHandler.deleteRoom(roomId);
     }
 
     // 동행 인원 신청 및 동행 모집 인원 체크
@@ -104,7 +105,7 @@ public class AccompanyAndAccompanyCountLadderService {
 
     // 동행 신청 취소 및 동행 인원 상태 변경
     @Transactional
-    public void deleteAccompanyCountAndIsFullCheck(long accompanyId, long userId) {
+    public void deleteAccompanyCountAndIsFullCheck(long accompanyId, long userId, String status) {
 
         Accompany accompany = accompanyService.getAccompany(accompanyId);
 
@@ -117,6 +118,10 @@ public class AccompanyAndAccompanyCountLadderService {
         long roomId = chatRoomAndChatRoomAndUserLadderService.getRoomId(accompanyId);
 
         chatRoomAndChatRoomAndUserLadderService.deleteChatRoomAndUser(userId, roomId);
+
+        if(status.equals("kick")) {
+            simpleWebSocketHandler.kickUser(roomId, userId);
+        }
     }
 
     // 참여중인 채팅방 목록 3개 리스트 반환 메서드

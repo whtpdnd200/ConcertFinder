@@ -9,7 +9,7 @@
   <link layout:fragment="css" rel="stylesheet" th:href="@{/css/chat/chat_room_style.css}">
 </head>
     <section layout:fragment="contents">
-        <div th:data-room-id="${roomId}" th:data-user-nickname="${#authentication.principal.loginUserDTO.nickname}" id="chatRoomData" class="chat-detail-wrapper">
+        <div th:data-room-id="${roomId}" th:data-user-nickname="${#authentication.principal.loginUserDTO.nickname}" th:data-is-host="${chatRoomInfo.host}" id="chatRoomData" class="chat-detail-wrapper">
           <div class="chat-header shadow-sm">
             <div class="d-flex align-items-center">
               <a href="javascript:history.back()" class="text-dark mr-3">
@@ -28,7 +28,7 @@
                         <i class="bi bi-three-dots-vertical" style="font-size: 1.2rem;"></i>
                     </button>
                     <div id="exitDropDown" th:data-room-id="${chatRoomInfo.chatRoomId}" th:data-accompany-id="${chatRoomInfo.accompanyId}" class="dropdown-menu dropdown-menu-right shadow border-0" aria-labelledby="chatMenuButton">
-                        <a id="userListBtn" class="dropdown-item py-2 text-secondary" href="javascript:void(0)" onclick="toggleUserList()">
+                        <a id="userListBtn" class="dropdown-item py-2 text-secondary" href="javascript:void(0)">
                             <i class="bi bi-people-fill mr-2"></i> 참여 유저 목록
                         </a>
                         <a th:if="${!chatRoomInfo.host}" id="roomExitBtn" class="dropdown-item py-2 text-secondary" href="javascript:void(0)" >
@@ -80,7 +80,6 @@
         const socket = new WebSocket("ws://localhost:8080/ws/chat/" + roomId);
 
 
-
         socket.onopen = () => {
             console.log("웹소켓 연결 성공!");
         };
@@ -97,6 +96,18 @@
             let nickname = parts[2];
             let message  = parts[3];
 
+
+            if(type === "KICK_USER") {
+
+                alert(message);
+                location.href = "/user/mypage";
+            }
+
+            if(type === "DELETE") {
+                alert(message);
+                location.href = "/user/mypage";
+            }
+
             // 2. 메시지 그리기 함수 호출
             appendMessageToArea(type, nickname, message);
         };
@@ -105,7 +116,8 @@
             let chatArea = $("#chatMessageArea");
             let messageTag;
 
-            if (type === "CONNECT" || type === "DISCONNECT") {
+
+            if (type !== "message") {
                 // 시스템 메시지
                 messageTag = $("<div>").addClass("system-message")
                     .append($("<span>").text(senderNickname + message));
@@ -201,11 +213,80 @@
         var token = $("meta[name='_csrf']").attr("content");
         var header = $("meta[name='_csrf_header']").attr("content");
 
+        $(document).on("click", ".kickBtn", function() {
+            let userId = $(this).data("user-id");
+            let accompanyId = $("#exitDropDown").data("accompany-id");
+            let nickname = $(this).data("nickname");
+
+            $.ajax({
+                type: "delete"
+                , url: "/accompany/" + accompanyId + "/" + userId
+                , beforeSend: function(xhr) {
+                    xhr.setRequestHeader(header, token);
+                }
+                , success: function() {
+                    let kickMessage = roomId + "|KICK|" + nickname + "|";
+                    socket.send(kickMessage);
+                }
+                , error: function(xhr) {
+
+                    alert(xhr.responseJSON.message);
+                }
+            });
+        });
+
         // 유저 리스트 열기
         $("#userListBtn").on("click", function() {
             $("#userSideBar").removeClass("hide");
 
+            $.ajax({
+                type: "get"
+                , url: "/room/users/" + roomId
+                , beforeSend: function(xhr) {
+                    xhr.setRequestHeader(header, token);
+                }
+                , success: function(response) {
+                    console.log(response);
 
+                    let userListArea = $("#userListArea");
+                    userListArea.empty(); // 기존 목록 비우기
+
+
+                    const isCurrentUserHost = $("#chatRoomData").data("is-host");
+
+                    $.each(response.data, function(index, user) {
+                        let html = '';
+                        html += '<li class="user-item">';
+                        html += '    <div class="user-info">';
+
+
+                        if (user.host) {
+                            html += '        <span class="host-badge">관리자</span>';
+                        }
+
+                        html += '        <span class="user-nickname">' + user.nickname + '</span>';
+                        html += '    </div>';
+
+
+                        if (isCurrentUserHost && !user.host) {
+                            html += '    <button class="btn btn-sm btn-outline-danger kickBtn" data-user-id="' + user.id + '" data-nickname="' + user.nickname + '">';
+                            html += '        내보내기';
+                            html += '    </button>';
+                        }
+
+                        html += '</li>';
+
+                        userListArea.append(html);
+                    });
+
+                    // 참여 인원 숫자 업데이트
+                    $("#userCount").text(response.length);
+                }
+                , error: function(xhr) {
+
+                    alert(xhr.responseJSON.message);
+                }
+            });
         });
 
         // 유저 리스트 닫기

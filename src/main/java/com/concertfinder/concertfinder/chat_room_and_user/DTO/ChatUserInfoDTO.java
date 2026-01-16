@@ -1,4 +1,4 @@
-package com.concertfinder.concertfinder.chat_room.DTO;
+package com.concertfinder.concertfinder.chat_room_and_user.DTO;
 
 import lombok.*;
 
@@ -11,7 +11,9 @@ public class ChatUserInfoDTO {
 
     private long id;
 
-    private String nickName;
+    private long roomId;
+
+    private String nickname;
 
     private boolean isHost;
 }

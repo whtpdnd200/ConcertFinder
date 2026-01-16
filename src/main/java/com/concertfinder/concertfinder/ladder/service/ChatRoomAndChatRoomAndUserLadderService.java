@@ -65,4 +65,14 @@ public class ChatRoomAndChatRoomAndUserLadderService {
 
         return chatRoomAndUserService.isHost(userId, roomId);
     }
+
+    // 1:1 채팅방 생성 및 유저 저장 메서드
+    @Transactional
+    public long createPrivateChatRoom(long userId, long otherUserId) {
+
+        long roomId = chatRoomService.insertChatRoom();
+        chatRoomAndUserService.insertPrivateChatRoomAndUser(userId, roomId);
+        chatRoomAndUserService.insertPrivateChatRoomAndUser(otherUserId, roomId);
+        return roomId;
+    }
 }

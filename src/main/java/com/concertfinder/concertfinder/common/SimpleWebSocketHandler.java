@@ -7,6 +7,7 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -45,6 +46,10 @@ public class SimpleWebSocketHandler extends TextWebSocketHandler {
         if(parts[1].equals("DISCONNECT")) {
 
             sb.append("님이 퇴장 하셧습니다.");
+        }
+
+        if(parts[1].equals("KICK")) {
+            sb.append("님이 관리자에 의해 강퇴 당하셧습니다.");
         }
 
         Long roomId = Long.parseLong(parts[0]);
@@ -90,5 +95,50 @@ public class SimpleWebSocketHandler extends TextWebSocketHandler {
                 }
             }
         }
+    }
+
+    public void deleteRoom(long roomId) {
+        Set<WebSocketSession> sessions = roomSessions.get(roomId);
+
+        if(sessions != null) {
+            for(WebSocketSession s : sessions) {
+
+                try {
+
+                    s.sendMessage(new TextMessage(roomId + "|DELETE|SYSTEM|방이 삭제 되었습니다."));
+                    s.close();
+
+                } catch(IOException e) {
+
+                    throw new RuntimeException("에러발생!");
+                }
+            }
+        }
+    }
+
+    public void kickUser(long roomId,long userId) {
+
+        Set<WebSocketSession> sessions = roomSessions.get(roomId);
+
+        if(sessions != null) {
+            for(WebSocketSession s : sessions) {
+
+                Long kickUserId = (Long)s.getAttributes().get("userId");
+
+                if(kickUserId.equals(userId)) {
+
+                    try {
+                        s.sendMessage(new TextMessage(roomId + "|KICK_USER|SYSTEM|관리자에 의해 강퇴되었습니다."));
+                        s.close();
+
+                    } catch(IOException e) {
+
+                        throw new RuntimeException("유저 강퇴중 에러가 발생 했습니다!");
+                    }
+                    break;
+                }
+            }
+        }
+
     }
 }

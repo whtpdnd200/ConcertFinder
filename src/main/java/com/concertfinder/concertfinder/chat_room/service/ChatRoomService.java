@@ -39,6 +39,20 @@ public class ChatRoomService {
         }
     }
 
+    // 1 : 1 채팅방 생성 메서드
+    public long insertChatRoom() {
+
+        ChatRoom chatRoom = ChatRoom.builder().build();
+
+        try {
+            return chatRoomRepository.save(chatRoom).getId();
+
+        } catch(DataAccessException e) {
+
+            throw new RuntimeException("서버 에러로인해 채팅방을 생성하지 못했습니다 잠시 후 다시 시도해주세요!");
+        }
+    }
+
     // 채팅방 번호 반환 메서드
     public long getRoomId(long accompanyId) {
 

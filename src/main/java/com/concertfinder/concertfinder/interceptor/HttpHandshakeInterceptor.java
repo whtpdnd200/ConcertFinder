@@ -1,8 +1,13 @@
 package com.concertfinder.concertfinder.interceptor;
 
+import com.concertfinder.concertfinder.user.DTO.PrincipalDetails;
 import groovy.util.logging.Slf4j;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.http.server.ServletServerHttpRequest;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor;
 
@@ -17,6 +22,16 @@ public class HttpHandshakeInterceptor extends HttpSessionHandshakeInterceptor {
                                    , ServerHttpResponse response
                                    , WebSocketHandler webSocketHandler
                                    , Map<String, Object> attributes) throws Exception {
+
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        PrincipalDetails userDetails = (PrincipalDetails)principal;
+
+        Long userId =  userDetails.getLoginUserDTO().getId();
+
+        if(userId != null) {
+            attributes.put("userId", userId);
+        }
 
         String[] path = request.getURI().getPath().split("/");
 
