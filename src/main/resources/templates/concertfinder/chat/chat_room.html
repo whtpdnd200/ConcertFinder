@@ -27,8 +27,10 @@
                     <button class="btn btn-link text-muted p-2" type="button" id="chatMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="bi bi-three-dots-vertical" style="font-size: 1.2rem;"></i>
                     </button>
-
                     <div id="exitDropDown" th:data-room-id="${chatRoomInfo.chatRoomId}" th:data-accompany-id="${chatRoomInfo.accompanyId}" class="dropdown-menu dropdown-menu-right shadow border-0" aria-labelledby="chatMenuButton">
+                        <a id="userListBtn" class="dropdown-item py-2 text-secondary" href="javascript:void(0)" onclick="toggleUserList()">
+                            <i class="bi bi-people-fill mr-2"></i> 참여 유저 목록
+                        </a>
                         <a th:if="${!chatRoomInfo.host}" id="roomExitBtn" class="dropdown-item py-2 text-secondary" href="javascript:void(0)" >
                             <i class="bi bi-box-arrow-right mr-2"></i> 채팅방 나가기
                         </a>
@@ -54,6 +56,17 @@
               </button>
             </div>
           </div>
+        </div>
+        <div id="userSideBar" class="user-sidebar hide">
+            <div class="sidebar-header d-flex justify-content-between align-items-center">
+            <h6 class="mb-0 font-weight-bold"><i class="bi bi-people"></i> 참여 유저</h6>
+            <button type="button" class="btn-close border-0 bg-transparent userListClose" style="font-size: 1.5rem;">&times;</button>
+        </div>
+            <div class="sidebar-content">
+                <ul id="userListArea" class="list-unstyled">
+
+                </ul>
+            </div>
         </div>
     </section>
     <script layout:fragment="script">
@@ -187,6 +200,26 @@
 
         var token = $("meta[name='_csrf']").attr("content");
         var header = $("meta[name='_csrf_header']").attr("content");
+
+        // 유저 리스트 열기
+        $("#userListBtn").on("click", function() {
+            $("#userSideBar").removeClass("hide");
+
+
+        });
+
+        // 유저 리스트 닫기
+        $(".userListClose").on("click", function() {
+            $("#userSideBar").addClass("hide");
+        });
+
+        // 사이드바 바깥 클릭 시 닫기 (선택 사항)
+        $(document).on("mousedown", function(e) {
+            const sidebar = $("#userSideBar");
+            if (!sidebar.hasClass("hide") && !sidebar.has(e.target).length && !$(e.target).closest("#userListBtn").length) {
+                sidebar.addClass("hide");
+            }
+        });
 
         $("#roomDeleteBtn").on("click", function() {
             let accompanyId = $("#exitDropDown").data("accompany-id");

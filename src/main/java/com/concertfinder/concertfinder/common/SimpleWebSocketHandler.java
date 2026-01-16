@@ -23,7 +23,8 @@ public class SimpleWebSocketHandler extends TextWebSocketHandler {
 
         Long roomId = (Long)session.getAttributes().get("roomId");
         if(roomId != null) {
-            roomSessions.computeIfAbsent(roomId, k -> ConcurrentHashMap.newKeySet()).add(session);
+            roomSessions.computeIfAbsent(roomId, k ->
+                    ConcurrentHashMap.newKeySet()).add(session);
         }
 
         log.info("connected : {} ", session);
