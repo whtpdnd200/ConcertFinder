@@ -3,6 +3,7 @@ package com.concertfinder.concertfinder.chat_room;
 import com.concertfinder.concertfinder.chat_room.DTO.ChatRoomListDTO;
 import com.concertfinder.concertfinder.common.DTO.ApiResponseDTO;
 import com.concertfinder.concertfinder.ladder.service.AccompanyAndAccompanyCountLadderService;
+import com.concertfinder.concertfinder.ladder.service.ChatRoomAndChatRoomAndUserLadderService;
 import com.concertfinder.concertfinder.post.service.PostService;
 import com.concertfinder.concertfinder.user.DTO.LoginUserDTO;
 import com.concertfinder.concertfinder.user.DTO.PrincipalDetails;
@@ -20,6 +21,7 @@ import java.util.List;
 public class ChatRoomRestController {
 
     private final AccompanyAndAccompanyCountLadderService accompanyAndAccompanyCountLadderService;
+    private final ChatRoomAndChatRoomAndUserLadderService chatRoomAndChatRoomAndUserLadderService;
     private final PostService postService;
 
     // 채팅방 목록 출력 API
@@ -39,6 +41,7 @@ public class ChatRoomRestController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.success("퇴장 성공"));
     }
 
+    // 채팅방 삭제 및 동행 모집 게시글 삭제
     @DeleteMapping("/{accompanyId}/{roomId}")
     public ResponseEntity<ApiResponseDTO<Void>> exitChatRoom(@PathVariable long accompanyId
                                                              , @PathVariable Long roomId
@@ -49,5 +52,20 @@ public class ChatRoomRestController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.success("삭제 성공"));
     }
 
-    
+    // 1:1 채팅방 생성 및 이동
+    @PostMapping("/{otherUserId}")
+    public ResponseEntity<ApiResponseDTO<Long>> oneToOneChat(@PathVariable long otherUserId
+                                                             , @AuthenticationPrincipal PrincipalDetails principal) {
+        LoginUserDTO loginUserDTO = principal.getLoginUserDTO();
+        Long roomId = chatRoomAndChatRoomAndUserLadderService.createPrivateChatRoom(loginUserDTO.getId(), otherUserId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDTO.success("생성 성공", roomId));
+    }
+
+    // 1:1 채팅방 삭제 및 유저 목록 삭제
+    @DeleteMapping("/private/{roomId}")
+    public ResponseEntity<ApiResponseDTO<Void>> deletePrivateChatRoom(@PathVariable long roomId) {
+
+        chatRoomAndChatRoomAndUserLadderService.deletePrivateChatRoomAndUser(roomId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.success("삭제 완료"));
+    }
 }

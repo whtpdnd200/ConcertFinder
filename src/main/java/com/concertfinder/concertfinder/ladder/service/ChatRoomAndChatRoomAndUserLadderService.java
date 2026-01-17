@@ -1,7 +1,9 @@
 package com.concertfinder.concertfinder.ladder.service;
 
+import com.concertfinder.concertfinder.chat_room.domain.ChatRoom;
 import com.concertfinder.concertfinder.chat_room.service.ChatRoomService;
 import com.concertfinder.concertfinder.chat_room_and_user.service.ChatRoomAndUserService;
+import com.concertfinder.concertfinder.common.SimpleWebSocketHandler;
 import groovy.util.logging.Slf4j;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,8 @@ public class ChatRoomAndChatRoomAndUserLadderService {
     private final ChatRoomService chatRoomService;
 
     private final ChatRoomAndUserService chatRoomAndUserService;
+
+    private final SimpleWebSocketHandler simpleWebSocketHandler;
 
     // 동행 글 작성한 유저의 채팅방 생성 및 입장 메서드
     @Transactional
@@ -56,6 +60,15 @@ public class ChatRoomAndChatRoomAndUserLadderService {
         chatRoomAndUserService.deleteAllChatRoomAndUser(roomId);
     }
 
+    // 1:1 채팅방 삭제
+    @Transactional
+    public void deletePrivateChatRoomAndUser(long roomId) {
+
+        deleteChatRoom(roomId);
+        deleteAllChatRoomAndUser(roomId);
+        simpleWebSocketHandler.deleteRoom(roomId);
+    }
+
     public String getChatName(long roomId) {
 
         return chatRoomService.getChatRoomName(roomId);
@@ -66,11 +79,38 @@ public class ChatRoomAndChatRoomAndUserLadderService {
         return chatRoomAndUserService.isHost(userId, roomId);
     }
 
+    public List<Long> getTop3ChatRoomIdList(long userId) {
+
+        return chatRoomAndUserService.getTop3ChatRoomIdList(userId);
+    }
+
+    public List<Long> getChatRoomIdList(long userId) {
+
+        return chatRoomAndUserService.getChatRoomIdList(userId);
+    }
+
+    public ChatRoom getChatRoom(long roomId) {
+
+        return chatRoomService.getChatRoom(roomId);
+    }
+
+    public int getCurrentCount(long roomId) {
+
+        return chatRoomAndUserService.getCurrentCount(roomId);
+    }
+
     // 1:1 채팅방 생성 및 유저 저장 메서드
     @Transactional
     public long createPrivateChatRoom(long userId, long otherUserId) {
 
-        long roomId = chatRoomService.insertChatRoom();
+        Long chatRoomId = chatRoomService.getChatRoomId(userId, otherUserId);
+
+        if(chatRoomId != null) {
+
+            return chatRoomId;
+        }
+
+        long roomId = chatRoomService.insertChatRoom(null, null);
         chatRoomAndUserService.insertPrivateChatRoomAndUser(userId, roomId);
         chatRoomAndUserService.insertPrivateChatRoomAndUser(otherUserId, roomId);
         return roomId;

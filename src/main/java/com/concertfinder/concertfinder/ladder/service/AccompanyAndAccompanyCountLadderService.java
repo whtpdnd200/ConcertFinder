@@ -6,6 +6,7 @@ import com.concertfinder.concertfinder.accompany.domain.Accompany;
 import com.concertfinder.concertfinder.accompany.service.AccompanyService;
 import com.concertfinder.concertfinder.accompany_count.service.AccompanyCountService;
 import com.concertfinder.concertfinder.chat_room.DTO.ChatRoomListDTO;
+import com.concertfinder.concertfinder.chat_room.domain.ChatRoom;
 import com.concertfinder.concertfinder.common.SimpleWebSocketHandler;
 import com.concertfinder.concertfinder.exception.custom_exception.UnAuthorizedException;
 import groovy.util.logging.Slf4j;
@@ -127,55 +128,55 @@ public class AccompanyAndAccompanyCountLadderService {
     // 참여중인 채팅방 목록 3개 리스트 반환 메서드
     public List<ChatRoomListDTO> getTop3ChatRoomList(long userId) {
 
-        List<Long> accompanyIdList = accompanyCountService.getAccompanyIdTop3List(userId);
+        List<Long> roomIdList = chatRoomAndChatRoomAndUserLadderService.getTop3ChatRoomIdList(userId);
 
         List<ChatRoomListDTO> chatRoomList = new ArrayList<>();
 
-        for(long accompanyId : accompanyIdList) {
+        for(Long roomId : roomIdList) {
 
-            Accompany accompany = accompanyService.getAccompany(accompanyId);
-            long roomId = chatRoomAndChatRoomAndUserLadderService.getRoomId(accompanyId);
+            ChatRoom chatRoom = chatRoomAndChatRoomAndUserLadderService.getChatRoom(roomId);
             String roomName = chatRoomAndChatRoomAndUserLadderService.getChatName(roomId);
-
+            Accompany accompany = chatRoom.getAccompanyId() == null ? null : accompanyService.getAccompany(chatRoom.getAccompanyId());
             ChatRoomListDTO chatRoomListDTO = ChatRoomListDTO.builder()
                     .roomId(roomId)
-                    .roomName(roomName)
-                    .headCount(accompany.getHeadCount())
-                    .currentCount(accompanyCountService.getAccompanyCount(accompanyId))
-                    .isFull(accompany.isFull())
-                    .isDateAfter(accompanyService.compareDate(accompany.getSDateTime()))
+                    .roomName(accompany == null ? "1:1채팅" : roomName)
+                    .headCount(accompany == null ? 2 : accompany.getHeadCount())
+                    .currentCount(chatRoomAndChatRoomAndUserLadderService.getCurrentCount(roomId))
+                    .isFull(accompany == null? true : accompany.isFull())
+                    .isDateAfter(accompany == null? true : accompanyService.compareDate(accompany.getSDateTime()))
                     .build();
 
             chatRoomList.add(chatRoomListDTO);
         }
+
         return chatRoomList;
     }
 
     // 참여중인 전체 채팅 목록 반환
     public List<ChatRoomListDTO> getChatRoomList(long userId) {
 
-        List<Long> accompanyIdList = accompanyCountService.getAccompanyAllIdList(userId);
+        List<Long> roomIdList = chatRoomAndChatRoomAndUserLadderService.getChatRoomIdList(userId);
 
-        List<ChatRoomListDTO> allChatRoomList = new ArrayList<>();
+        List<ChatRoomListDTO> chatRoomList = new ArrayList<>();
 
-        for(long accompanyId : accompanyIdList) {
+        for(Long roomId : roomIdList) {
 
-            Accompany accompany = accompanyService.getAccompany(accompanyId);
-            long roomId = chatRoomAndChatRoomAndUserLadderService.getRoomId(accompanyId);
+            ChatRoom chatRoom = chatRoomAndChatRoomAndUserLadderService.getChatRoom(roomId);
             String roomName = chatRoomAndChatRoomAndUserLadderService.getChatName(roomId);
-
+            Accompany accompany = chatRoom.getAccompanyId() == null ? null : accompanyService.getAccompany(chatRoom.getAccompanyId());
             ChatRoomListDTO chatRoomListDTO = ChatRoomListDTO.builder()
                     .roomId(roomId)
-                    .roomName(roomName)
-                    .headCount(accompany.getHeadCount())
-                    .currentCount(accompanyCountService.getAccompanyCount(accompanyId))
-                    .isFull(accompany.isFull())
-                    .isDateAfter(accompanyService.compareDate(accompany.getSDateTime()))
+                    .roomName(accompany == null ? "1:1채팅" : roomName)
+                    .headCount(accompany == null ? 2 : accompany.getHeadCount())
+                    .currentCount(chatRoomAndChatRoomAndUserLadderService.getCurrentCount(roomId))
+                    .isFull(accompany == null? true : accompany.isFull())
+                    .isDateAfter(accompany == null? true : accompanyService.compareDate(accompany.getSDateTime()))
                     .build();
 
-            allChatRoomList.add(chatRoomListDTO);
+            chatRoomList.add(chatRoomListDTO);
         }
-        return allChatRoomList;
+
+        return chatRoomList;
     }
 
     public long getPostId(long accompanyId) {

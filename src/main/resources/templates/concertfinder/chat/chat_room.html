@@ -31,12 +31,19 @@
                         <a id="userListBtn" class="dropdown-item py-2 text-secondary" href="javascript:void(0)">
                             <i class="bi bi-people-fill mr-2"></i> 참여 유저 목록
                         </a>
-                        <a th:if="${!chatRoomInfo.host}" id="roomExitBtn" class="dropdown-item py-2 text-secondary" href="javascript:void(0)" >
-                            <i class="bi bi-box-arrow-right mr-2"></i> 채팅방 나가기
-                        </a>
-                        <a th:unless="${!chatRoomInfo.host}" id="roomDeleteBtn" class="dropdown-item py-2 text-danger" href="javascript:void(0)" >
-                            <i class="bi bi-trash3-fill mr-2"></i> 채팅방 삭제하기
-                        </a>
+                        <span th:if="${chatRoomInfo.accompanyId == null}">
+                            <a id="privateRoomExitBtn" class="dropdown-item py-2 text-secondary" href="javascript:void(0)" >
+                                <i class="bi bi-box-arrow-right mr-2"></i> 채팅방 나가기
+                            </a>
+                        </span>
+                        <span th:unless="${chatRoomInfo.accompanyId == null}">
+                            <a th:if="${!chatRoomInfo.host}" id="roomExitBtn" class="dropdown-item py-2 text-secondary" href="javascript:void(0)" >
+                                <i class="bi bi-box-arrow-right mr-2"></i> 채팅방 나가기
+                            </a>
+                            <a th:if="${chatRoomInfo.host}" id="roomDeleteBtn" class="dropdown-item py-2 text-danger" href="javascript:void(0)" >
+                                <i class="bi bi-trash3-fill mr-2"></i> 채팅방 삭제하기
+                            </a>
+                        </span>
                     </div>
                 </div>
             </div>
@@ -180,7 +187,7 @@
                 message = replaceMessage(message);
             }
 
-            let messageProtocol = roomId + "|" + "message" + "|" + userNickname + "|" + message;
+            let messageProtocol = roomId + "|" + "MESSAGE" + "|" + userNickname + "|" + message;
 
             if (message.trim()) {
                 socket.send(messageProtocol);
@@ -212,6 +219,25 @@
 
         var token = $("meta[name='_csrf']").attr("content");
         var header = $("meta[name='_csrf_header']").attr("content");
+
+        $("#privateRoomExitBtn").on("click", function() {
+
+            $.ajax({
+                type: "delete"
+                , url: "/chat/private/" + roomId
+                , beforeSend: function(xhr) {
+                    xhr.setRequestHeader(header, token);
+                }
+                , success: function() {
+                    
+                    location.href = "/user/mypage";
+                }
+                , error: function(xhr) {
+
+                    alert(xhr.responseJSON.message);
+                }
+            });
+        });
 
         $(document).on("click", ".kickBtn", function() {
             let userId = $(this).data("user-id");

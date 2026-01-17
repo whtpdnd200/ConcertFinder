@@ -13,7 +13,7 @@ public class ChatRoomInfoDTO {
 
     private long chatRoomId;
 
-    private long accompanyId;
+    private Long accompanyId;
 
     private String roomName;
 

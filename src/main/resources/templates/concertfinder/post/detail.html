@@ -259,7 +259,20 @@
         $("#createdChatBtn").on("click", function() {
             let userId = $("#createdChatBtn").data("user-id");
 
-            alert(userId);
+            $.ajax({
+                type: "post"
+                , url: "/chat/" + userId
+                , beforeSend: function(xhr) {
+                    xhr.setRequestHeader(header, token);
+                }
+                , success: function(response) {
+
+                    location.href = "/chat/room/" + response.data;
+                }
+                , error: function(xhr) {
+                    alert(xhr.responseJSON.message);
+                }
+            });
         });
 
         $("#accompanyCancelBtn").on("click", function(e) {

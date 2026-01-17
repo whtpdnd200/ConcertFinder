@@ -135,4 +135,32 @@ public class ChatRoomAndUserService {
 
         return userInfoList;
     }
+
+    public List<Long> getTop3ChatRoomIdList(long userId) {
+
+        List<ChatRoomAndUser> chatRoomAndUsers = chatRoomAndUserRepository.findTop3ByUserIdOrderByCreatedAtDesc(userId);
+
+        List<Long> chatRoomIdList = new ArrayList<>();
+
+        for(ChatRoomAndUser c : chatRoomAndUsers) {
+
+            chatRoomIdList.add(c.getRoomId());
+        }
+
+        return chatRoomIdList;
+    }
+
+    public List<Long> getChatRoomIdList(long userId) {
+
+        List<ChatRoomAndUser> chatRoomAndUsers = chatRoomAndUserRepository.findTop3ByUserIdOrderByCreatedAtDesc(userId);
+
+        List<Long> chatRoomIdList = new ArrayList<>();
+
+        for(ChatRoomAndUser c : chatRoomAndUsers) {
+
+            chatRoomIdList.add(c.getRoomId());
+        }
+
+        return chatRoomIdList;
+    }
 }
