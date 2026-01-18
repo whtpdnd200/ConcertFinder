@@ -55,6 +55,8 @@ public class AccompanyAndAccompanyCountLadderService {
 
         chatRoomAndChatRoomAndUserLadderService.deleteChatRoom(roomId);
         chatRoomAndChatRoomAndUserLadderService.deleteAllChatRoomAndUser(roomId);
+        chatRoomAndChatRoomAndUserLadderService.deleteChatMessage(roomId);
+        simpleWebSocketHandler.deleteRoom(roomId);
     }
 
     // 동행 모집 PK로 동행 모집 정보 삭제 및 동행 모집 인원 전체 삭제
@@ -70,6 +72,7 @@ public class AccompanyAndAccompanyCountLadderService {
 
         chatRoomAndChatRoomAndUserLadderService.deleteChatRoom(roomId);
         chatRoomAndChatRoomAndUserLadderService.deleteAllChatRoomAndUser(roomId);
+        chatRoomAndChatRoomAndUserLadderService.deleteChatMessage(roomId);
         simpleWebSocketHandler.deleteRoom(roomId);
     }
 
@@ -90,7 +93,7 @@ public class AccompanyAndAccompanyCountLadderService {
         chatRoomAndChatRoomAndUserLadderService.insertChatRoomAndUser(userId, roomId);
 
         try {
-            simpleWebSocketHandler.sendEnterMessage(roomId, nickName);
+            simpleWebSocketHandler.sendEnterMessage(roomId, nickName, userId);
         } catch(Exception e) {
 
             throw new RuntimeException("서버에러로 인해 채팅방에 입장하지 못했습니다!");
@@ -139,9 +142,10 @@ public class AccompanyAndAccompanyCountLadderService {
             Accompany accompany = chatRoom.getAccompanyId() == null ? null : accompanyService.getAccompany(chatRoom.getAccompanyId());
             ChatRoomListDTO chatRoomListDTO = ChatRoomListDTO.builder()
                     .roomId(roomId)
-                    .roomName(accompany == null ? "1:1채팅" : roomName)
+                    .roomName(accompany == null ? chatRoomAndChatRoomAndUserLadderService.getPrivateRoomNickname(roomId, userId) : roomName)
                     .headCount(accompany == null ? 2 : accompany.getHeadCount())
                     .currentCount(chatRoomAndChatRoomAndUserLadderService.getCurrentCount(roomId))
+                    .isPrivate(accompany == null ? true : false)
                     .isFull(accompany == null? true : accompany.isFull())
                     .isDateAfter(accompany == null? true : accompanyService.compareDate(accompany.getSDateTime()))
                     .build();
@@ -166,9 +170,10 @@ public class AccompanyAndAccompanyCountLadderService {
             Accompany accompany = chatRoom.getAccompanyId() == null ? null : accompanyService.getAccompany(chatRoom.getAccompanyId());
             ChatRoomListDTO chatRoomListDTO = ChatRoomListDTO.builder()
                     .roomId(roomId)
-                    .roomName(accompany == null ? "1:1채팅" : roomName)
+                    .roomName(accompany == null ? chatRoomAndChatRoomAndUserLadderService.getPrivateRoomNickname(roomId, userId) : roomName)
                     .headCount(accompany == null ? 2 : accompany.getHeadCount())
                     .currentCount(chatRoomAndChatRoomAndUserLadderService.getCurrentCount(roomId))
+                    .isPrivate(accompany == null ? true : false)
                     .isFull(accompany == null? true : accompany.isFull())
                     .isDateAfter(accompany == null? true : accompanyService.compareDate(accompany.getSDateTime()))
                     .build();

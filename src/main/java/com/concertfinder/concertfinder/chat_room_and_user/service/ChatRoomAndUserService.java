@@ -152,7 +152,7 @@ public class ChatRoomAndUserService {
 
     public List<Long> getChatRoomIdList(long userId) {
 
-        List<ChatRoomAndUser> chatRoomAndUsers = chatRoomAndUserRepository.findTop3ByUserIdOrderByCreatedAtDesc(userId);
+        List<ChatRoomAndUser> chatRoomAndUsers = chatRoomAndUserRepository.findAllByUserIdOrderByCreatedAtDesc(userId);
 
         List<Long> chatRoomIdList = new ArrayList<>();
 
@@ -162,5 +162,18 @@ public class ChatRoomAndUserService {
         }
 
         return chatRoomIdList;
+    }
+
+    // 1:1 채팅 상대방 닉네임 반환
+    public String getPrivateRoomNickname(long roomId, long userId) {
+
+        ChatRoomAndUser chatRoomAndUser = chatRoomAndUserRepository.findByRoomIdAndUserIdNot(roomId, userId).orElse(null);
+
+        if(chatRoomAndUser == null) {
+
+            throw new NoSuchElementException("채팅방 리스트를 불러오는 중 에러가 발생 했습니다!");
+        }
+
+        return userService.getNickname(chatRoomAndUser.getUserId());
     }
 }

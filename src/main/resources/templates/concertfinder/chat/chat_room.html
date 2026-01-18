@@ -124,7 +124,7 @@
             let messageTag;
 
 
-            if (type !== "message") {
+            if (type !== "MESSAGE") {
                 // 시스템 메시지
                 messageTag = $("<div>").addClass("system-message")
                     .append($("<span>").text(senderNickname + message));
@@ -229,7 +229,7 @@
                     xhr.setRequestHeader(header, token);
                 }
                 , success: function() {
-                    
+
                     location.href = "/user/mypage";
                 }
                 , error: function(xhr) {
@@ -359,6 +359,7 @@
                 type: "delete"
                 , url: "/chat/" + accompanyId
                 , beforeSend: function(xhr) {
+
                     xhr.setRequestHeader(header, token);
                 }
                 , success: function() {

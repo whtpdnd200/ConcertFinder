@@ -1,7 +1,11 @@
 package com.concertfinder.concertfinder.common;
 
+import com.concertfinder.concertfinder.chatMessage.DTO.SendMessageDTO;
+import com.concertfinder.concertfinder.chatMessage.service.ChatMessageService;
 import groovy.util.logging.Slf4j;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -14,10 +18,25 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @lombok.extern.slf4j.Slf4j
 @Component
+@RequiredArgsConstructor
 @Slf4j
 public class SimpleWebSocketHandler extends TextWebSocketHandler {
 
     private final Map<Long, Set<WebSocketSession>> roomSessions = new ConcurrentHashMap<>();
+
+    private final ChatMessageService chatMessageService;
+
+    public void sendMessageInsert(String[] parts, long userId) {
+
+        SendMessageDTO sendMessageDTO = SendMessageDTO.builder()
+                .userId(userId)
+                .roomId(Long.parseLong(parts[0]))
+                .messageType(parts[1])
+                .content(parts[3])
+                .build();
+
+        chatMessageService.insertMessage(sendMessageDTO);
+    }
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
@@ -32,7 +51,10 @@ public class SimpleWebSocketHandler extends TextWebSocketHandler {
     }
 
     @Override
+    @Transactional
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+
+        Long userId = (Long)session.getAttributes().get("userId");
 
         // 규격: [0]방번호 | [1]타입 | [2]닉네임 | [3]메시지
 
@@ -46,10 +68,13 @@ public class SimpleWebSocketHandler extends TextWebSocketHandler {
         if(parts[1].equals("DISCONNECT")) {
 
             sb.append("님이 퇴장 하셧습니다.");
+            parts[3] = "님이 퇴장 하셧습니다.";
         }
 
         if(parts[1].equals("KICK")) {
             sb.append("님이 관리자에 의해 강퇴 당하셧습니다.");
+
+            parts[3] = "님이 관리자에 의해 강퇴 당하셧습니다.";
         }
 
         Long roomId = Long.parseLong(parts[0]);
@@ -66,6 +91,8 @@ public class SimpleWebSocketHandler extends TextWebSocketHandler {
                 }
             }
         }
+
+        sendMessageInsert(parts, userId);
     }
 
     @Override
@@ -80,11 +107,13 @@ public class SimpleWebSocketHandler extends TextWebSocketHandler {
         }
     }
 
-    public void sendEnterMessage(long roomId, String userNickname) throws Exception {
+    public void sendEnterMessage(long roomId, String userNickname, long userId) throws Exception {
 
         Set<WebSocketSession> sessions = roomSessions.get(roomId);
 
         String sendOpenMessage = roomId + "|" + "CONNECT" + "|" + userNickname + "|님이 입장 했습니다.";
+
+        String[] parts = sendOpenMessage.split("\\|", -1);
 
         if(sessions != null) {
 
@@ -95,6 +124,8 @@ public class SimpleWebSocketHandler extends TextWebSocketHandler {
                 }
             }
         }
+
+        sendMessageInsert(parts, userId);
     }
 
     public void deleteRoom(long roomId) {
@@ -119,6 +150,10 @@ public class SimpleWebSocketHandler extends TextWebSocketHandler {
     public void kickUser(long roomId,long userId) {
 
         Set<WebSocketSession> sessions = roomSessions.get(roomId);
+
+        String message = roomId + "|KICK_USER|SYSTEM|관리자에 의해 강퇴되었습니다.";
+
+        String[] parts = message.split("\\|", -1);
 
         if(sessions != null) {
             for(WebSocketSession s : sessions) {

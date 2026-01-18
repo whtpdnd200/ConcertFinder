@@ -1,5 +1,6 @@
 package com.concertfinder.concertfinder.ladder.service;
 
+import com.concertfinder.concertfinder.chatMessage.service.ChatMessageService;
 import com.concertfinder.concertfinder.chat_room.domain.ChatRoom;
 import com.concertfinder.concertfinder.chat_room.service.ChatRoomService;
 import com.concertfinder.concertfinder.chat_room_and_user.service.ChatRoomAndUserService;
@@ -22,6 +23,8 @@ public class ChatRoomAndChatRoomAndUserLadderService {
     private final ChatRoomAndUserService chatRoomAndUserService;
 
     private final SimpleWebSocketHandler simpleWebSocketHandler;
+
+    private final ChatMessageService chatMessageService;
 
     // 동행 글 작성한 유저의 채팅방 생성 및 입장 메서드
     @Transactional
@@ -66,7 +69,13 @@ public class ChatRoomAndChatRoomAndUserLadderService {
 
         deleteChatRoom(roomId);
         deleteAllChatRoomAndUser(roomId);
+        chatMessageService.deleteMessage(roomId);
         simpleWebSocketHandler.deleteRoom(roomId);
+    }
+
+    public void deleteChatMessage(long roomId) {
+
+        chatMessageService.deleteMessage(roomId);
     }
 
     public String getChatName(long roomId) {
@@ -114,5 +123,11 @@ public class ChatRoomAndChatRoomAndUserLadderService {
         chatRoomAndUserService.insertPrivateChatRoomAndUser(userId, roomId);
         chatRoomAndUserService.insertPrivateChatRoomAndUser(otherUserId, roomId);
         return roomId;
+    }
+
+    // 1:1 채팅 상대방 닉네임 반환
+    public String getPrivateRoomNickname(long roomId, long userId) {
+
+        return chatRoomAndUserService.getPrivateRoomNickname(roomId, userId);
     }
 }

@@ -22,4 +22,7 @@ public interface ChatRoomAndUserRepository extends JpaRepository<ChatRoomAndUser
     public List<ChatRoomAndUser> findTop3ByUserIdOrderByCreatedAtDesc(long userId);
 
     public List<ChatRoomAndUser> findAllByUserIdOrderByCreatedAtDesc(long userId);
+
+    public Optional<ChatRoomAndUser> findByRoomIdAndUserIdNot(long roomId, long userId);
+
 }

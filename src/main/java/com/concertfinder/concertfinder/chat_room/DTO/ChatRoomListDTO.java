@@ -19,6 +19,8 @@ public class ChatRoomListDTO {
 
     private int currentCount;
 
+    private boolean isPrivate;
+
     private boolean isFull;
 
     private boolean isDateAfter;
