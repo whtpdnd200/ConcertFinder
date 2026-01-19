@@ -122,25 +122,24 @@ public class ChatMessageService {
                 .build());
     }
 
-    public long getLastChatMessageId(long roomId) {
+    public Long getLastChatMessageId(long roomId) {
 
         Optional<ChatMessage> optionalChatMessage = chatMessageRepository.findFirstByRoomIdOrderByIdDesc(roomId);
 
-        if(!optionalChatMessage.isPresent()) {
 
-            throw new NoSuchElementException("서버 에러 발생!");
-        }
-
-        return optionalChatMessage.get().getId();
+        return optionalChatMessage.map(ChatMessage::getId).orElse(null);
     }
 
     @Transactional
     public void updateLastChat(long roomId, long userId) {
 
         try {
-            long lastId = getLastChatMessageId(roomId);
+            Long lastId = getLastChatMessageId(roomId);
 
-            lastChatService.updateLastMessage(roomId, userId, lastId);
+            if(lastId != null) {
+                lastChatService.updateLastMessage(roomId, userId, lastId);
+            }
+
         } catch (Exception e) {
             log.warn("채팅방 삭제시 업데이트 로직 에러 발생 함");
         }
