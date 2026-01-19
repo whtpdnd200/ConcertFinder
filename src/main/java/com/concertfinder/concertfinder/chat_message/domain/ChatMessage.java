@@ -1,4 +1,4 @@
-package com.concertfinder.concertfinder.chatMessage.domain;
+package com.concertfinder.concertfinder.chat_message.domain;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

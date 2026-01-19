@@ -116,10 +116,10 @@
             }
 
             // 2. 메시지 그리기 함수 호출
-            appendMessageToArea(type, nickname, message);
+            appendMessageToArea(type, nickname, message, null, true, true);
         };
 
-        function appendMessageToArea(type, senderNickname, message) {
+        function appendMessageToArea(type, senderNickname, message, date, isOne, isAppend) {
             let chatArea = $("#chatMessageArea");
             let messageTag;
 
@@ -133,7 +133,7 @@
                 //일반 채팅
                 let isMe = (senderNickname === userNickname); // 내가 보낸 건지 확인
                 let groupClass = isMe ? "me" : "opponent";
-                let currentTime = getCurrentTime();
+                let currentTime = getCurrentTime(date);
 
                 // 메인 태그 영역
                 messageTag = $("<div>").addClass("message-group").addClass(groupClass);
@@ -158,15 +158,25 @@
 
                 messageTag.append(contentWrapper);
             }
+            if(isAppend) {
+                chatArea.append(messageTag);
+            } else {
+                chatArea.prepend(messageTag);
+            }
 
-            // 화면에 추가 후 스크롤 하단 고정
-            chatArea.append(messageTag);
-            chatArea.scrollTop(chatArea[0].scrollHeight);
+
+            if(isOne) {
+                // 화면에 추가 후 스크롤 하단 고정
+                chatArea.scrollTop(chatArea[0].scrollHeight);
+            }
+
         }
 
 
-        function getCurrentTime() {
-            return new Date().toLocaleTimeString('ko-KR', {
+        function getCurrentTime(date) {
+            let dateString = date ? new Date(date) : new Date();
+
+            return dateString.toLocaleTimeString('ko-KR', {
                 hour: '2-digit',
                 minute: '2-digit',
                 hour12: true
@@ -196,6 +206,8 @@
             }
         }
 
+
+
         function replaceMessage(message) {
 
             return message.replace("|", "│");
@@ -203,6 +215,8 @@
 
 
         $(document).ready(function() {
+
+
             // 전송 버튼 클릭
             $("#sendBtn").on("click", function() {
                 sendMessage();
@@ -219,6 +233,100 @@
 
         var token = $("meta[name='_csrf']").attr("content");
         var header = $("meta[name='_csrf_header']").attr("content");
+
+        var isLastPage = false;
+        var isLoading = false;
+
+        var lastId = null;
+
+        $("#chatMessageArea").on("scroll", function() {
+
+            if ($(this).scrollTop() === 0) {
+
+                if(isLastPage) {
+                    alert("이전 메시지가 없습니다");
+                }
+
+                if (!isLastPage && !isLoading) {
+
+                    isLoading = true;
+                    let chatArea = $("#chatMessageArea");
+                    let previousHeight = chatArea[0].scrollHeight;
+                    let newScrollHeight;
+
+                    $.ajax({
+                        type: "get"
+                        , url: "/message/" + roomId + "/" + lastId
+                        , beforeSend: function(xhr) {
+                            xhr.setRequestHeader(header, token);
+                        }
+                        , success: function(response) {
+
+                            let messageList = response.data.content;
+
+                            //console.log(response);
+
+                            lastId = messageList[0].id;
+
+                            //console.log(lastId);
+
+                            //console.log(response);
+                            isLastPage = response.data.last;
+
+                            $.each(messageList, function(index, msg) {
+
+                                appendMessageToArea(msg.type, msg.userNickname, msg.content, msg.createdAt, false, false);
+                            });
+                            let newHeight = chatArea[0].scrollHeight;
+                            newScrollHeight = newHeight - previousHeight;
+                        }
+                        , complete: function() {
+                            isLoading = false;
+
+                            chatArea.scrollTop(newScrollHeight);
+                        }
+                        , error: function(xhr) {
+
+                            alert(xhr.responseJSON.message);
+                        }
+                    });
+                }
+            }
+        });
+
+        $.ajax({
+            type: "get"
+            , url: "/message/" + roomId
+            , beforeSend: function(xhr) {
+                xhr.setRequestHeader(header, token);
+            }
+            , success: function(response) {
+
+                let messageList = response.data.content.reverse();
+
+                lastId = messageList[0].id;
+
+                //console.log(lastId);
+
+                //console.log(response);
+                isLastPage = response.data.last;
+
+                $.each(messageList, function(index, msg) {
+
+                    appendMessageToArea(msg.type, msg.userNickname, msg.content, msg.createdAt, false, true);
+                });
+
+            }
+            , complete: function() {
+
+                let chatArea = $("#chatMessageArea");
+                chatArea.scrollTop(chatArea[0].scrollHeight);
+            }
+            , error: function(xhr) {
+
+                alert(xhr.responseJSON.message);
+            }
+        });
 
         $("#privateRoomExitBtn").on("click", function() {
 

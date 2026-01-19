@@ -1,4 +1,4 @@
-package com.concertfinder.concertfinder.chatMessage.DTO;
+package com.concertfinder.concertfinder.chat_message.DTO;
 
 import lombok.*;
 

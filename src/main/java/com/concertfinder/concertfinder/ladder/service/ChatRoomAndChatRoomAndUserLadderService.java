@@ -1,10 +1,12 @@
 package com.concertfinder.concertfinder.ladder.service;
 
-import com.concertfinder.concertfinder.chatMessage.service.ChatMessageService;
+import com.concertfinder.concertfinder.chat_message.service.ChatMessageService;
 import com.concertfinder.concertfinder.chat_room.domain.ChatRoom;
 import com.concertfinder.concertfinder.chat_room.service.ChatRoomService;
 import com.concertfinder.concertfinder.chat_room_and_user.service.ChatRoomAndUserService;
 import com.concertfinder.concertfinder.common.SimpleWebSocketHandler;
+import com.concertfinder.concertfinder.last_chat.domain.LastChat;
+import com.concertfinder.concertfinder.last_chat.service.LastChatService;
 import groovy.util.logging.Slf4j;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,8 @@ public class ChatRoomAndChatRoomAndUserLadderService {
     private final SimpleWebSocketHandler simpleWebSocketHandler;
 
     private final ChatMessageService chatMessageService;
+
+    private final LastChatService lastChatService;
 
     // 동행 글 작성한 유저의 채팅방 생성 및 입장 메서드
     @Transactional
@@ -129,5 +133,14 @@ public class ChatRoomAndChatRoomAndUserLadderService {
     public String getPrivateRoomNickname(long roomId, long userId) {
 
         return chatRoomAndUserService.getPrivateRoomNickname(roomId, userId);
+    }
+
+    // 마지막 읽은 채팅 내역 저장
+    @Transactional
+    public void updateLastChat(long roomId, long userId) {
+
+        long lastId = chatMessageService.getLastChatMessageId(roomId);
+
+        lastChatService.updateLastMessage(roomId, userId, lastId);
     }
 }

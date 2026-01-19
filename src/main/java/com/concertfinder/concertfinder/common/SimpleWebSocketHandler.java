@@ -1,7 +1,8 @@
 package com.concertfinder.concertfinder.common;
 
-import com.concertfinder.concertfinder.chatMessage.DTO.SendMessageDTO;
-import com.concertfinder.concertfinder.chatMessage.service.ChatMessageService;
+import com.concertfinder.concertfinder.chat_message.DTO.SendMessageDTO;
+import com.concertfinder.concertfinder.chat_message.service.ChatMessageService;
+import com.concertfinder.concertfinder.ladder.service.ChatRoomAndChatRoomAndUserLadderService;
 import groovy.util.logging.Slf4j;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -25,6 +26,7 @@ public class SimpleWebSocketHandler extends TextWebSocketHandler {
     private final Map<Long, Set<WebSocketSession>> roomSessions = new ConcurrentHashMap<>();
 
     private final ChatMessageService chatMessageService;
+
 
     public void sendMessageInsert(String[] parts, long userId) {
 
@@ -99,12 +101,18 @@ public class SimpleWebSocketHandler extends TextWebSocketHandler {
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
 
         Long roomId = (Long)session.getAttributes().get("roomId");
+        long userId = (Long)session.getAttributes().get("userId");
+
 
         if(roomId != null) {
             Set<WebSocketSession> sessions = roomSessions.get(roomId);
 
             sessions.remove(session);
+
+            chatMessageService.updateLastChat(roomId, userId);
         }
+
+
     }
 
     public void sendEnterMessage(long roomId, String userNickname, long userId) throws Exception {
