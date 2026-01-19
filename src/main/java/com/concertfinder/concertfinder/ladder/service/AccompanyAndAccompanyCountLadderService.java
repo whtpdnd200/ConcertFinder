@@ -67,13 +67,21 @@ public class AccompanyAndAccompanyCountLadderService {
 
             throw new UnAuthorizedException("관리자만 채팅방을 삭제 할 수 있습니다!");
         }
-        accompanyService.deleteAccompany(accompanyId);
+
+        simpleWebSocketHandler.deleteRoom(roomId);
+        chatRoomAndChatRoomAndUserLadderService.lastChatDelete(roomId);
+        // 1. 채팅 관련 데이터 삭제 (채팅방은 AccompanyId를 참조할 가능성이 높음)
+        chatRoomAndChatRoomAndUserLadderService.deleteChatMessage(roomId);
+        chatRoomAndChatRoomAndUserLadderService.deleteAllChatRoomAndUser(roomId);
+        chatRoomAndChatRoomAndUserLadderService.deleteChatRoom(roomId);
+
+        // 2. 동행 인원 삭제 (AccompanyId 참조 중)
         accompanyCountService.deleteAllAccompanyCount(accompanyId);
 
-        chatRoomAndChatRoomAndUserLadderService.deleteChatRoom(roomId);
-        chatRoomAndChatRoomAndUserLadderService.deleteAllChatRoomAndUser(roomId);
-        chatRoomAndChatRoomAndUserLadderService.deleteChatMessage(roomId);
-        simpleWebSocketHandler.deleteRoom(roomId);
+        // 3. 마지막에 동행(부모) 정보 삭제
+        accompanyService.deleteAccompany(accompanyId);
+
+
     }
 
     // 동행 인원 신청 및 동행 모집 인원 체크

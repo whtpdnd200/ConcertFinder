@@ -5,9 +5,11 @@ import com.concertfinder.concertfinder.last_chat.domain.LastChatId;
 import com.concertfinder.concertfinder.last_chat.repository.LastChatRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -33,5 +35,25 @@ public class LastChatService {
 
             throw new RuntimeException("서버 에러로인해 채팅방 내역을 저장하지 못했습니다!");
         }
+    }
+
+    public void deleteLastChat(long roomId) {
+
+        List<LastChat> lastChatList = lastChatRepository.findAllByRoomId(roomId);
+
+        for(LastChat l : lastChatList) {
+
+            try {
+                lastChatRepository.delete(l);
+            } catch(DataAccessException e) {
+
+                throw new RuntimeException("서버 에러 발생!");
+            }
+        }
+    }
+
+    public Long getLastChatId(long roomId, long userId) {
+
+        return lastChatRepository.findByRoomIdAndUserId(roomId, userId).map(LastChat::getLastChatId).orElse(0l);
     }
 }

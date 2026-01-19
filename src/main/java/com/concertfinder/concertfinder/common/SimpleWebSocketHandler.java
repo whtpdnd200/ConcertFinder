@@ -111,8 +111,6 @@ public class SimpleWebSocketHandler extends TextWebSocketHandler {
 
             chatMessageService.updateLastChat(roomId, userId);
         }
-
-
     }
 
     public void sendEnterMessage(long roomId, String userNickname, long userId) throws Exception {

@@ -65,17 +65,44 @@ public class ChatMessageService {
         }
     }
 
+
+
     // 메시지 출력 메서드
-    public Slice<MessageListDTO> getMessageList(long roomId, Pageable pageable) {
+    public Slice<MessageListDTO> getMessageList(long roomId, long userId, Pageable pageable) {
 
+        long lastId = lastChatService.getLastChatId(roomId, userId);
 
-        Slice<ChatMessage> chatMessages = chatMessageRepository.findAllByRoomIdOrderByIdDesc(roomId, PageRequest.of(0, 15));
+        Slice<ChatMessage> chatMessages = null;
+
+        if(lastId == 0l) {
+
+            chatMessages = chatMessageRepository.findAllByRoomIdOrderByIdDesc(roomId, PageRequest.of(0, 15));
+        } else {
+
+            chatMessages = chatMessageRepository.findByRoomIdAndIdGreaterThanEqualOrderByIdAsc(roomId, lastId, PageRequest.of(0, 100));
+        }
 
         return chatMessages.map(entity -> MessageListDTO.builder()
                 .id(entity.getId())
                 .type(entity.getMessageType())
                 .userNickname(userService.getNickname(entity.getUserId()))
                 .content(entity.getContent())
+                .reverse(lastId == 0l)
+                .createdAt(entity.getCreatedAt())
+                .build());
+    }
+
+    // 다음 메시지 출력 메서드
+    public Slice<MessageListDTO> getNextMessageList(long roomId, long nextId) {
+
+        Slice<ChatMessage> chatMessages = chatMessageRepository.findByRoomIdAndIdGreaterThanOrderByIdAsc(roomId, nextId, PageRequest.of(0, 15));
+
+        return chatMessages.map(entity -> MessageListDTO.builder()
+                .id(entity.getId())
+                .type(entity.getMessageType())
+                .userNickname(userService.getNickname(entity.getUserId()))
+                .content(entity.getContent())
+                .reverse(false)
                 .createdAt(entity.getCreatedAt())
                 .build());
     }
@@ -90,6 +117,7 @@ public class ChatMessageService {
                 .type(entity.getMessageType())
                 .userNickname(userService.getNickname(entity.getUserId()))
                 .content(entity.getContent())
+                .reverse(false)
                 .createdAt(entity.getCreatedAt())
                 .build());
     }
@@ -109,8 +137,13 @@ public class ChatMessageService {
     @Transactional
     public void updateLastChat(long roomId, long userId) {
 
-        long lastId = getLastChatMessageId(roomId);
+        try {
+            long lastId = getLastChatMessageId(roomId);
 
-        lastChatService.updateLastMessage(roomId, userId, lastId);
+            lastChatService.updateLastMessage(roomId, userId, lastId);
+        } catch (Exception e) {
+            log.warn("채팅방 삭제시 업데이트 로직 에러 발생 함");
+        }
+
     }
 }

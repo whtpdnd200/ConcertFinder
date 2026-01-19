@@ -73,6 +73,7 @@ public class ChatRoomAndChatRoomAndUserLadderService {
 
         deleteChatRoom(roomId);
         deleteAllChatRoomAndUser(roomId);
+        lastChatDelete(roomId);
         chatMessageService.deleteMessage(roomId);
         simpleWebSocketHandler.deleteRoom(roomId);
     }
@@ -127,6 +128,11 @@ public class ChatRoomAndChatRoomAndUserLadderService {
         chatRoomAndUserService.insertPrivateChatRoomAndUser(userId, roomId);
         chatRoomAndUserService.insertPrivateChatRoomAndUser(otherUserId, roomId);
         return roomId;
+    }
+
+    public void lastChatDelete(long roomId) {
+
+        lastChatService.deleteLastChat(roomId);
     }
 
     // 1:1 채팅 상대방 닉네임 반환

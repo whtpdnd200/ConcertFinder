@@ -19,5 +19,7 @@ public class MessageListDTO {
 
     private String content;
 
+    private boolean reverse;
+
     private LocalDateTime createdAt;
 }
