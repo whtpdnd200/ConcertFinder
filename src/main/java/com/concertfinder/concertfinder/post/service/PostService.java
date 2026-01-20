@@ -156,8 +156,9 @@ public class PostService {
             }
             try {
                 postRepository.delete(post);
+                commentService.deleteAllComment(postId);
                 if(post.getCategory().equals('R')) {
-                    
+
                     accompanyAndAccompanyCountLadderService.deleteAccompanyAndAccompanyCount(postId);
                 }
             } catch(DataAccessException e) {

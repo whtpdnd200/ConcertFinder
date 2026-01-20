@@ -246,3 +246,17 @@
     padding: 2px 8px;
     border-radius: 12px;
 }
+
+.read-separator {
+    display: flex;
+    align-items: center;
+    margin: 25px 0;
+    color: #888;
+    font-size: 12px;
+}
+.read-separator hr {
+    flex: 1;
+    border: none;
+    border-top: 1px solid #ddd;
+    margin: 0 10px;
+}

@@ -53,7 +53,6 @@ public class SimpleWebSocketHandler extends TextWebSocketHandler {
     }
 
     @Override
-    @Transactional
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
 
         Long userId = (Long)session.getAttributes().get("userId");

@@ -92,7 +92,7 @@
         var isNextLastPage = true;
         var isLoading = false;
 
-        var lastId = null;
+        var lastId = 0;
         var nextLastId = null;
 
         const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
@@ -166,6 +166,11 @@
 
                 if (!isBeforeLastPage && !isLoading) {
 
+                    if (lastId === 0) {
+                        console.log("아직 초기 메시지가 로드되지 않았습니다.");
+                        return;
+                    }
+
                     isLoading = true;
 
                     let previousHeight = chatArea[0].scrollHeight;
@@ -179,23 +184,28 @@
                         }
                         , success: function(response) {
 
-                            let messageList = response.data.content;
+                            if (response.data.content.length > 0) {
+                                let messageList = response.data.content;
 
-                            //console.log(response);
+                                //console.log(response);
 
-                            lastId = messageList[messageList.length - 1].id;
+                                lastId = messageList[messageList.length - 1].id;
 
-                            //console.log(lastId);
+                                //console.log(lastId);
 
-                            //console.log(response);
-                            isBeforeLastPage = response.data.last;
+                                //console.log(response);
+                                isBeforeLastPage = response.data.last;
 
-                            $.each(messageList, function(index, msg) {
+                                $.each(messageList, function(index, msg) {
 
-                                appendMessageToArea(msg.type, msg.userNickname, msg.content, msg.createdAt, false, false);
-                            });
-                            let newHeight = chatArea[0].scrollHeight;
-                            newScrollHeight = newHeight - previousHeight;
+                                    appendMessageToArea(msg.type, msg.userNickname, msg.content, msg.createdAt, false, false);
+                                });
+                                let newHeight = chatArea[0].scrollHeight;
+                                newScrollHeight = newHeight - previousHeight;
+                            } else {
+                                isBeforeLastPage = true;
+                            }
+
                         }
                         , complete: function() {
                             isLoading = false;
@@ -203,7 +213,7 @@
                             chatArea.scrollTop(newScrollHeight);
                         }
                         , error: function(xhr) {
-
+                            isLoading = false
                             alert(xhr.responseJSON.message);
                         }
                     });
@@ -243,7 +253,7 @@
                         isLoading = false;
                     }
                     , error: function(xhr) {
-
+                        isLoading = false
                         alert(xhr.responseJSON.message);
                     }
                 });
@@ -251,57 +261,52 @@
         });
 
         $.ajax({
-            type: "get"
-            , url: "/message/" + roomId
-            , beforeSend: function(xhr) {
+            type: "get",
+            url: "/message/" + roomId,
+            beforeSend: function(xhr) {
                 xhr.setRequestHeader(header, token);
-            }
-            , success: function(response) {
+            },
+            success: function(response) {
 
+                console.log(response);
                 let messageList = response.data.content;
 
                 if (messageList.length > 0 && messageList[0].reverse) {
                     messageList.reverse();
                 }
 
-                //console.log(lastId);
-
-                console.log(response);
-
-                if (messageList.length > 0) {
-                    lastId = messageList[0].id;
-                    nextLastId = messageList[messageList.length - 1].id;
+                // 유효한 메시지들만 필터링 (ID가 -1인 시스템 라인 제외)하여 ID 할당
+                const validMessages = messageList.filter(m => m.id !== -1);
+                if (validMessages.length > 0) {
+                    lastId = validMessages[0].id;
+                    nextLastId = validMessages[validMessages.length - 1].id;
                 }
 
                 isBeforeLastPage = false;
                 isNextLastPage = response.data.last;
 
-
-
+                // 메시지 그리기 (msg.id를 인자로 추가 전달)
                 $.each(messageList, function(index, msg) {
-
-                    appendMessageToArea(msg.type, msg.userNickname, msg.content, msg.createdAt, false, true);
+                    appendMessageToArea(msg.type, msg.userNickname, msg.content, msg.createdAt, false, true, msg.id);
                 });
-
-
-
-            }
-            , complete: function() {
-
+            },
+            complete: function() {
                 let chatArea = $("#chatMessageArea");
+                let marker = $("#last-read-marker");
 
-                // 5. 스크롤 위치 결정
-                // 만약 안 읽은 메시지가 있어서(isNextLastPage == false) 위쪽부터 보여줘야 한다면 0
-                // 다 읽은 상태라면 맨 아래로 이동
-                if (!isNextLastPage) {
-                    chatArea.scrollTop(0); // 안 읽은 시작점부터 보기
+                // 스크롤 위치 결정
+                if (marker.length > 0) {
+                    // "여기까지 읽었습니다" 마커가 있으면 그 위치로 이동
+                    // 마커가 화면의 상단에서 약간 아래(중앙쯤)에 오도록 계산
+                    let offset = marker.offset().top - chatArea.offset().top + chatArea.scrollTop();
+                    chatArea.scrollTop(offset - (chatArea.height() / 2));
+                } else if (!isNextLastPage) {
+                    // 안 읽은 메시지가 많아서 다음 페이지가 더 있는 경우 맨 위로
+                    chatArea.scrollTop(0);
                 } else {
-                    chatArea.scrollTop(chatArea[0].scrollHeight); // 최신 메시지 보기
+                    // 모든 메시지를 다 읽은 상태면 맨 아래로
+                    chatArea.scrollTop(chatArea[0].scrollHeight);
                 }
-            }
-            , error: function(xhr) {
-
-                alert(xhr.responseJSON.message);
             }
         });
 
@@ -338,6 +343,7 @@
                 , success: function() {
                     let kickMessage = roomId + "|KICK|" + nickname + "|";
                     socket.send(kickMessage);
+                    location.reload();
                 }
                 , error: function(xhr) {
 

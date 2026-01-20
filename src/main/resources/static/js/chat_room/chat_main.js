@@ -1,12 +1,18 @@
-function appendMessageToArea(type, senderNickname, message, date, isOne, isAppend) {
+function appendMessageToArea(type, senderNickname, message, date, isOne, isAppend, msgId) {
     let chatArea = $("#chatMessageArea");
     let messageTag;
 
-
-    if (type !== "MESSAGE") {
-        // 시스템 메시지
+    if (type === "SYSTEM_LINE") {
+        messageTag = $("<div>").addClass("read-separator").attr("id", "last-read-marker")
+            .append($("<hr>"))
+            .append($("<span>").text(message))
+            .append($("<hr>"));
+    }
+    else if (type !== "MESSAGE") {
+        // 일반 시스템 메시지 (입장, 퇴장 등)
         messageTag = $("<div>").addClass("system-message")
-            .append($("<span>").text(senderNickname + message));
+            .append($("<span>").text(senderNickname + (message || "")));
+
 
     } else {
         //일반 채팅
@@ -16,6 +22,8 @@ function appendMessageToArea(type, senderNickname, message, date, isOne, isAppen
 
         // 메인 태그 영역
         messageTag = $("<div>").addClass("message-group").addClass(groupClass);
+
+        if (msgId) messageTag.attr("data-id", msgId); // ID 저장
 
         // 상대방일 때만 닉네임 표시
         if (!isMe) {

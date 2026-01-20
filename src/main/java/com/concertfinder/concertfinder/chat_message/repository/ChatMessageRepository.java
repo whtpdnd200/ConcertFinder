@@ -4,6 +4,8 @@ import com.concertfinder.concertfinder.chat_message.domain.ChatMessage;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -24,4 +26,11 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
     Slice<ChatMessage> findByRoomIdAndIdGreaterThanOrderByIdAsc(Long roomId, Long id, Pageable pageable);
 
     public Optional<ChatMessage> findFirstByRoomIdOrderByIdDesc(long roomId);
+
+    // 과거 메시지 조회 (DESC)
+    Slice<ChatMessage> findByRoomIdAndIdLessThanEqualOrderByIdDesc(long roomId, long lastId, Pageable pageable);
+
+    // 이후 메시지 조회 (ASC)
+    Slice<ChatMessage> findByRoomIdAndIdGreaterThanOrderByIdAsc(long roomId, long lastId, Pageable pageable);
+
 }
