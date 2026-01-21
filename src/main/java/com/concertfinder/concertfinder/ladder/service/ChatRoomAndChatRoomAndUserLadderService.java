@@ -71,14 +71,14 @@ public class ChatRoomAndChatRoomAndUserLadderService {
         chatRoomAndUserService.deleteAllChatRoomAndUser(roomId);
     }
 
-    public void deleteChatRoomUser() {
+    public void deleteChatRoomUser(List<Long> userIdList) {
 
-        List<ChatRoomAndUser> chatRoomAndUsers = chatRoomAndUserService.getChatRoomUserList();
+        List<ChatRoomAndUser> chatRoomAndUsers = chatRoomAndUserService.getChatRoomUserList(userIdList);
 
         if(!chatRoomAndUsers.isEmpty()) {
             for(ChatRoomAndUser c : chatRoomAndUsers) {
 
-                if(!userService.isExistsUser(c.getUserId())) {
+                if(userService.getIsDelete(c.getUserId())) {
 
                     ChatRoom chatRoom = chatRoomService.getChatRoom(c.getRoomId());
 
@@ -88,12 +88,12 @@ public class ChatRoomAndChatRoomAndUserLadderService {
                         deleteAllChatRoomAndUser(c.getRoomId());
                         lastChatDelete(c.getRoomId());
                         chatMessageService.deleteMessage(c.getRoomId());
+
                     } else if(chatRoom.getAccompanyId() != null) {
 
                         lastChatService.deleteLastChatUser(c.getUserId());
                         deleteChatRoomAndUser(c.getUserId(), c.getRoomId());
                     }
-
                 }
             }
         }

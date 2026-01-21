@@ -21,4 +21,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // 로그인 메서드 : 아이디와 비밀번호로 회원 조회
     public Optional<User> findByUserIdAndPassword(String userId, String password);
 
+    void deleteAllByIdIn(List<Long> userIdList);
 }

@@ -172,18 +172,13 @@ public class UserService {
     public String getNickname(long id) {
 
         Optional<User> optionalUser = userRepository.findById(id);
-        if(!optionalUser.isPresent()) {
-            return "찾을 수 없는 사용자";
-        }
 
-        User user = optionalUser.get();
-
-        if(user.isDelete()) {
+        if(!optionalUser.isPresent() || optionalUser.get().isDelete()) {
 
             return "탈퇴한 유저";
         }
 
-        return user.getNickname();
+        return optionalUser.get().getNickname();
     }
 
     public boolean isExistsUser(long id) {
@@ -216,17 +211,15 @@ public class UserService {
         }
     }
 
-    public void deleteUsers() {
 
-        List<Long> deleteUserIdList = userRepository.findAllByIsDelete(true).stream().map(User::getId).toList();
+    public List<Long> getDeleteUserIdList() {
 
-        if(!deleteUserIdList.isEmpty()) {
+        return userRepository.findAllByIsDelete(true).stream().map(User::getId).toList();
+    }
 
-            for(long id : deleteUserIdList) {
+    public void deleteUsers(List<Long> userIdList) {
 
-                deleteUser(id);
-            }
-        }
+        userRepository.deleteAllByIdIn(userIdList);
     }
 
     // 회원 탈퇴 메서드

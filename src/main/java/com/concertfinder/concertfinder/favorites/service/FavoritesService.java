@@ -7,6 +7,7 @@ import com.concertfinder.concertfinder.favorites.domain.Favorites;
 import com.concertfinder.concertfinder.favorites.repository.FavoritesRepository;
 import com.concertfinder.concertfinder.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FavoritesService{
@@ -95,6 +97,17 @@ public class FavoritesService{
                     deleteFavorites(f.getConcertId(), f.getUserId());
                 }
             }
+        }
+    }
+
+    public void deleteUserFavorites(List<Long> userIdList) {
+
+        try {
+
+            favoritesRepository.deleteAllByUserIdIn(userIdList);
+        } catch(DataAccessException e) {
+
+            log.warn("탈퇴 회원 즐겨찾기 삭제 실패");
         }
 
     }

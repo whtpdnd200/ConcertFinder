@@ -177,6 +177,17 @@ public class CommentService {
                 }
             }
         }
+    }
 
+    public void deleteUserComment(List<Long> userIdList) {
+
+        try {
+
+            commentRepository.deleteAllByUserIdIn(userIdList);
+
+        } catch(DataAccessException e) {
+
+            throw new RuntimeException("삭제 에러");
+        }
     }
 }

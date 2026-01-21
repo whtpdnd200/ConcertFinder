@@ -49,14 +49,16 @@ public class SchedulerService {
     }
 
     @Transactional
-    @Scheduled(cron = "0 0 4 * * *", zone = "Asia/Seoul")
+    @Scheduled(cron = "*/1 * * * * *", zone = "Asia/Seoul")
     public void userRelationDelete() {
 
-        userService.deleteUsers();
-        commentService.deleteUserComment();
-        favoritesService.deleteUserFavorites();
-        reviewService.deleteUserReview();
-        chatRoomAndChatRoomAndUserLadderService.deleteChatRoomUser();
-        postService.deleteUserPost();
+        List<Long> userIdList = userService.getDeleteUserIdList();
+
+        commentService.deleteUserComment(userIdList);
+        favoritesService.deleteUserFavorites(userIdList);
+        reviewService.deleteUserReview(userIdList);
+        chatRoomAndChatRoomAndUserLadderService.deleteChatRoomUser(userIdList);
+        postService.deleteUserPost(userIdList);
+        userService.deleteUsers(userIdList);
     }
 }

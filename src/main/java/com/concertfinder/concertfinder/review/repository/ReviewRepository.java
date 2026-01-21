@@ -22,4 +22,5 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     public Page<Review> findAllByAreaCode(String areaCode, Pageable pageable);
 
+    void deleteAllByUserIdIn(List<Long> userIdList);
 }

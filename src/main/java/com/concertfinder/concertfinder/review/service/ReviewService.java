@@ -7,6 +7,7 @@ import com.concertfinder.concertfinder.review.DTO.ReviewWriteDTO;
 import com.concertfinder.concertfinder.review.domain.Review;
 import com.concertfinder.concertfinder.review.repository.ReviewRepository;
 import com.concertfinder.concertfinder.user.service.UserService;
+import groovy.util.logging.Slf4j;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.*;
@@ -17,8 +18,10 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+@lombok.extern.slf4j.Slf4j
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
@@ -161,6 +164,16 @@ public class ReviewService {
                 }
             }
         }
+    }
 
+    public void deleteUserReview(List<Long> userIdList) {
+
+        try {
+
+            reviewRepository.deleteAllByUserIdIn(userIdList);
+        } catch(DataAccessException e) {
+
+            log.warn("탈퇴 회원 리뷰 목록 삭제 실패!");
+        }
     }
 }

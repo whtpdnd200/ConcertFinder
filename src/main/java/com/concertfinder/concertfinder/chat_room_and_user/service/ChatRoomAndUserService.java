@@ -181,9 +181,9 @@ public class ChatRoomAndUserService {
         return userService.getNickname(chatRoomAndUser.getUserId());
     }
 
-    public List<ChatRoomAndUser> getChatRoomUserList() {
+    public List<ChatRoomAndUser> getChatRoomUserList(List<Long> userIdList) {
 
-        List<ChatRoomAndUser> chatRoomAndUsers = chatRoomAndUserRepository.findAll();
+        List<ChatRoomAndUser> chatRoomAndUsers = chatRoomAndUserRepository.findAllByUserIdIn(userIdList);
 
         return chatRoomAndUsers;
     }

@@ -185,6 +185,7 @@ public class PostService {
             }
             try {
                 postRepository.delete(post);
+                commentService.deleteAllComment(postId);
                 if(post.getCategory().equals('R')) {
 
                     accompanyAndAccompanyCountLadderService.deleteAccompanyAndAccompanyCountByAccompanyId(accompanyId, roomId, userId);
@@ -238,20 +239,19 @@ public class PostService {
     }
 
     // 탈퇴한 사용자의 게시글 삭제
-    public void deleteUserPost() {
+    public void deleteUserPost(List<Long> userIdList) {
 
-        List<Post> posts = postRepository.findAll();
+        List<Post> posts = postRepository.findAllByUserIdIn(userIdList);
 
         if(!posts.isEmpty()) {
 
             for(Post p : posts) {
 
-                if(!userService.isExistsUser(p.getUserId())) {
+                if(userService.getIsDelete(p.getUserId())) {
 
                     postDelete(p.getId(), p.getUserId());
                 }
             }
         }
-
     }
 }
