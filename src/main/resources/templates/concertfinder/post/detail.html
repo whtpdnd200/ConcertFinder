@@ -31,7 +31,19 @@
                                 <div class="author-avatar mr-2">
                                     <i class="bi bi-person-circle"></i>
                                 </div>
-                                <span th:text="${postInfo.userNickname}" class="author-name font-weight-bold">재미니팬</span>
+                                <span th:if="${#authentication.principal.loginUserDTO.id == postInfo.userId}" th:text="${postInfo.userNickname}" class="author-name font-weight-bold">재미니팬</span>
+                                <div th:unless="${#authentication.principal.loginUserDTO.id == postInfo.userId}" class="dropdown d-inline-block">
+                                    <a class="text-dark font-weight-bold dropdown-toggle" href="javascript:void(0)"
+                                       id="userMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                       th:text="${postInfo.userNickname}">
+                                        작성자닉네임
+                                    </a>
+                                    <div class="dropdown-menu shadow border-0" aria-labelledby="userMenu">
+                                        <a th:data-user-id="${postInfo.userId}" class="dropdown-item py-2" href="javascript:void(0)" id="createdChatBtn">
+                                            <i class="bi bi-chat-dots-fill mr-2 text-primary"></i> 1:1 채팅하기
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
                             <div class="post-stats text-muted small">
                                 <span><i class="bi bi-chat-dots mr-1"></i> 댓글 <span th:text="${postInfo.commentCount}">12</span></span>
@@ -244,6 +256,25 @@
 
         var header = $("meta[name='_csrf_header']").attr("content");
 
+        $("#createdChatBtn").on("click", function() {
+            let userId = $("#createdChatBtn").data("user-id");
+
+            $.ajax({
+                type: "post"
+                , url: "/chat/" + userId
+                , beforeSend: function(xhr) {
+                    xhr.setRequestHeader(header, token);
+                }
+                , success: function(response) {
+
+                    location.href = "/chat/room/" + response.data;
+                }
+                , error: function(xhr) {
+                    alert(xhr.responseJSON.message);
+                }
+            });
+        });
+
         $("#accompanyCancelBtn").on("click", function(e) {
             e.preventDefault();
 
@@ -274,9 +305,13 @@
                 , beforeSend: function(xhr) {
                     xhr.setRequestHeader(header, token);
                 }
-                , success: function() {
+                , success: function(response) {
 
                     location.reload();
+
+                    if(confirm("동행 신청이 완료 되었습니다 마이페이지로 이동해서 채팅방에 입장하시겠습니까?")) {
+                        location.href = "/user/mypage";
+                    }
                 }
                 , error: function(xhr) {
 

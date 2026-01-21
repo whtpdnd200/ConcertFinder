@@ -77,23 +77,34 @@
                         <div class="col-md-6 mb-4">
                             <div class="activity-box shadow-sm bg-white p-4 h-100 border-0">
                                 <h5 class="font-weight-bold mb-4 border-bottom pb-3">
-                                    <i class="bi bi-chat-dots-fill text-primary mr-2"></i>참여 중인 동행 채팅
+                                    <i class="bi bi-chat-dots-fill text-primary mr-2"></i>참여 중인 채팅
                                 </h5>
-                                <div class="list-group list-group-flush">
-                                    <div class="list-group-item border-0 px-0 mb-2">
-                                        <div class="d-flex justify-content-between align-items-center mb-1">
-                                            <span class="badge badge-pill badge-primary">모집 중</span>
+                                <div th:if="${!chatRoomList.isEmpty() && chatRoomList != null}" class="list-group list-group-flush">
+                                    <div th:each="chatRoom : ${chatRoomList}" class="list-group-item border-0 px-0 mb-2">
+                                        <div th:if="${!chatRoom.private}" class="d-flex justify-content-between align-items-center mb-1">
+                                            <span th:if="${!chatRoom.full && chatRoom.dateAfter}" class="badge badge-pill badge-primary">모집 중</span>
+                                            <span th:if="${chatRoom.full || !chatRoom.dateAfter}" class="badge badge-pill badge-danger">모집 종료</span>
                                             <small class="text-muted">3시간 전</small>
                                         </div>
-                                        <h6 class="font-weight-bold mb-1">아이유 콘서트 막콘 같이 가실 분!</h6>
+                                        <h6 th:data-room-id="${chatRoom.roomId}" th:text="${chatRoom.roomName}" class="font-weight-bold mb-1">아이유 콘서트 막콘 같이 가실 분!</h6>
                                         <div class="d-flex justify-content-between align-items-center">
-                                            <small class="text-muted"><i class="bi bi-people"></i> 인원: 2 / 4</small>
-                                            <a href="#" class="btn btn-sm btn-enter-chat">입장하기</a>
+                                            <small class="text-muted"><i class="bi bi-people"></i> 인원: <span th:text="${chatRoom.currentCount}">2</span> / <span th:text="${chatRoom.headCount}">4</span></small>
+                                            <a th:href="@{/chat/room/{roomId}(roomId = ${chatRoom.roomId})}" class="btn btn-sm btn-enter-chat">입장하기</a>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="activity-footer">
-                                    <a href="#" class="btn btn-link text-primary btn-sm">채팅 목록 이동 <i class="bi bi-arrow-right-circle"></i></a>
+                                <div th:if="${chatRoomList.isEmpty() || chatRoomList == null}" class="chat-room-container">
+                                    <div class="empty-list-container">
+                                        <h3 class="empty-title">참여 중인 채팅방이 없습니다.</h3>
+                                        <p class="empty-description">
+                                            마음에 드는 동행 게시글을 찾아<br>
+                                            새로운 대화를 시작해보세요!
+                                        </p>
+                                        <a href="/concert/list" class="go-to-list-btn">동행 찾으러 가기</a>
+                                    </div>
+                                </div>
+                                <div th:if="${!chatRoomList.isEmpty() && chatRoomList != null}" class="activity-footer">
+                                    <a href="javascript:void(0)" id="openChatBtn" class="btn btn-link text-primary btn-sm">채팅 목록 이동 <i class="bi bi-arrow-right-circle"></i></a>
                                 </div>
                             </div>
                         </div>
@@ -127,11 +138,73 @@
                 </div>
             </div>
         </div>
+        <div id="chatRoomsModal" class="modal-overlay" style="display:none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="fw-bold">내 채팅방 목록</h2>
+                    <button type="button" class="close-modal" @click="closeChatModal()">&times;</button>
+                </div>
+
+                <div x-data="chatRoomsComponent()" @load-chat-rooms.window="fetchChatRooms()" class="modal-body">
+                    <ul id="chatRoomsList" class="fav-list">
+                        <template x-for="room in chatRooms.data" :key="room.roomId">
+                            <li class="fav-item d-flex align-items-center mb-3 p-2 rounded hover-shadow" style="transition: background 0.2s;">
+                                <div class="d-flex align-items-center w-100 text-decoration-none">
+                                    <div class="mr-3 position-relative">
+                                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                            <span x-text="room.roomName.substring(0,1)" class="font-weight-bold">방</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex-grow-1 ml-3">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <h6 x-text="room.roomName" class="mb-0 font-weight-bold text-dark text-truncate" style="max-width: 180px;">채팅방 이름</h6>
+                                            <a :href="'/chat/room/' + room.roomId" class="chat-icon-btn">
+                                                <i class="bi bi-chevron-right"></i>
+                                            </a>
+                                        </div>
+                                        <template x-if="!room.private">
+                                            <div class="d-flex justify-content-between">
+                                                <small class="text-secondary text-truncate" style="max-width: 200px;">동행 모집 상세 보기</small>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+                            </li>
+                        </template>
+                    </ul>
+                </div>
+            </div>
+        </div>
     </section>
 
     <script layout:fragment="script">
 
         var userId = $("#dataValue").data("id");
+
+        function chatRoomsComponent() {
+            item = {
+                chatRooms: [],
+
+                fetchChatRooms() {
+
+                    fetch('/chat/' + userId + '/list')
+                        .then(res => {
+                            if(!res.ok) {
+                                return res.json().then(err => {
+                                    throw new Error(err.message);
+                                });
+                            }
+                            return res.json();
+                        })
+                        .then(data => {
+                            this.chatRooms = data;
+                        })
+                        .catch(error => alert(error.message));
+                }
+            }
+            console.log(item);
+            return item;
+        }
 
         function favoritesComponent() {
             return {
@@ -171,6 +244,22 @@
                 $('#favoritesModal').fadeOut(200);
                 $('body').css('overflow', 'auto');
             });
+        });
+
+        $("#openChatBtn").on("click", function(e) {
+            e.preventDefault();
+
+            $("#chatRoomsModal").css('display', 'flex').hide().fadeIn(200);
+            $('body').css('overflow', 'hidden');
+            window.dispatchEvent(new CustomEvent('load-chat-rooms'));
+        });
+
+        $('.close-modal, .modal-overlay').on('click', function(e) {
+            // 배경 클릭 시 자식 요소인 modal-content 클릭은 무시
+            if (e.target !== this && !$(e.target).hasClass('close-modal')) return;
+
+            $('#chatRoomsModal').fadeOut(200);
+            $('body').css('overflow', 'auto');
         });
     </script>
 </html>

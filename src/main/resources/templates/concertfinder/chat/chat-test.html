@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+          integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+</head>
+<body class="container mt-5">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">실시간 웹소켓 테스트</h5>
+        </div>
+        <div class="card-body">
+            <div id="status" class="alert alert-secondary">연결 상태: 대기 중...</div>
+
+            <div id="chatBox" class="border rounded p-3 mb-3" style="height: 300px; overflow-y: auto; background: #f8f9fa;">
+            </div>
+
+            <div class="input-group">
+                <input type="text" id="messageInput" class="form-control" placeholder="메시지를 입력하세요...">
+                <button class="btn btn-primary" onclick="sendMessage()">전송</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 1. 웹소켓 연결 (서버 설정 주소와 맞춰야 함)
+        const socket = new WebSocket("ws://localhost:8080/ws/chat");
+        const chatBox = document.getElementById('chatBox');
+        const status = document.getElementById('status');
+
+        // 연결 성공 시
+        socket.onopen = () => {
+            status.innerText = "연결 상태: 연결됨 ✅";
+            status.className = "alert alert-success";
+        };
+
+        // 메시지 수신 시
+        socket.onmessage = (event) => {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = "bg-white border rounded p-2 mb-2 shadow-sm";
+            msgDiv.innerText = "받은 메시지: " + event.data;
+            chatBox.appendChild(msgDiv);
+            chatBox.scrollTop = chatBox.scrollHeight; // 스크롤 하단 고정
+        };
+
+        // 연결 종료 시
+        socket.onclose = () => {
+            status.innerText = "연결 상태: 끊김 ❌";
+            status.className = "alert alert-danger";
+        };
+
+        // 메시지 전송 함수
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            console.log(input.value);
+
+            if (input.value) {
+                socket.send(input.value); // 서버로 전송!
+                input.value = '';
+            }
+        }
+
+        // 엔터키 지원
+        document.getElementById('messageInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+    </script>
+</body>
+</html>

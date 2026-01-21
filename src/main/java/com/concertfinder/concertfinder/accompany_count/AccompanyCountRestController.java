@@ -22,10 +22,10 @@ public class AccompanyCountRestController {
 
     // 동행 신청
     @PostMapping("/{accompanyId}")
-    public ResponseEntity<ApiResponseDTO<Void>> addAccompany(@PathVariable long accompanyId
+    public ResponseEntity<ApiResponseDTO<Long>> addAccompany(@PathVariable long accompanyId
                                                              , @AuthenticationPrincipal PrincipalDetails principal) {
         LoginUserDTO loginUserDTO = principal.getLoginUserDTO();
-        accompanyAndAccompanyCountLadderService.insertAccompanyCountAndIsFullCheck(accompanyId, loginUserDTO.getId());
+        accompanyAndAccompanyCountLadderService.insertAccompanyCountAndIsFullCheck(accompanyId, loginUserDTO.getId(), loginUserDTO.getNickname());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDTO.success("동행 신청 성공"));
     }
@@ -37,7 +37,16 @@ public class AccompanyCountRestController {
                                                                 , @AuthenticationPrincipal PrincipalDetails principal) {
 
         LoginUserDTO loginUserDTO = principal.getLoginUserDTO();
-        accompanyAndAccompanyCountLadderService.deleteAccompanyCountAndIsFullCheck(accompanyId, loginUserDTO.getId());
+        accompanyAndAccompanyCountLadderService.deleteAccompanyCountAndIsFullCheck(accompanyId, loginUserDTO.getId(), "exit");
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.success("동행 취소 성공"));
+    }
+
+    // 유저 강퇴
+    @DeleteMapping("/{accompanyId}/{userId}")
+    public ResponseEntity<ApiResponseDTO<Void>> kickAccompany(@PathVariable long accompanyId
+                                                             , @PathVariable long userId) {
+
+        accompanyAndAccompanyCountLadderService.deleteAccompanyCountAndIsFullCheck(accompanyId, userId, "kick");
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.success("동행 강퇴 성공"));
     }
 }

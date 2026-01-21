@@ -94,7 +94,7 @@ public class PostService {
                         .sDateTime(postWriteDTO.getSDateTime())
                         .build();
 
-                accompanyAndAccompanyCountLadderService.insertAccompanyAndAccompanyCount(accompanyAddDTO);
+                accompanyAndAccompanyCountLadderService.insertAccompanyAndAccompanyCount(accompanyAddDTO, userId , postWriteDTO.getTitle());
             }
         } catch(DataAccessException e) {
             throw new RuntimeException("서버 에러로 인해 게시글 작성이 실패 하였습니다 잠시 후 다시 시도해주세요!");
@@ -141,7 +141,7 @@ public class PostService {
         }
     }
 
-    // 게시글 삭제 메서드
+    // 게시글 PK로 삭제 메서드
     @Transactional
     public void postDelete(long postId, Long userId) {
 
@@ -156,9 +156,37 @@ public class PostService {
             }
             try {
                 postRepository.delete(post);
+                commentService.deleteAllComment(postId);
                 if(post.getCategory().equals('R')) {
-                    
+
                     accompanyAndAccompanyCountLadderService.deleteAccompanyAndAccompanyCount(postId);
+                }
+            } catch(DataAccessException e) {
+                throw new RuntimeException("서버 에러로 인해 게시글 삭제가 실패 하였습니다 잠시 후 다시 시도해주세요!");
+            }
+        }
+    }
+
+    // accompanyId로 게시글 PK 얻어와서 삭제
+    @Transactional
+    public void postDeleteByAccompanyId(long accompanyId, Long userId, Long roomId) {
+
+        GlobalExceptionHandler.loginException(userId);
+
+        long postId = accompanyAndAccompanyCountLadderService.getPostId(accompanyId);
+
+        Optional<Post> optionalPost = postRepository.findById(postId);
+
+        if(optionalPost.isPresent()) {
+            Post post = optionalPost.get();
+            if(!userId.equals(post.getUserId())) {
+                throw new UnAuthorizedException("다른 사람의 게시글은 삭제 할 수 없습니다!");
+            }
+            try {
+                postRepository.delete(post);
+                if(post.getCategory().equals('R')) {
+
+                    accompanyAndAccompanyCountLadderService.deleteAccompanyAndAccompanyCountByAccompanyId(accompanyId, roomId, userId);
                 }
             } catch(DataAccessException e) {
                 throw new RuntimeException("서버 에러로 인해 게시글 삭제가 실패 하였습니다 잠시 후 다시 시도해주세요!");

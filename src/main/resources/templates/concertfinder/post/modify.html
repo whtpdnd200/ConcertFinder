@@ -17,24 +17,7 @@
             <div class="row justify-content-center">
                 <div class="col-lg-9">
                     <div class="write-card shadow-sm rounded bg-white p-4 p-md-5 border">
-                        <form id="postModifyForm">
-                            <div class="form-group mb-4">
-                                <label class="form-label font-weight-bold">카테고리</label>
-                                <div class="category-radio-group d-flex flex-wrap">
-                                    <label class="category-item">
-                                        <input th:checked="${#strings.equals(postModifyInfo.category, 'F')}" type="radio" name="category" value="F">
-                                        <span class="category-btn">자유글</span>
-                                    </label>
-                                    <label class="category-item">
-                                        <input th:checked="${#strings.equals(postModifyInfo.category, 'R')}" type="radio" name="category" value="R">
-                                        <span class="category-btn">동행 모집</span>
-                                    </label>
-                                    <label class="category-item">
-                                        <input th:checked="${#strings.equals(postModifyInfo.category, 'T')}" type="radio" name="category" value="T">
-                                        <span class="category-btn">티켓 양도</span>
-                                    </label>
-                                </div>
-                            </div>
+                        <form id="postModifyForm" th:data-category="${postModifyInfo.category}">
 
                             <div id="idStorageTag" th:data-post-id="${postModifyInfo.id}" th:data-post-user-id="${postModifyInfo.userId}" th:data-user-id="${#authentication.principal.loginUserDTO.id}" class="form-group mb-4">
                                 <label for="titleInput" class="form-label font-weight-bold">제목</label>
@@ -83,7 +66,7 @@
 
             let postId = $("#idStorageTag").data("post-id");
 
-            let category = $('input[name=category]:checked').prop('checked',true).val();
+            let category = $("#postModifyForm").data("category");
 
             let title = $("#titleInput").val();
 

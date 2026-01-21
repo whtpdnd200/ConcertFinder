@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -71,5 +72,33 @@ public class AccompanyCountService {
     public boolean isAccompanyChecked(long accompanyId, long userId) {
 
         return accompanyCountRepository.existsByAccompanyIdAndUserId(accompanyId, userId);
+    }
+
+    public List<Long> getAccompanyIdTop3List(long userId) {
+
+        List<AccompanyCount> accompanyCounts = accompanyCountRepository.findAllTop3ByUserId(userId);
+
+        List<Long> accompanyIdList = new ArrayList<>();
+
+        for(AccompanyCount a : accompanyCounts) {
+
+            accompanyIdList.add(a.getAccompanyId());
+        }
+
+        return accompanyIdList;
+    }
+
+    public List<Long> getAccompanyAllIdList(long userId) {
+
+        List<AccompanyCount> accompanyAllCounts = accompanyCountRepository.findAllByUserId(userId);
+
+        List<Long> accompanyAllIdList = new ArrayList<>();
+
+        for(AccompanyCount a : accompanyAllCounts) {
+
+            accompanyAllIdList.add(a.getAccompanyId());
+        }
+
+        return accompanyAllIdList;
     }
 }

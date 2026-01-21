@@ -80,7 +80,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     border-bottom: 2px solid #f4f4f4;
     padding-bottom: 15px;
 }
@@ -95,6 +95,8 @@
 
 /* 리스트 스타일 */
 .modal-body {
+    padding-top: 0px;
+    padding-bottom: 0px;
     overflow-y: auto; /* 내용이 많으면 스크롤 */
     flex-grow: 1;
 }
@@ -155,7 +157,8 @@
 /* 비어있을 때 컨테이너 */
 .no-fav-container {
     width: 100%;
-    padding: 60px 20px;
+    min-height: 236px;
+    padding: 40px 20px;
     background-color: #fcfcfc; /* 아주 연한 회색 배경 */
     border: 2px dashed #e9ecef; /* 점선 테두리로 '비어있음' 표현 */
     border-radius: 20px;
@@ -208,3 +211,93 @@
     box-shadow: 0 6px 15px rgba(92, 124, 255, 0.3);
 }
 
+/* 전체 컨테이너 (부모) */
+.chat-room-container {
+    display: flex;
+    flex-direction: column;
+}
+
+/* 비어있을 때의 컨테이너 */
+.empty-list-container {
+    margin: auto; /* 부모가 flex일 때 중앙 정렬 */
+
+    padding: 40px 20px;
+    text-align: center;
+    background-color: #f9f9f9; /* 연한 회색 배경 */
+    border-radius: 12px;
+    border: 2px dashed #e0e0e0; /* 점선 테두리로 '비어있음' 느낌 강조 */
+    width: 100%;
+    max-width: 500px;
+}
+
+/* 아이콘 스타일 */
+.empty-icon {
+    font-size: 50px;
+    margin-bottom: 15px;
+    color: #bdbdbd;
+}
+
+/* 메인 텍스트 */
+.empty-title {
+    font-size: 1.25rem;
+    color: #333;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+/* 설명 텍스트 */
+.empty-description {
+    font-size: 0.95rem;
+    color: #757575;
+    line-height: 1.5;
+    margin-bottom: 25px;
+}
+
+/* 버튼 스타일 */
+.go-to-list-btn {
+    display: inline-block;
+    padding: 12px 24px;
+    background-color: #4A90E2; /* 재미니 프로젝트의 메인 컬러로 변경하세요 */
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.go-to-list-btn:hover {
+    background-color: #357ABD;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* 마우스 올렸을 때 배경색 변경 효과 */
+.fav-item:hover {
+    background-color: #f8f9fa;
+    cursor: pointer;
+}
+
+/* 텍스트 줄임표 처리 (방 이름이 길 때 대비) */
+.text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+.chat-icon-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f2f5;
+    color: #4A90E2 !important;
+    border-radius: 50%;
+    text-decoration: none !important;
+    transition: background 0.2s;
+}
+
+.chat-icon-btn:hover {
+    background-color: #e4e6e9;
+    color: #357ABD !important;
+}

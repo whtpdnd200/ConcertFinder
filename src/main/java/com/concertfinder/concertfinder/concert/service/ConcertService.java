@@ -68,10 +68,10 @@ public class ConcertService {
 
     // 기본 화면의 콘서트 목록 출력 메서드
     public ResponsesListDTO getList(String code
-                                , Integer page
-                                , String areaCode
-                                , String keyword
-                                , long userId) {
+                                    , Integer page
+                                    , String areaCode
+                                    , String keyword
+                                    , long userId) {
 
         if(page == null) {
             page = 1;

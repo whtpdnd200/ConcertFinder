@@ -13,8 +13,6 @@ import lombok.*;
 @AllArgsConstructor
 public class ModifyUserDTO {
 
-    @NotNull
-    private Long id;
 
     @NotBlank(message = "닉네임은 비어 있을 수 없습니다!")
     @Size(max = 16, message = "닉네임은 16글자 이하로만 작성 가능 합니다!")

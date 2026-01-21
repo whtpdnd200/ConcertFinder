@@ -1,5 +1,6 @@
 package com.concertfinder.concertfinder.user;
 
+import com.concertfinder.concertfinder.ladder.service.AccompanyAndAccompanyCountLadderService;
 import com.concertfinder.concertfinder.sidoCode.service.SidoCodeService;
 import com.concertfinder.concertfinder.user.DTO.LoginUserDTO;
 import com.concertfinder.concertfinder.user.DTO.PrincipalDetails;
@@ -20,6 +21,7 @@ public class UserController {
 
     private final SidoCodeService sidoCodeService;
     private final UserService userService;
+    private final AccompanyAndAccompanyCountLadderService accompanyAndAccompanyCountLadderService;
 
     // 회원가입 페이지
     @GetMapping("/join")
@@ -52,6 +54,7 @@ public class UserController {
 
         LoginUserDTO loginUserDTO = principal.getLoginUserDTO();
 
+        model.addAttribute("chatRoomList", accompanyAndAccompanyCountLadderService.getTop3ChatRoomList(loginUserDTO.getId()));
         model.addAttribute("concertList", userService.getConcertListTop3(loginUserDTO.getId()));
         return "concertfinder/user/mypage";
     }

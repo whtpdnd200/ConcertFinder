@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{concertfinder/layouts/main_layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>채팅</title>
+    <link layout:fragment="css" rel="stylesheet" th:href="@{/css/chat/chat_room_style.css}">
+    <script layout:fragment="chatJS" th:src="@{/js/chat_room/chat_main.js}"></script>
+</head>
+    <section layout:fragment="contents">
+        <div th:data-room-id="${roomId}" th:data-user-nickname="${#authentication.principal.loginUserDTO.nickname}" th:data-is-host="${chatRoomInfo.host}" id="chatRoomData" class="chat-detail-wrapper">
+          <div class="chat-header shadow-sm">
+            <div class="d-flex align-items-center">
+              <a href="javascript:history.back()" class="text-dark mr-3">
+                <i class="bi bi-chevron-left" style="font-size: 1.2rem;"></i>
+              </a>
+              <div>
+                <h5 th:text="${chatRoomInfo.roomName}" class="mb-0 font-weight-bold text-truncate" style="max-width: 200px;">채팅방 이름</h5>
+                <small class="text-muted">
+                  <i class="bi bi-people-fill"></i> 참여 인원 <span th:text="${chatRoomInfo.currentCount}" >0</span>명
+                </small>
+              </div>
+            </div>
+            <div class="header-actions">
+                <div class="dropdown">
+                    <button class="btn btn-link text-muted p-2" type="button" id="chatMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="bi bi-three-dots-vertical" style="font-size: 1.2rem;"></i>
+                    </button>
+                    <div id="exitDropDown" th:data-room-id="${chatRoomInfo.chatRoomId}" th:data-accompany-id="${chatRoomInfo.accompanyId}" class="dropdown-menu dropdown-menu-right shadow border-0" aria-labelledby="chatMenuButton">
+                        <a id="userListBtn" class="dropdown-item py-2 text-secondary" href="javascript:void(0)">
+                            <i class="bi bi-people-fill mr-2"></i> 참여 유저 목록
+                        </a>
+                        <span th:if="${chatRoomInfo.accompanyId == null}">
+                            <a id="privateRoomExitBtn" class="dropdown-item py-2 text-secondary" href="javascript:void(0)" >
+                                <i class="bi bi-box-arrow-right mr-2"></i> 채팅방 나가기
+                            </a>
+                        </span>
+                        <span th:unless="${chatRoomInfo.accompanyId == null}">
+                            <a th:if="${!chatRoomInfo.host}" id="roomExitBtn" class="dropdown-item py-2 text-secondary" href="javascript:void(0)" >
+                                <i class="bi bi-box-arrow-right mr-2"></i> 채팅방 나가기
+                            </a>
+                            <a th:if="${chatRoomInfo.host}" id="roomDeleteBtn" class="dropdown-item py-2 text-danger" href="javascript:void(0)" >
+                                <i class="bi bi-trash3-fill mr-2"></i> 채팅방 삭제하기
+                            </a>
+                        </span>
+                    </div>
+                </div>
+            </div>
+          </div>
+
+          <div id="chatMessageArea" class="chat-message-container">
+
+
+          </div>
+
+          <div class="chat-input-area shadow-lg">
+            <div class="input-wrapper">
+              <button class="btn-plus"><i class="bi bi-plus-lg"></i></button>
+              <textarea id="messageInput" placeholder="메시지를 입력하세요..." rows="1"></textarea>
+              <button id="sendBtn" class="btn-send" onclick="sendMessage()">
+                <i class="bi bi-send-fill"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div id="userSideBar" class="user-sidebar hide">
+            <div class="sidebar-header d-flex justify-content-between align-items-center">
+            <h6 class="mb-0 font-weight-bold"><i class="bi bi-people"></i> 참여 유저</h6>
+            <button type="button" class="btn-close border-0 bg-transparent userListClose" style="font-size: 1.5rem;">&times;</button>
+        </div>
+            <div class="sidebar-content">
+                <ul id="userListArea" class="list-unstyled">
+
+                </ul>
+            </div>
+        </div>
+    </section>
+    <script layout:fragment="script">
+
+        // 규격 : 채팅방 번호|타입|닉네임|메세지
+
+        var roomId = $("#chatRoomData").data("room-id");
+
+        var userNickname = $("#chatRoomData").data("user-nickname");
+
+        var token = $("meta[name='_csrf']").attr("content");
+        var header = $("meta[name='_csrf_header']").attr("content");
+
+        var isBeforeLastPage = false;
+        var isNextLastPage = true;
+        var isLoading = false;
+
+        var lastId = 0;
+        var nextLastId = null;
+
+        const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+        const host = window.location.host;
+        const socket = new WebSocket(protocol + host + "/ws/chat/" + roomId);
+
+        //const socket = new WebSocket("ws://localhost:8080/ws/chat/" + roomId);
+
+
+        socket.onopen = () => {
+            console.log("웹소켓 연결 성공!");
+        };
+
+
+        socket.onmessage = (event) => {
+
+            const rawData = event.data;
+            const parts = rawData.split("|");
+
+            // 규격: [0]방번호 | [1]타입 | [2]닉네임 | [3]메시지
+            let currentRoomId   = parts[0];
+            let type     = parts[1];
+            let nickname = parts[2];
+            let message  = parts[3];
+
+
+            if(type === "KICK_USER") {
+
+                alert(message);
+                location.href = "/user/mypage";
+            }
+
+            if(type === "DELETE") {
+                alert(message);
+                location.href = "/user/mypage";
+            }
+
+            // 2. 메시지 그리기 함수 호출
+            appendMessageToArea(type, nickname, message, null, true, true);
+        };
+
+        socket.onclose = () => {
+            console.log("웹소켓 연결 종료");
+        };
+
+
+        $(document).ready(function() {
+
+            // 전송 버튼 클릭
+            $("#sendBtn").on("click", function() {
+                sendMessage();
+            });
+
+
+            $("#messageInput").on("keypress", function(e) {
+                if (e.key === 'Enter' || e.keyCode === 13) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+        });
+
+        $("#chatMessageArea").on("scroll", function() {
+
+            let chatArea = $(this);
+            let scrollTop = chatArea.scrollTop();
+            let innerHeight = chatArea.innerHeight();
+            let scrollHeight = chatArea[0].scrollHeight;
+
+            if (scrollTop === 0 && !isBeforeLastPage && !isLoading) {
+
+                if (!isBeforeLastPage && !isLoading) {
+
+                    if (lastId === 0) {
+                        console.log("아직 초기 메시지가 로드되지 않았습니다.");
+                        return;
+                    }
+
+                    isLoading = true;
+
+                    let previousHeight = chatArea[0].scrollHeight;
+                    let newScrollHeight;
+
+                    $.ajax({
+                        type: "get"
+                        , url: "/message/before/" + roomId + "/" + lastId
+                        , beforeSend: function(xhr) {
+                            xhr.setRequestHeader(header, token);
+                        }
+                        , success: function(response) {
+
+                            if (response.data.content.length > 0) {
+                                let messageList = response.data.content;
+
+                                //console.log(response);
+
+                                lastId = messageList[messageList.length - 1].id;
+
+                                //console.log(lastId);
+
+                                //console.log(response);
+                                isBeforeLastPage = response.data.last;
+
+                                $.each(messageList, function(index, msg) {
+
+                                    appendMessageToArea(msg.type, msg.userNickname, msg.content, msg.createdAt, false, false);
+                                });
+                                let newHeight = chatArea[0].scrollHeight;
+                                newScrollHeight = newHeight - previousHeight;
+                            } else {
+                                isBeforeLastPage = true;
+                            }
+
+                        }
+                        , complete: function() {
+                            isLoading = false;
+
+                            chatArea.scrollTop(newScrollHeight);
+                        }
+                        , error: function(xhr) {
+                            isLoading = false
+                            alert(xhr.responseJSON.message);
+                        }
+                    });
+                }
+            }
+
+            if (scrollTop + innerHeight >= scrollHeight - 10) {
+
+                if (isLoading || isNextLastPage) {
+                    return;
+                }
+
+                isLoading = true;
+
+                $.ajax({
+                    type: "get"
+                    , url: "/message/next/" + roomId + "/" + nextLastId
+                    , beforeSend: function(xhr) {
+                        xhr.setRequestHeader(header, token);
+                    }
+                    , success: function(response) {
+
+                        let messageList = response.data.content;
+
+                        if (messageList.length > 0) {
+
+                            $.each(messageList, function(index, msg) {
+                                appendMessageToArea(msg.type, msg.userNickname, msg.content, msg.createdAt, false, true);
+                            });
+
+                            nextLastId = messageList[messageList.length - 1].id;
+                        }
+
+                        isNextLastPage = response.data.last;
+                    }
+                    , complete: function() {
+                        isLoading = false;
+                    }
+                    , error: function(xhr) {
+                        isLoading = false
+                        alert(xhr.responseJSON.message);
+                    }
+                });
+            }
+        });
+
+        $.ajax({
+            type: "get",
+            url: "/message/" + roomId,
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader(header, token);
+            },
+            success: function(response) {
+
+                console.log(response);
+                let messageList = response.data.content;
+
+                if (messageList.length > 0 && messageList[0].reverse) {
+                    messageList.reverse();
+                }
+
+                // 유효한 메시지들만 필터링 (ID가 -1인 시스템 라인 제외)하여 ID 할당
+                const validMessages = messageList.filter(m => m.id !== -1);
+                if (validMessages.length > 0) {
+                    lastId = validMessages[0].id;
+                    nextLastId = validMessages[validMessages.length - 1].id;
+                }
+
+                isBeforeLastPage = false;
+                isNextLastPage = response.data.last;
+
+                // 메시지 그리기 (msg.id를 인자로 추가 전달)
+                $.each(messageList, function(index, msg) {
+                    appendMessageToArea(msg.type, msg.userNickname, msg.content, msg.createdAt, false, true, msg.id);
+                });
+            },
+            complete: function() {
+                let chatArea = $("#chatMessageArea");
+                let marker = $("#last-read-marker");
+
+                // 스크롤 위치 결정
+                if (marker.length > 0) {
+                    // "여기까지 읽었습니다" 마커가 있으면 그 위치로 이동
+                    // 마커가 화면의 상단에서 약간 아래(중앙쯤)에 오도록 계산
+                    let offset = marker.offset().top - chatArea.offset().top + chatArea.scrollTop();
+                    chatArea.scrollTop(offset - (chatArea.height() / 2));
+                } else if (!isNextLastPage) {
+                    // 안 읽은 메시지가 많아서 다음 페이지가 더 있는 경우 맨 위로
+                    chatArea.scrollTop(0);
+                } else {
+                    // 모든 메시지를 다 읽은 상태면 맨 아래로
+                    chatArea.scrollTop(chatArea[0].scrollHeight);
+                }
+            }
+        });
+
+        $("#privateRoomExitBtn").on("click", function() {
+
+            $.ajax({
+                type: "delete"
+                , url: "/chat/private/" + roomId
+                , beforeSend: function(xhr) {
+                    xhr.setRequestHeader(header, token);
+                }
+                , success: function() {
+
+                    location.href = "/user/mypage";
+                }
+                , error: function(xhr) {
+
+                    alert(xhr.responseJSON.message);
+                }
+            });
+        });
+
+        $(document).on("click", ".kickBtn", function() {
+            let userId = $(this).data("user-id");
+            let accompanyId = $("#exitDropDown").data("accompany-id");
+            let nickname = $(this).data("nickname");
+
+            $.ajax({
+                type: "delete"
+                , url: "/accompany/" + accompanyId + "/" + userId
+                , beforeSend: function(xhr) {
+                    xhr.setRequestHeader(header, token);
+                }
+                , success: function() {
+                    let kickMessage = roomId + "|KICK|" + nickname + "|";
+                    socket.send(kickMessage);
+                    location.reload();
+                }
+                , error: function(xhr) {
+
+                    alert(xhr.responseJSON.message);
+                }
+            });
+        });
+
+        // 유저 리스트 열기
+        $("#userListBtn").on("click", function() {
+            $("#userSideBar").removeClass("hide");
+
+            $.ajax({
+                type: "get"
+                , url: "/room/users/" + roomId
+                , beforeSend: function(xhr) {
+                    xhr.setRequestHeader(header, token);
+                }
+                , success: function(response) {
+                    console.log(response);
+
+                    let userListArea = $("#userListArea");
+                    userListArea.empty(); // 기존 목록 비우기
+
+
+                    const isCurrentUserHost = $("#chatRoomData").data("is-host");
+
+                    $.each(response.data, function(index, user) {
+                        let html = '';
+                        html += '<li class="user-item">';
+                        html += '    <div class="user-info">';
+
+
+                        if (user.host) {
+                            html += '        <span class="host-badge">관리자</span>';
+                        }
+
+                        html += '        <span class="user-nickname">' + user.nickname + '</span>';
+                        html += '    </div>';
+
+
+                        if (isCurrentUserHost && !user.host) {
+                            html += '    <button class="btn btn-sm btn-outline-danger kickBtn" data-user-id="' + user.id + '" data-nickname="' + user.nickname + '">';
+                            html += '        내보내기';
+                            html += '    </button>';
+                        }
+
+                        html += '</li>';
+
+                        userListArea.append(html);
+                    });
+
+                    // 참여 인원 숫자 업데이트
+                    $("#userCount").text(response.length);
+                }
+                , error: function(xhr) {
+
+                    alert(xhr.responseJSON.message);
+                }
+            });
+        });
+
+        // 유저 리스트 닫기
+        $(".userListClose").on("click", function() {
+            $("#userSideBar").addClass("hide");
+        });
+
+        // 사이드바 바깥 클릭 시 닫기 (선택 사항)
+        $(document).on("mousedown", function(e) {
+            const sidebar = $("#userSideBar");
+            if (!sidebar.hasClass("hide") && !sidebar.has(e.target).length && !$(e.target).closest("#userListBtn").length) {
+                sidebar.addClass("hide");
+            }
+        });
+
+        $("#roomDeleteBtn").on("click", function() {
+            let accompanyId = $("#exitDropDown").data("accompany-id");
+            let roomId = $("#exitDropDown").data("room-id");
+
+            if(confirm("채팅방 삭제시 동행 모집 게시글도 삭제 됩니다 삭제 하시겠습니까?")) {
+                $.ajax({
+                    type: "delete"
+                    , url: "/chat/" + accompanyId + "/" + roomId
+                    , beforeSend: function(xhr) {
+                        xhr.setRequestHeader(header, token);
+                    }
+                    , success: function() {
+                        location.href = "/user/mypage";
+                    }
+                    , error: function(xhr) {
+
+                        alert(xhr.responseJSON.message);
+                    }
+                });
+            }
+
+        });
+
+        $("#roomExitBtn").on("click", function() {
+
+            let accompanyId = $("#exitDropDown").data("accompany-id");
+
+            $.ajax({
+                type: "delete"
+                , url: "/chat/" + accompanyId
+                , beforeSend: function(xhr) {
+
+                    xhr.setRequestHeader(header, token);
+                }
+                , success: function() {
+                    let exitMessage = roomId + "|DISCONNECT|" + userNickname + "|";
+                    socket.send(exitMessage);
+
+                    location.href = "/user/mypage";
+                }
+                , error: function(xhr) {
+
+                    alert(xhr.responseJSON.message);
+                }
+            });
+        });
+
+    </script>
+
+</html>

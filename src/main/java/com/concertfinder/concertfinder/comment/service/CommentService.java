@@ -101,6 +101,48 @@ public class CommentService {
         return commentRepository.countByPostId(postId);
     }
 
+    // 게시글의 댓글 목록 아이디 반환
+    public List<Long> getCommentIdList(long postId) {
+
+        List<Comment> comments = commentRepository.findAllByPostId(postId);
+
+        List<Long> commentIdList = new ArrayList<>();
+
+        for(Comment c : comments) {
+
+            commentIdList.add(c.getId());
+        }
+
+        return commentIdList;
+    }
+
+    // 게시글에 포함 된 댓글 전체 삭제
+    public void deleteAllComment(long postId) {
+
+        List<Long> commentIdList = getCommentIdList(postId);
+
+        for(Long id : commentIdList) {
+
+            deleteComment(id);
+        }
+    }
+
+    public void deleteComment(long commentId) {
+
+
+        Optional<Comment> optionalComment = commentRepository.findById(commentId);
+
+        if(optionalComment.isPresent()) {
+            Comment comment = optionalComment.get();
+
+            try {
+                commentRepository.delete(comment);
+            } catch(DataAccessException e) {
+                throw new RuntimeException("서버 에러로 인해 댓글 삭제가 실패 했습니다 잠시 후 다시 시도 해주세요!");
+            }
+        }
+    }
+
     // 댓글 삭제 메서드
     public void deleteComment(long commentId, Long userId) {
 
