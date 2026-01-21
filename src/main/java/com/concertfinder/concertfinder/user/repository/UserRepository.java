@@ -4,6 +4,7 @@ import com.concertfinder.concertfinder.user.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -12,6 +13,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // 중복된 아이디가 있는지 확인하는 메서드
     public boolean existsByUserId(String userId);
 
+    List<User> findAllByIsDelete(boolean isDelete);
 
     // 로그인 메서드 : 아이디로 salt값 확인
     public Optional<User> findByUserId(String userId);

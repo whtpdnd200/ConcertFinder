@@ -81,6 +81,8 @@ public class ChatRoomService {
 
     public ChatRoom getChatRoom(long roomId) {
 
+        log.info("chatRoom id : {}", roomId);
+
         Optional<ChatRoom> optionalChatRoom = chatRoomRepository.findById(roomId);
 
         if(!optionalChatRoom.isPresent()) {

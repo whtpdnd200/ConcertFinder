@@ -59,6 +59,7 @@ public class PostService {
                 .title(post.getTitle())
                 .content(post.getContent())
                 .commentCount(commentService.getCommentCount(post.getId()))
+                .isUserDelete(userService.getIsDelete(post.getUserId()))
                 .accompanyInfoDTO(accompanyInfoDTO)
                 .createdAt(post.getCreatedAt())
                 .updatedAt(post.getUpdatedAt())
@@ -236,12 +237,21 @@ public class PostService {
         return postPageList;
     }
 
-    public List<Long> getUserIdList() {
+    // 탈퇴한 사용자의 게시글 삭제
+    public void deleteUserPost() {
 
         List<Post> posts = postRepository.findAll();
 
-        return posts.stream().map(Post::getUserId).toList();
+        if(!posts.isEmpty()) {
+
+            for(Post p : posts) {
+
+                if(!userService.isExistsUser(p.getUserId())) {
+
+                    postDelete(p.getId(), p.getUserId());
+                }
+            }
+        }
+
     }
-
-
 }

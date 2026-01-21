@@ -11,22 +11,24 @@ import com.concertfinder.concertfinder.user.DTO.ModifyUserDTO;
 import com.concertfinder.concertfinder.user.domain.User;
 import com.concertfinder.concertfinder.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
     private final SidoCodeService sidoCodeService;
-    private final ConcertService concertService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final UserDeleteLadderService userDeleteLadderService;
+
 
     // LoginUserDTO에 User 정보 담아주는 함수
     public LoginUserDTO addDTO(Optional<User> oUser) {
@@ -40,6 +42,7 @@ public class UserService {
                 .attentionAreaCode(user.getAttentionAreaCode())
                 .attentionAreaName(sidoCodeService.getSidoName(user.getAttentionAreaCode()))
                 .role(user.getRole())
+                .isDelete(user.isDelete())
                 .build();
 
         return loginUserDTO;
@@ -65,6 +68,7 @@ public class UserService {
                 .email(joinUserDTO.getEmail())
                 .attentionAreaCode(joinUserDTO.getAttentionAreaCode())
                 .role("ROLE_USER")
+                .isDelete(false)
                 .build();
 
         try {
@@ -152,16 +156,34 @@ public class UserService {
         return null;
     }
 
+    public boolean getIsDelete(long id) {
+
+        Optional<User> optionalUser = userRepository.findById(id);
+
+        if(!optionalUser.isPresent()) {
+
+            throw new NoSuchElementException("유저 정보를 찾을 수 없습니다!");
+        }
+        User user = optionalUser.get();
+        return user.isDelete();
+    }
+
     // 유저 이름 얻어오는 메서드
     public String getNickname(long id) {
 
         Optional<User> optionalUser = userRepository.findById(id);
-        if(optionalUser.isPresent()) {
-
-            return optionalUser.get().getNickname();
+        if(!optionalUser.isPresent()) {
+            return "찾을 수 없는 사용자";
         }
 
-        return null;
+        User user = optionalUser.get();
+
+        if(user.isDelete()) {
+
+            return "탈퇴한 유저";
+        }
+
+        return user.getNickname();
     }
 
     public boolean isExistsUser(long id) {
@@ -169,14 +191,61 @@ public class UserService {
         return userRepository.existsById(id);
     }
 
-    public List<ConcertFavoritesListDTO> getConcertListTop3(long userId) {
+    // 회원 탈퇴 처리 메서드
+    public void updateDeleteUser(long userId) {
 
-        return concertService.getConcertListTop3(userId);
+        Optional<User> optionalUser = userRepository.findById(userId);
+
+        if(!optionalUser.isPresent()) {
+
+            throw new NoSuchElementException("사용자 정보를 찾을 수 없습니다!");
+        }
+
+        User user = optionalUser.get();
+
+        user = user.toBuilder()
+                .isDelete(true)
+                .build();
+
+        try {
+            userRepository.save(user);
+
+        } catch(DataAccessException e) {
+
+            throw new RuntimeException("서버 에러로 인해 탈퇴를 진행 하지 못했습니다 잠시 후 다시 시도해주세요!");
+        }
+    }
+
+    public void deleteUsers() {
+
+        List<Long> deleteUserIdList = userRepository.findAllByIsDelete(true).stream().map(User::getId).toList();
+
+        if(!deleteUserIdList.isEmpty()) {
+
+            for(long id : deleteUserIdList) {
+
+                deleteUser(id);
+            }
+        }
     }
 
     // 회원 탈퇴 메서드
     public void deleteUser(long userId) {
 
+        Optional<User> optionalUser = userRepository.findById(userId);
 
+        if(!optionalUser.isPresent()) {
+
+            log.warn("사용자 정보가 없음!");
+        }
+
+        try {
+
+            User user = optionalUser.get();
+            userRepository.delete(user);
+        } catch(DataAccessException e) {
+
+            log.warn("탈퇴 처리 에러!");
+        }
     }
 }

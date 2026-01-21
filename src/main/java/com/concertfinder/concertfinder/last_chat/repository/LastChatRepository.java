@@ -14,5 +14,7 @@ public interface LastChatRepository extends JpaRepository<LastChat, LastChatId> 
 
     public Optional<LastChat> findByRoomIdAndUserId(long roomId, long userId);
 
+    List<LastChat> findAllByUserId(long userId);
+
     List<LastChat> findAllByRoomId(long roomId);
 }

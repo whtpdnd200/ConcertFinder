@@ -30,16 +30,6 @@ public class SchedulerServiceTest {
     @DisplayName("회원 연관 정보 삭제 테스트")
     public void deleteTest() {
 
-        List<Long> postUserIdList = postService.getUserIdList();
-
-        for(long id : postUserIdList) {
-
-            if(userService.isExistsUser(id)) {
-
-                log.info("존재 함");
-            }
-        }
-
 
     }
 }

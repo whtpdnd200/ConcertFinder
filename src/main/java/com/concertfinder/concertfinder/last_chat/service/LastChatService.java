@@ -3,11 +3,15 @@ package com.concertfinder.concertfinder.last_chat.service;
 import com.concertfinder.concertfinder.last_chat.domain.LastChat;
 import com.concertfinder.concertfinder.last_chat.repository.LastChatRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class LastChatService {
@@ -29,6 +33,21 @@ public class LastChatService {
         } catch(DataAccessException e) {
 
             throw new RuntimeException("서버 에러로인해 채팅방 내역을 저장하지 못했습니다!");
+        }
+    }
+
+    public void deleteLastChatUser(long userId) {
+
+        List<LastChat> lastChats = lastChatRepository.findAllByUserId(userId);
+
+        for(LastChat l : lastChats) {
+
+            try {
+                lastChatRepository.delete(l);
+            } catch(DataAccessException e) {
+
+                throw new RuntimeException("서버 에러 발생!");
+            }
         }
     }
 

@@ -15,18 +15,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReviewAndUserLadderService {
 
-    private final UserService userService;
+
     private final ReviewService reviewService;
 
-    @Transactional
     public Page<ReviewListDTO> getReviewList(String areaCode, int page, int size, String orderType, Pageable pageable) {
 
         Page<ReviewListDTO> reviewList = reviewService.getReviewList(areaCode, page, size, orderType, pageable);
-
-        for(ReviewListDTO reviewListDTO : reviewList) {
-
-            reviewListDTO.setUserNickname(userService.getNickname(reviewListDTO.getUserId()));
-        }
 
         return reviewList;
     }

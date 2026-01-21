@@ -3,10 +3,12 @@ package com.concertfinder.concertfinder.ladder.service;
 import com.concertfinder.concertfinder.chat_message.service.ChatMessageService;
 import com.concertfinder.concertfinder.chat_room.domain.ChatRoom;
 import com.concertfinder.concertfinder.chat_room.service.ChatRoomService;
+import com.concertfinder.concertfinder.chat_room_and_user.domain.ChatRoomAndUser;
 import com.concertfinder.concertfinder.chat_room_and_user.service.ChatRoomAndUserService;
 import com.concertfinder.concertfinder.common.SimpleWebSocketHandler;
 import com.concertfinder.concertfinder.last_chat.domain.LastChat;
 import com.concertfinder.concertfinder.last_chat.service.LastChatService;
+import com.concertfinder.concertfinder.user.service.UserService;
 import groovy.util.logging.Slf4j;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,6 +31,8 @@ public class ChatRoomAndChatRoomAndUserLadderService {
     private final ChatMessageService chatMessageService;
 
     private final LastChatService lastChatService;
+
+    private final UserService userService;
 
     // 동행 글 작성한 유저의 채팅방 생성 및 입장 메서드
     @Transactional
@@ -65,6 +69,34 @@ public class ChatRoomAndChatRoomAndUserLadderService {
     public void deleteAllChatRoomAndUser(long roomId) {
 
         chatRoomAndUserService.deleteAllChatRoomAndUser(roomId);
+    }
+
+    public void deleteChatRoomUser() {
+
+        List<ChatRoomAndUser> chatRoomAndUsers = chatRoomAndUserService.getChatRoomUserList();
+
+        if(!chatRoomAndUsers.isEmpty()) {
+            for(ChatRoomAndUser c : chatRoomAndUsers) {
+
+                if(!userService.isExistsUser(c.getUserId())) {
+
+                    ChatRoom chatRoom = chatRoomService.getChatRoom(c.getRoomId());
+
+                    if(chatRoom.getAccompanyId() == null) {
+
+                        deleteChatRoom(c.getRoomId());
+                        deleteAllChatRoomAndUser(c.getRoomId());
+                        lastChatDelete(c.getRoomId());
+                        chatMessageService.deleteMessage(c.getRoomId());
+                    } else if(chatRoom.getAccompanyId() != null) {
+
+                        lastChatService.deleteLastChatUser(c.getUserId());
+                        deleteChatRoomAndUser(c.getUserId(), c.getRoomId());
+                    }
+
+                }
+            }
+        }
     }
 
     // 1:1 채팅방 삭제
@@ -141,12 +173,5 @@ public class ChatRoomAndChatRoomAndUserLadderService {
         return chatRoomAndUserService.getPrivateRoomNickname(roomId, userId);
     }
 
-    // 마지막 읽은 채팅 내역 저장
-    @Transactional
-    public void updateLastChat(long roomId, long userId) {
 
-        long lastId = chatMessageService.getLastChatMessageId(roomId);
-
-        lastChatService.updateLastMessage(roomId, userId, lastId);
-    }
 }

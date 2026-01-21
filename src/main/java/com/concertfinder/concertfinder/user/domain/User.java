@@ -27,6 +27,7 @@ public class User {
     private String email;
     private String attentionAreaCode;
     private String role;
+    private boolean isDelete;
 
     @CreationTimestamp
     private LocalDateTime createdAt;

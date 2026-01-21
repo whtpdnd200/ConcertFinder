@@ -5,6 +5,7 @@ import com.concertfinder.concertfinder.exception.GlobalExceptionHandler;
 import com.concertfinder.concertfinder.favorites.DTO.FavoritesConcertIdDTO;
 import com.concertfinder.concertfinder.favorites.domain.Favorites;
 import com.concertfinder.concertfinder.favorites.repository.FavoritesRepository;
+import com.concertfinder.concertfinder.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import java.util.Optional;
 public class FavoritesService{
 
     private final FavoritesRepository favoritesRepository;
+    private final UserService userService;
 
 
     // 콘서트 정보 즐겨찾기
@@ -78,5 +80,22 @@ public class FavoritesService{
             favoritesConcertIdList.add(favorites.getConcertId());
         }
         return favoritesConcertIdList;
+    }
+
+    public void deleteUserFavorites() {
+
+        List<Favorites> favorites = favoritesRepository.findAll();
+
+        if(!favorites.isEmpty()) {
+
+            for(Favorites f : favorites) {
+
+                if(!userService.isExistsUser(f.getUserId())) {
+
+                    deleteFavorites(f.getConcertId(), f.getUserId());
+                }
+            }
+        }
+
     }
 }

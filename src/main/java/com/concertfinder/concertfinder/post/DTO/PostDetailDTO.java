@@ -28,6 +28,8 @@ public class PostDetailDTO {
 
     private int commentCount;
 
+    private boolean isUserDelete;
+
     // 동행 정보 객체
     private AccompanyInfoDTO accompanyInfoDTO;
 
