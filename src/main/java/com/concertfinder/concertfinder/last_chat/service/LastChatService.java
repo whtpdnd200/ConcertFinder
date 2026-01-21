@@ -1,17 +1,12 @@
 package com.concertfinder.concertfinder.last_chat.service;
 
 import com.concertfinder.concertfinder.last_chat.domain.LastChat;
-import com.concertfinder.concertfinder.last_chat.domain.LastChatId;
 import com.concertfinder.concertfinder.last_chat.repository.LastChatRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -54,6 +49,6 @@ public class LastChatService {
 
     public Long getLastChatId(long roomId, long userId) {
 
-        return lastChatRepository.findByRoomIdAndUserId(roomId, userId).map(LastChat::getLastChatId).orElse(0l);
+        return lastChatRepository.findByRoomIdAndUserId(roomId, userId).map(LastChat::getLastChatId).orElse(null);
     }
 }

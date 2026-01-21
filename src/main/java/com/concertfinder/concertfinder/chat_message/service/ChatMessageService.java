@@ -93,16 +93,16 @@ public class ChatMessageService {
 //                .build());
 //    }
 
-    // 테스트 메서드
+    // 메시지 목록 출력 메서드
     public Slice<MessageListDTO> getMessageList(long roomId, long userId, Pageable pageable) {
         // 1. 마지막으로 읽은 ID 조회
-        long lastId = lastChatService.getLastChatId(roomId, userId);
+        Long lastId = lastChatService.getLastChatId(roomId, userId);
 
         log.info("마지막 id {}", lastId);
         List<ChatMessage> combinedList = new ArrayList<>();
         boolean hasNext = false;
 
-        if (lastId == 0L) {
+        if (lastId == null) {
             // 읽은 기록이 없는 경우 최신 메시지 15개만 가져옴
 
             Slice<ChatMessage> latest = chatMessageRepository.findAllByRoomIdOrderByIdDesc(roomId, PageRequest.of(0, 15));
