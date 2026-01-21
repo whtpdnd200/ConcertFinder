@@ -235,4 +235,13 @@ public class PostService {
 
         return postPageList;
     }
+
+    public List<Long> getUserIdList() {
+
+        List<Post> posts = postRepository.findAll();
+
+        return posts.stream().map(Post::getUserId).toList();
+    }
+
+
 }

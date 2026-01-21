@@ -35,9 +35,29 @@
                                 <a href="/user/modify" class="btn btn-outline-primary btn-sm rounded-pill px-3 mr-2">
                                     <i class="bi bi-gear-fill"></i> 정보 수정
                                 </a>
-                                <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-3">
+                                <button id="userDelModalBtn" type="button" class="btn btn-outline-danger btn-sm rounded-pill px-3" data-toggle="modal" data-target="#deleteConfirmModal">
                                     <i class="bi bi-person-x-fill"></i> 회원 탈퇴
                                 </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content border-0 shadow">
+                                <div class="modal-header bg-dark text-white">
+                                    <h5 class="modal-title font-weight-bold">회원 탈퇴</h5>
+                                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body p-4 text-center">
+                                    <p class="mb-0">정말로 탈퇴 하시겠습니까?<br>탈퇴시 모든 정보가 삭제됩니다.</p>
+                                </div>
+                                <div class="modal-footer border-0 p-3 justify-content-center">
+                                    <button type="button" class="btn btn-light px-4 mr-2" data-dismiss="modal">취소</button>
+                                    <button id="userDeleteBtn" type="button" class="btn btn-danger px-4">탈퇴 확인</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -180,6 +200,11 @@
     <script layout:fragment="script">
 
         var userId = $("#dataValue").data("id");
+
+        $("#userDeleteBtn").on("click", function() {
+
+
+        });
 
         function chatRoomsComponent() {
             item = {

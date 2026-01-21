@@ -1,6 +1,7 @@
 package com.concertfinder.concertfinder.user.service;
 
 import com.concertfinder.concertfinder.exception.custom_exception.DuplicateException;
+import com.concertfinder.concertfinder.ladder.service.UserDeleteLadderService;
 import com.concertfinder.concertfinder.sidoCode.service.SidoCodeService;
 import com.concertfinder.concertfinder.concert.DTO.ConcertFavoritesListDTO;
 import com.concertfinder.concertfinder.concert.service.ConcertService;
@@ -15,7 +16,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -26,6 +26,7 @@ public class UserService {
     private final SidoCodeService sidoCodeService;
     private final ConcertService concertService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final UserDeleteLadderService userDeleteLadderService;
 
     // LoginUserDTO에 User 정보 담아주는 함수
     public LoginUserDTO addDTO(Optional<User> oUser) {
@@ -163,13 +164,19 @@ public class UserService {
         return null;
     }
 
-    public List<ConcertFavoritesListDTO> getLists(long userId) {
+    public boolean isExistsUser(long id) {
 
-        return concertService.getConcertList(userId);
+        return userRepository.existsById(id);
     }
 
     public List<ConcertFavoritesListDTO> getConcertListTop3(long userId) {
 
         return concertService.getConcertListTop3(userId);
+    }
+
+    // 회원 탈퇴 메서드
+    public void deleteUser(long userId) {
+
+
     }
 }

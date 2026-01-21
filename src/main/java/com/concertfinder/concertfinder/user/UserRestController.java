@@ -84,4 +84,14 @@ public class UserRestController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.success("회원 정보 수정 성공"));
     }
+
+    // 회원 탈퇴 기능
+    // 유저 정보 작성한 게시글, 댓글, 즐겨찾기, 동행 채팅방 1:1 채팅방
+    @DeleteMapping
+    public ResponseEntity<ApiResponseDTO<Void>> removeUser(@AuthenticationPrincipal PrincipalDetails principal) {
+
+        LoginUserDTO loginUserDTO = principal.getLoginUserDTO();
+
+        return null;
+    }
 }

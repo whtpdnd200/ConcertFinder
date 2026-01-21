@@ -3,6 +3,8 @@ package com.concertfinder.concertfinder.scheduler.service;
 import com.concertfinder.concertfinder.concert.domain.Concert;
 import com.concertfinder.concertfinder.concert.service.ConcertService;
 import com.concertfinder.concertfinder.favorites.service.FavoritesService;
+import com.concertfinder.concertfinder.post.service.PostService;
+import com.concertfinder.concertfinder.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -18,7 +20,8 @@ public class SchedulerService {
 
     private final ConcertService concertService;
     private final FavoritesService favoritesService;
-
+    private final UserService userService;
+    private final PostService postService;
 
     @Transactional
     @Scheduled(cron = "0 0 5 * * *", zone = "Asia/Seoul")
@@ -35,5 +38,14 @@ public class SchedulerService {
                 concertService.deleteConcert(concert);
             }
         }
+    }
+
+    @Transactional
+    @Scheduled(cron = "0 0 4 * * *", zone = "Asia/Seoul")
+    public void userRelationDelete() {
+
+
+
+
     }
 }
