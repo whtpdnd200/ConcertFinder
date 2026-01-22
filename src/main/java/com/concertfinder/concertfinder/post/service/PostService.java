@@ -4,6 +4,7 @@ import com.concertfinder.concertfinder.accompany.DTO.AccompanyAddDTO;
 import com.concertfinder.concertfinder.accompany.DTO.AccompanyInfoDTO;
 import com.concertfinder.concertfinder.comment.service.CommentService;
 import com.concertfinder.concertfinder.exception.GlobalExceptionHandler;
+import com.concertfinder.concertfinder.exception.custom_exception.NotFoundException;
 import com.concertfinder.concertfinder.exception.custom_exception.UnAuthorizedException;
 import com.concertfinder.concertfinder.ladder.service.AccompanyAndAccompanyCountLadderService;
 import com.concertfinder.concertfinder.post.DTO.PostDetailDTO;
@@ -110,7 +111,7 @@ public class PostService {
 
         if(!optionalPost.isPresent()) {
 
-            throw new NoSuchElementException("게시글이 존재하지 않습니다!");
+            throw new NotFoundException("존재하지 않는 게시글 입니다!");
         }
 
 
