@@ -3,7 +3,10 @@ package com.concertfinder.concertfinder.exception;
 import com.concertfinder.concertfinder.common.DTO.ApiResponseDTO;
 import com.concertfinder.concertfinder.exception.custom_exception.DuplicateException;
 import com.concertfinder.concertfinder.exception.custom_exception.UnAuthorizedException;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -35,12 +38,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponseDTO<Void>> IllegalArgumentException(IllegalArgumentException e) {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponseDTO.fail(e.getMessage()));
-    }
-
-    @ExceptionHandler(DisabledException.class)
-    public ResponseEntity<ApiResponseDTO<Void>> DisabledException(DisabledException e) {
-
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ApiResponseDTO.fail("탈퇴 한 회원 입니다!"));
     }
 
     // 변수 하나에 파라미터 전송시 예외 핸들러

@@ -36,6 +36,7 @@ public class ChatRoomRestController {
     @DeleteMapping("/{accompanyId}")
     public ResponseEntity<ApiResponseDTO<Void>> exitChatRoom(@PathVariable long accompanyId
                                                             , @AuthenticationPrincipal PrincipalDetails principal) {
+
         LoginUserDTO loginUserDTO = principal.getLoginUserDTO();
         accompanyAndAccompanyCountLadderService.deleteAccompanyCountAndIsFullCheck(accompanyId, loginUserDTO.getId(), "exit");
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.success("퇴장 성공"));

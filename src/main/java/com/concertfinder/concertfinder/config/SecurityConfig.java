@@ -47,8 +47,6 @@ public class SecurityConfig {
                                 errorMessage = "탈퇴 한 회원 입니다!";
                             }
                             response.getWriter().write("{\"message\":\"" + errorMessage + "\"}");
-
-
                         })
                         .permitAll())
                 // 로그아웃 설정

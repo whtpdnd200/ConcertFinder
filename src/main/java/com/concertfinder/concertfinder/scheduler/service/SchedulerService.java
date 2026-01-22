@@ -49,7 +49,7 @@ public class SchedulerService {
     }
 
     @Transactional
-    @Scheduled(cron = "*/1 * * * * *", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 0 4 * * *", zone = "Asia/Seoul")
     public void userRelationDelete() {
 
         List<Long> userIdList = userService.getDeleteUserIdList();

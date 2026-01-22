@@ -6,7 +6,6 @@ import com.concertfinder.concertfinder.chat_room.service.ChatRoomService;
 import com.concertfinder.concertfinder.chat_room_and_user.domain.ChatRoomAndUser;
 import com.concertfinder.concertfinder.chat_room_and_user.service.ChatRoomAndUserService;
 import com.concertfinder.concertfinder.common.SimpleWebSocketHandler;
-import com.concertfinder.concertfinder.last_chat.domain.LastChat;
 import com.concertfinder.concertfinder.last_chat.service.LastChatService;
 import com.concertfinder.concertfinder.user.service.UserService;
 import groovy.util.logging.Slf4j;

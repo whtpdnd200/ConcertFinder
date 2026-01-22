@@ -108,12 +108,14 @@ public class PostService {
 
         Optional<Post> optionalPost = postRepository.findById(postId);
 
-        if(optionalPost.isPresent()) {
-            PostDetailDTO postDetailDTO = addDto(optionalPost.get(), userId);
-            return postDetailDTO;
+        if(!optionalPost.isPresent()) {
+
+            throw new NoSuchElementException("게시글이 존재하지 않습니다!");
         }
 
-        return null;
+
+        PostDetailDTO postDetailDTO = addDto(optionalPost.get(), userId);
+        return postDetailDTO;
     }
 
     // 게시글 수정 메서드
