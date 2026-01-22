@@ -184,16 +184,22 @@ public class PostService {
         if(optionalPost.isPresent()) {
             Post post = optionalPost.get();
             if(!userId.equals(post.getUserId())) {
+
                 throw new UnAuthorizedException("다른 사람의 게시글은 삭제 할 수 없습니다!");
             }
+
             try {
+
                 postRepository.delete(post);
                 commentService.deleteAllComment(postId);
+
                 if(post.getCategory().equals('R')) {
 
                     accompanyAndAccompanyCountLadderService.deleteAccompanyAndAccompanyCountByAccompanyId(accompanyId, roomId, userId);
                 }
+
             } catch(DataAccessException e) {
+
                 throw new RuntimeException("서버 에러로 인해 게시글 삭제가 실패 하였습니다 잠시 후 다시 시도해주세요!");
             }
         }
@@ -218,7 +224,7 @@ public class PostService {
         }
 
         if(posts == null) {
-            throw new NoSuchElementException("게시글 목록 조회에 실패 했습니다! 나중에 다시 시도 해주세요");
+            throw new NoSuchElementException("게시글 목록 조회에 실패 했습니다! 나중에 다시 시도 해주세요!");
         }
 
         List<PostListDTO> postList = new ArrayList<>();

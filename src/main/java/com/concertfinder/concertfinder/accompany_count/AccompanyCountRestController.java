@@ -41,12 +41,5 @@ public class AccompanyCountRestController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.success("동행 취소 성공"));
     }
 
-    // 유저 강퇴
-    @DeleteMapping("/{accompanyId}/{userId}")
-    public ResponseEntity<ApiResponseDTO<Void>> kickAccompany(@PathVariable long accompanyId
-                                                             , @PathVariable long userId) {
 
-        accompanyAndAccompanyCountLadderService.deleteAccompanyCountAndIsFullCheck(accompanyId, userId, "kick");
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.success("동행 강퇴 성공"));
-    }
 }

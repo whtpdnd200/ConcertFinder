@@ -29,7 +29,7 @@ public class AccompanyCountService {
             accompanyCountRepository.save(accompanyCount);
         } catch(DataAccessException e) {
 
-            throw new RuntimeException("서버 에러로인해 게시글을 저장 하지 못했습니다 잠시 후 다시 시도해주세요!");
+            throw new RuntimeException("서버 에러로인해 동행 정보를 저장 하지 못했습니다 잠시 후 다시 시도해주세요!");
         }
     }
 

@@ -25,7 +25,7 @@ public class LastChat {
     @Id
     private long userId;
 
-    private long lastChatId;
+    private long chatId;
 
     @CreationTimestamp
     private LocalDateTime createdAt;

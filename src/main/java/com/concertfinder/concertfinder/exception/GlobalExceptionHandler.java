@@ -111,9 +111,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> NotFoundException(NotFoundException e) {
 
         String script = "<script>" +
-                "   alert('" + e.getMessage() + "');" +
-                "   location.href = '/concert/list';" +
-                "</script>";
+                        "   alert('" + e.getMessage() + "');" +
+                        "   location.href = '/concert/list';" +
+                        "</script>";
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .header("Content-Type", "text/html; charset=utf-8")

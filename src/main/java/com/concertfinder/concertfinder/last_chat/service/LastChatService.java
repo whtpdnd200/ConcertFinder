@@ -24,7 +24,7 @@ public class LastChatService {
         LastChat lastChat = lastChatRepository.findByRoomIdAndUserId(roomId, userId).orElse(new LastChat(roomId, userId));
 
         lastChat = lastChat.toBuilder()
-                .lastChatId(lastChatId)
+                .chatId(lastChatId)
                 .build();
 
         try {
@@ -68,6 +68,6 @@ public class LastChatService {
 
     public Long getLastChatId(long roomId, long userId) {
 
-        return lastChatRepository.findByRoomIdAndUserId(roomId, userId).map(LastChat::getLastChatId).orElse(null);
+        return lastChatRepository.findByRoomIdAndUserId(roomId, userId).map(LastChat::getChatId).orElse(null);
     }
 }

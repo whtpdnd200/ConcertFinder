@@ -40,14 +40,6 @@ public class PostController {
 
         PostDetailDTO postDetailDTO = postService.getPost(postId, loginUserDTO.getId());
 
-        if(postDetailDTO == null) {
-
-            return "<script>" +
-                    "   alert('존재하지 않는 게시글 입니다!');" +
-                    "   location.href = '/concert/list';" +
-                    "</scrept>";
-        }
-
         model.addAttribute("postInfo", postDetailDTO);
         return "concertfinder/post/detail";
     }

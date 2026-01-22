@@ -105,7 +105,7 @@ public class ReviewService {
         Optional<Review> optionalReview = reviewRepository.findById(reviewId);
 
         if(!optionalReview.isPresent()) {
-            throw new NoSuchElementException("댓글이 존재하지 않습니다!");
+            throw new NoSuchElementException("리뷰가 존재하지 않습니다!");
         }
 
         Review review = optionalReview.get();

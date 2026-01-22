@@ -48,7 +48,7 @@ public class PostRestController {
         LoginUserDTO loginUserDTO = principal.getLoginUserDTO();
         postService.postUpdate(postId, postModifyDTO, loginUserDTO.getId());
 
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.success("게시글 수정 성공"));
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.success(null));
     }
 
     // 게시글 삭제 API
@@ -58,7 +58,7 @@ public class PostRestController {
         LoginUserDTO loginUserDTO = principal.getLoginUserDTO();
         postService.postDelete(postId, loginUserDTO.getId());
 
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.success("게시글 삭제 성공"));
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.success(null));
     }
 
     // 게시글 목록 출력 API
