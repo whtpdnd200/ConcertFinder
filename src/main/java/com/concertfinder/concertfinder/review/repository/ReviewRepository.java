@@ -13,14 +13,14 @@ import java.util.List;
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
 
-    public int countByAreaCode(String areaCode);
+    int countByAreaCode(String areaCode);
 
     @Query("""
             SELECT AVG(r.point) FROM Review r WHERE r.areaCode = :areaCode
             """)
-    public Double getAveragePointByAreaCode(String areaCode);
+    Double getAveragePointByAreaCode(String areaCode);
 
-    public Page<Review> findAllByAreaCode(String areaCode, Pageable pageable);
+    Page<Review> findAllByAreaCode(String areaCode, Pageable pageable);
 
     void deleteAllByUserIdIn(List<Long> userIdList);
 }

@@ -10,7 +10,7 @@ import java.util.Optional;
 @Repository
 public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
 
-    public Optional<ChatRoom> findByAccompanyId(long accompanyId);
+    Optional<ChatRoom> findByAccompanyId(long accompanyId);
 
     @Query(value = "SELECT u.room_id " +
             "FROM chat_room_and_user AS u " +
@@ -21,6 +21,6 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
             "AND c.accompany_id IS NULL " +
             "AND c.room_name IS NULL " +
             "LIMIT 1", nativeQuery = true)
-    public Optional<Long> findRoomIdByNativeQuery(long userId, long otherUserId);
+    Optional<Long> findRoomIdByNativeQuery(long userId, long otherUserId);
 
 }

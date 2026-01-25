@@ -11,15 +11,15 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
 
     // 중복된 아이디가 있는지 확인하는 메서드
-    public boolean existsByUserId(String userId);
+    boolean existsByUserId(String userId);
 
     List<User> findAllByIsDelete(boolean isDelete);
 
     // 로그인 메서드 : 아이디로 salt값 확인
-    public Optional<User> findByUserId(String userId);
+    Optional<User> findByUserId(String userId);
 
     // 로그인 메서드 : 아이디와 비밀번호로 회원 조회
-    public Optional<User> findByUserIdAndPassword(String userId, String password);
+    Optional<User> findByUserIdAndPassword(String userId, String password);
 
     void deleteAllByIdIn(List<Long> userIdList);
 }

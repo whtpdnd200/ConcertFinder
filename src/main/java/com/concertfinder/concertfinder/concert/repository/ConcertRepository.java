@@ -13,20 +13,20 @@ import java.util.Optional;
 @Repository
 public interface ConcertRepository extends JpaRepository<Concert, String> {
 
-    public boolean existsByConcertId(String concertId);
+    boolean existsByConcertId(String concertId);
 
     @Query("""
             SELECT c FROM Concert c
             WHERE c.concertId IN(:concertIdList)
             ORDER BY c.createdAt DESC
             """)
-    public List<Concert> findAllByConcertId(List<String> concertIdList);
+    List<Concert> findAllByConcertId(List<String> concertIdList);
 
     @Query("""
             SELECT c FROM Concert c
             WHERE c.concertId IN(:concertIdList)
             ORDER BY c.createdAt DESC
             """)
-    public List<Concert> findAllTop3ByConcertId(List<String> concertIdList, Pageable pageable);
+    List<Concert> findAllTop3ByConcertId(List<String> concertIdList, Pageable pageable);
 
 }

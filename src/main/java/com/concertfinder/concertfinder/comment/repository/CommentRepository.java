@@ -12,11 +12,11 @@ import java.util.List;
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
 
-    public Page<Comment> findAllByPostId(long postId, Pageable pageable);
+    Page<Comment> findAllByPostId(long postId, Pageable pageable);
     
-    public int countByPostId(long postId);
+    int countByPostId(long postId);
 
-    public List<Comment> findAllByPostId(long postId);
+    List<Comment> findAllByPostId(long postId);
 
     void deleteAllByUserIdIn(List<Long> userIds);
 }

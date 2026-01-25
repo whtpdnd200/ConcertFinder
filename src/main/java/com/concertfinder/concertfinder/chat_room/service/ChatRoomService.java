@@ -68,6 +68,7 @@ public class ChatRoomService {
         ChatRoom chatRoom = optionalChatRoom.get();
 
         try {
+
             chatRoomRepository.delete(chatRoom);
         } catch(DataAccessException e) {
 

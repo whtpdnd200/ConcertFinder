@@ -11,8 +11,7 @@ import java.util.Optional;
 @Repository
 public interface LastChatRepository extends JpaRepository<LastChat, LastChatId> {
 
-
-    public Optional<LastChat> findByRoomIdAndUserId(long roomId, long userId);
+    Optional<LastChat> findByRoomIdAndUserId(long roomId, long userId);
 
     List<LastChat> findAllByUserId(long userId);
 

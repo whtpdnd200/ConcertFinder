@@ -114,7 +114,6 @@ public class PostService {
             throw new NotFoundException("존재하지 않는 게시글 입니다!");
         }
 
-
         PostDetailDTO postDetailDTO = addDto(optionalPost.get(), userId);
         return postDetailDTO;
     }
@@ -138,8 +137,10 @@ public class PostService {
                     .build();
 
             try {
+
                 postRepository.save(post);
             } catch(DataAccessException e) {
+
                 throw new RuntimeException("서버 에러로 게시글을 수정 하지 못했습니다 잠시 후 다시 시도 해주세요!");
             }
         }
@@ -166,6 +167,7 @@ public class PostService {
                     accompanyAndAccompanyCountLadderService.deleteAccompanyAndAccompanyCount(postId);
                 }
             } catch(DataAccessException e) {
+
                 throw new RuntimeException("서버 에러로 인해 게시글 삭제가 실패 하였습니다 잠시 후 다시 시도해주세요!");
             }
         }

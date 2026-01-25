@@ -70,6 +70,6 @@ public class ReviewRestController {
 
         LoginUserDTO loginUserDTO = principal.getLoginUserDTO();
         reviewService.deleteReview(reviewId, loginUserDTO.getId());
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.success("리뷰 삭제 완료"));
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.success(null));
     }
 }

@@ -103,6 +103,6 @@ public class UserRestController {
             new SecurityContextLogoutHandler().logout(request, response, auth);
         }
 
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.success("탈퇴 완료"));
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.success(null));
     }
 }

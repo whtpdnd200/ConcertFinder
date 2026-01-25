@@ -13,13 +13,13 @@ import java.util.Optional;
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> {
 
 
-    public List<ChatMessage> findAllByRoomId(long roomId);
+    List<ChatMessage> findAllByRoomId(long roomId);
 
     Slice<ChatMessage> findAllByRoomIdOrderByIdDesc(long roomId, Pageable pageable);
 
     Slice<ChatMessage> findByRoomIdAndIdLessThanOrderByIdDesc(long roomId, long id, Pageable pageable);
 
-    public Optional<ChatMessage> findFirstByRoomIdOrderByIdDesc(long roomId);
+    Optional<ChatMessage> findFirstByRoomIdOrderByIdDesc(long roomId);
 
     // 과거 메시지 조회 (DESC)
     Slice<ChatMessage> findByRoomIdAndIdLessThanEqualOrderByIdDesc(long roomId, Long lastId, Pageable pageable);

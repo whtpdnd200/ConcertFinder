@@ -39,6 +39,6 @@ public class FavoritesRestController {
         LoginUserDTO loginUserDTO = principal.getLoginUserDTO();
         favoritesService.deleteFavorites(concertId, loginUserDTO.getId());
         
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.success("즐겨찾기 삭제 성공"));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.success(null));
     }
 }

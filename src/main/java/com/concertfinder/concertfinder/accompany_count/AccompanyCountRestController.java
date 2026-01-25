@@ -38,7 +38,7 @@ public class AccompanyCountRestController {
 
         LoginUserDTO loginUserDTO = principal.getLoginUserDTO();
         accompanyAndAccompanyCountLadderService.deleteAccompanyCountAndIsFullCheck(accompanyId, loginUserDTO.getId(), "exit");
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.success("동행 취소 성공"));
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.success(null));
     }
 
 

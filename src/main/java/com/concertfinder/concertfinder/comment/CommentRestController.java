@@ -67,6 +67,6 @@ public class CommentRestController {
 
         commentService.deleteComment(commentId, loginUserDTO.getId());
 
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.success("댓글 삭제 성공"));
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.success(null));
     }
 }
