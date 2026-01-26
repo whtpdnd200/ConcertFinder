@@ -213,7 +213,8 @@ public class UserService {
             return "탈퇴한 유저";
         }
 
-        nickname = optionalUser.get().getNickname();
+        User user = optionalUser.get();
+        nickname = user.isDelete() ? "탈퇴한 유저" : user.getNickname();
 
         redisTemplate.opsForValue().set(key, nickname, java.time.Duration.ofMinutes(30));
 
