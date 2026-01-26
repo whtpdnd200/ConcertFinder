@@ -28,8 +28,6 @@ public class Comment {
 
     private String comment;
 
-    private boolean isPrivate;
-
     @CreationTimestamp
     private LocalDateTime createdAt;
 
