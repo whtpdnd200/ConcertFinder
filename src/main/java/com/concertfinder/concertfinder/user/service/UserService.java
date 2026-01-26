@@ -13,6 +13,7 @@ import com.concertfinder.concertfinder.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +29,8 @@ public class UserService {
     private final UserRepository userRepository;
     private final SidoCodeService sidoCodeService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-
+    private final RedisTemplate<String, Object> redisTemplate;
+    private static final String NICKNAME_KEY_PREFIX = "user:nickname:";
 
     // LoginUserDTO에 User 정보 담아주는 함수
     public LoginUserDTO addDTO(Optional<User> oUser) {
@@ -170,6 +172,19 @@ public class UserService {
 
     // 유저 이름 얻어오는 메서드
     public String getNickname(long id) {
+
+        String key = NICKNAME_KEY_PREFIX + id;
+
+        // redis에서 조회
+        String nickname = (String)redisTemplate.opsForValue().get(key);
+
+        if(nickname != null) {
+
+            log.info("redis Cache Hit : userId : {}, nickname : {}", id, nickname);
+            return nickname;
+        }
+
+        log.info("Redis Cache Miss: userId : {}", id);
 
         Optional<User> optionalUser = userRepository.findById(id);
 
