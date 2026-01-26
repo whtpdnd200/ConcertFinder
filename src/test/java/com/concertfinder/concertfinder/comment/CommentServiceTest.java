@@ -21,7 +21,7 @@ public class CommentServiceTest {
     @DisplayName("타인의 댓글은 수정 할 수 없음")
     public void updateCommentTest() {
 
-        Long userId = 3l;
+        Long userId = 1l;
         long commentId = 1L;
         CommentModifyDTO modifyDTO = CommentModifyDTO.builder()
                 .comment("test")

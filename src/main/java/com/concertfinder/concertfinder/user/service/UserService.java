@@ -141,6 +141,8 @@ public class UserService {
 
             try {
                 userRepository.save(user);
+                redisTemplate.delete(NICKNAME_KEY_PREFIX + id);
+
             } catch(DataAccessException e) {
                 throw new RuntimeException("서버에러로 회원 정보 수정이 실패 했습니다 잠시후 다시 시도해주세요!");
             }
@@ -193,7 +195,11 @@ public class UserService {
             return "탈퇴한 유저";
         }
 
-        return optionalUser.get().getNickname();
+        nickname = optionalUser.get().getNickname();
+
+        redisTemplate.opsForValue().set(key, nickname, java.time.Duration.ofMinutes(30));
+
+        return nickname;
     }
 
     public boolean isExistsUser(long id) {
@@ -219,6 +225,7 @@ public class UserService {
 
         try {
             userRepository.save(user);
+            redisTemplate.delete(NICKNAME_KEY_PREFIX + userId);
 
         } catch(DataAccessException e) {
 
