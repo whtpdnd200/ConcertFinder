@@ -52,7 +52,7 @@ public class AccompanyAndAccompanyCountLadderService {
         accompanyCountService.deleteAllAccompanyCount(accompanyId);
 
         long roomId = chatRoomAndChatRoomAndUserLadderService.getRoomId(accompanyId);
-
+        chatRoomAndChatRoomAndUserLadderService.lastChatDelete(roomId);
         chatRoomAndChatRoomAndUserLadderService.deleteChatRoom(roomId);
         chatRoomAndChatRoomAndUserLadderService.deleteAllChatRoomAndUser(roomId);
         chatRoomAndChatRoomAndUserLadderService.deleteChatMessage(roomId);
@@ -70,15 +70,12 @@ public class AccompanyAndAccompanyCountLadderService {
 
         simpleWebSocketHandler.deleteRoom(roomId);
         chatRoomAndChatRoomAndUserLadderService.lastChatDelete(roomId);
-        // 1. 채팅 관련 데이터 삭제 (채팅방은 AccompanyId를 참조할 가능성이 높음)
+
         chatRoomAndChatRoomAndUserLadderService.deleteChatMessage(roomId);
         chatRoomAndChatRoomAndUserLadderService.deleteAllChatRoomAndUser(roomId);
         chatRoomAndChatRoomAndUserLadderService.deleteChatRoom(roomId);
 
-        // 2. 동행 인원 삭제 (AccompanyId 참조 중)
         accompanyCountService.deleteAllAccompanyCount(accompanyId);
-
-        // 3. 마지막에 동행(부모) 정보 삭제
         accompanyService.deleteAccompany(accompanyId);
 
 

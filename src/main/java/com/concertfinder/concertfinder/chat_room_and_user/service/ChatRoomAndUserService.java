@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import static reactor.netty.http.HttpConnectionLiveness.log;
+
 @Service
 @RequiredArgsConstructor
 public class ChatRoomAndUserService {
@@ -174,6 +176,15 @@ public class ChatRoomAndUserService {
             throw new NoSuchElementException("채팅방 리스트를 불러오는 중 에러가 발생 했습니다!");
         }
 
+        log.info("유저 아이디 {}", chatRoomAndUser.getUserId());
+
         return userService.getNickname(chatRoomAndUser.getUserId());
+    }
+
+    public List<ChatRoomAndUser> getChatRoomUserList(List<Long> userIdList) {
+
+        List<ChatRoomAndUser> chatRoomAndUsers = chatRoomAndUserRepository.findAllByUserIdIn(userIdList);
+
+        return chatRoomAndUsers;
     }
 }

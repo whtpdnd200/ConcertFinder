@@ -2,9 +2,14 @@ package com.concertfinder.concertfinder.exception;
 
 import com.concertfinder.concertfinder.common.DTO.ApiResponseDTO;
 import com.concertfinder.concertfinder.exception.custom_exception.DuplicateException;
+import com.concertfinder.concertfinder.exception.custom_exception.NotFoundException;
 import com.concertfinder.concertfinder.exception.custom_exception.UnAuthorizedException;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -100,5 +105,18 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponseDTO<Void>> NoSuchElementException(NoSuchElementException e) {
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponseDTO.fail(e.getMessage()));
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<String> NotFoundException(NotFoundException e) {
+
+        String script = "<script>" +
+                        "   alert('" + e.getMessage() + "');" +
+                        "   location.href = '/concert/list';" +
+                        "</script>";
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .header("Content-Type", "text/html; charset=utf-8")
+                .body(script);
     }
 }

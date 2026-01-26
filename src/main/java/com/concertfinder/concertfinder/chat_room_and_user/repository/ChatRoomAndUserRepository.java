@@ -11,18 +11,19 @@ import java.util.Optional;
 @Repository
 public interface ChatRoomAndUserRepository extends JpaRepository<ChatRoomAndUser, ChatRoomAndUserId> {
 
-    public boolean existsByRoomId(long roomId);
+    boolean existsByRoomId(long roomId);
 
-    public List<ChatRoomAndUser> findAllByRoomId(long roomId);
+    List<ChatRoomAndUser> findAllByRoomId(long roomId);
 
-    public Optional<ChatRoomAndUser> findByUserIdAndRoomId(long userId, long roomId);
+    Optional<ChatRoomAndUser> findByUserIdAndRoomId(long userId, long roomId);
 
-    public int countByRoomId(long roomId);
+    int countByRoomId(long roomId);
 
-    public List<ChatRoomAndUser> findTop3ByUserIdOrderByCreatedAtDesc(long userId);
+    List<ChatRoomAndUser> findTop3ByUserIdOrderByCreatedAtDesc(long userId);
 
-    public List<ChatRoomAndUser> findAllByUserIdOrderByCreatedAtDesc(long userId);
+    List<ChatRoomAndUser> findAllByUserIdOrderByCreatedAtDesc(long userId);
 
-    public Optional<ChatRoomAndUser> findByRoomIdAndUserIdNot(long roomId, long userId);
+    Optional<ChatRoomAndUser> findByRoomIdAndUserIdNot(long roomId, long userId);
 
+    List<ChatRoomAndUser> findAllByUserIdIn(List<Long> userIdList);
 }

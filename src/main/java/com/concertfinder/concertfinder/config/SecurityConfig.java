@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -37,9 +38,15 @@ public class SecurityConfig {
                         })
                         // ajax error 처럼 로그인 실패시 실행 할 내용
                         .failureHandler((request, response, exception) -> {
+                            String errorMessage = "아이디 혹은 비밀번호가 일치하지 않습니다!";
                             response.setStatus(HttpStatus.UNAUTHORIZED.value());
+
                             response.setContentType("application/json;charset=UTF-8");
-                            response.getWriter().write("{\"message\":\"" + "아이디 혹은 비밀번호가 일치하지 않습니다!" + "\"}");
+                            if (exception instanceof DisabledException) {
+                                response.setStatus(HttpStatus.FORBIDDEN.value()); // 403으로 변경
+                                errorMessage = "탈퇴 한 회원 입니다!";
+                            }
+                            response.getWriter().write("{\"message\":\"" + errorMessage + "\"}");
                         })
                         .permitAll())
                 // 로그아웃 설정

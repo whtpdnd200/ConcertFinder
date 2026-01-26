@@ -6,6 +6,8 @@ import com.concertfinder.concertfinder.user.DTO.LoginUserDTO;
 import com.concertfinder.concertfinder.user.DTO.ModifyUserDTO;
 import com.concertfinder.concertfinder.user.DTO.PrincipalDetails;
 import com.concertfinder.concertfinder.user.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -17,6 +19,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -83,5 +86,23 @@ public class UserRestController {
         // 스프링 시큐리티의 세션 같은곳에 정보 업데이트
         SecurityContextHolder.getContext().setAuthentication(authentication);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.success("회원 정보 수정 성공"));
+    }
+
+    // 회원 탈퇴 기능
+    // 유저 정보 작성한 게시글, 댓글, 즐겨찾기, 동행 채팅방 1:1 채팅방
+    @DeleteMapping
+    public ResponseEntity<ApiResponseDTO<Void>> removeUser(@AuthenticationPrincipal PrincipalDetails principal
+                                                            , HttpServletRequest request
+                                                           , HttpServletResponse response) {
+
+        LoginUserDTO loginUserDTO = principal.getLoginUserDTO();
+        userService.updateDeleteUser(loginUserDTO.getId());
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth != null) {
+            new SecurityContextLogoutHandler().logout(request, response, auth);
+        }
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.success(null));
     }
 }

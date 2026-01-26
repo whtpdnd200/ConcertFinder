@@ -1,5 +1,6 @@
 package com.concertfinder.concertfinder.post;
 
+import com.concertfinder.concertfinder.post.DTO.PostDetailDTO;
 import com.concertfinder.concertfinder.post.service.PostService;
 import com.concertfinder.concertfinder.user.DTO.LoginUserDTO;
 import com.concertfinder.concertfinder.user.DTO.PrincipalDetails;
@@ -31,10 +32,15 @@ public class PostController {
     @GetMapping("/{postId}")
     public String detail(@PathVariable long postId
                          , @AuthenticationPrincipal PrincipalDetails principal
-                        , Model model) {
+                         , Model model) {
+
+
 
         LoginUserDTO loginUserDTO = principal.getLoginUserDTO();
-        model.addAttribute("postInfo", postService.getPost(postId, loginUserDTO.getId()));
+
+        PostDetailDTO postDetailDTO = postService.getPost(postId, loginUserDTO.getId());
+
+        model.addAttribute("postInfo", postDetailDTO);
         return "concertfinder/post/detail";
     }
 

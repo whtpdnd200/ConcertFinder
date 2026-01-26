@@ -95,6 +95,10 @@
 
         var id = $("#dataValue").data("id");
 
+        var token = $("meta[name='_csrf']").attr("content");
+
+        var header = $("meta[name='_csrf_header']").attr("content");
+
         $("#emailSelect").on("change", function() {
 
             let value = $("#emailSelect").val();

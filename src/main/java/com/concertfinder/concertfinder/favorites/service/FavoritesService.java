@@ -5,7 +5,9 @@ import com.concertfinder.concertfinder.exception.GlobalExceptionHandler;
 import com.concertfinder.concertfinder.favorites.DTO.FavoritesConcertIdDTO;
 import com.concertfinder.concertfinder.favorites.domain.Favorites;
 import com.concertfinder.concertfinder.favorites.repository.FavoritesRepository;
+import com.concertfinder.concertfinder.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,11 +17,13 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FavoritesService{
 
     private final FavoritesRepository favoritesRepository;
+    private final UserService userService;
 
 
     // 콘서트 정보 즐겨찾기
@@ -78,5 +82,33 @@ public class FavoritesService{
             favoritesConcertIdList.add(favorites.getConcertId());
         }
         return favoritesConcertIdList;
+    }
+
+    public void deleteUserFavorites() {
+
+        List<Favorites> favorites = favoritesRepository.findAll();
+
+        if(!favorites.isEmpty()) {
+
+            for(Favorites f : favorites) {
+
+                if(!userService.isExistsUser(f.getUserId())) {
+
+                    deleteFavorites(f.getConcertId(), f.getUserId());
+                }
+            }
+        }
+    }
+
+    public void deleteUserFavorites(List<Long> userIdList) {
+
+        try {
+
+            favoritesRepository.deleteAllByUserIdIn(userIdList);
+        } catch(DataAccessException e) {
+
+            log.warn("탈퇴 회원 즐겨찾기 삭제 실패");
+        }
+
     }
 }

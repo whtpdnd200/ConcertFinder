@@ -16,4 +16,5 @@ public class LoginUserDTO {
     private String attentionAreaCode;
     private String attentionAreaName;
     private String role;
+    private boolean isDelete;
 }

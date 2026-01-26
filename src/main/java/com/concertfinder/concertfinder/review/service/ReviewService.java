@@ -6,6 +6,8 @@ import com.concertfinder.concertfinder.review.DTO.ReviewModifyDTO;
 import com.concertfinder.concertfinder.review.DTO.ReviewWriteDTO;
 import com.concertfinder.concertfinder.review.domain.Review;
 import com.concertfinder.concertfinder.review.repository.ReviewRepository;
+import com.concertfinder.concertfinder.user.service.UserService;
+import groovy.util.logging.Slf4j;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.*;
@@ -16,11 +18,14 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+@lombok.extern.slf4j.Slf4j
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
+    private final UserService userService;
 
     // 리뷰 저장 메서드
     public void insertReview(String areaCode
@@ -81,6 +86,7 @@ public class ReviewService {
             ReviewListDTO reviewListDTO = ReviewListDTO.builder()
                     .id(review.getId())
                     .UserId(review.getUserId())
+                    .userNickname(userService.getNickname(review.getUserId()))
                     .review(review.getReview())
                     .createdAt(review.getCreatedAt())
                     .point(review.getPoint())
@@ -99,7 +105,7 @@ public class ReviewService {
         Optional<Review> optionalReview = reviewRepository.findById(reviewId);
 
         if(!optionalReview.isPresent()) {
-            throw new NoSuchElementException("댓글이 존재하지 않습니다!");
+            throw new NoSuchElementException("리뷰가 존재하지 않습니다!");
         }
 
         Review review = optionalReview.get();
@@ -127,7 +133,7 @@ public class ReviewService {
         Optional<Review> optionalReview = reviewRepository.findById(reviewId);
 
         if(!optionalReview.isPresent()) {
-            throw new NoSuchElementException("댓글이 존재하지 않습니다!");
+            throw new NoSuchElementException("리뷰가 존재하지 않습니다!");
         }
 
         Review review = optionalReview.get();
@@ -136,12 +142,38 @@ public class ReviewService {
             throw new UnAuthorizedException("다른 사용자의 리뷰는 삭제 할 수 없습니다!");
         }
 
-
         try {
             reviewRepository.delete(review);
 
         } catch(DataAccessException e) {
             throw new RuntimeException("서버 에러로 리뷰 정보를 삭제 하지 못했습니다! 잠시 후 다시 시도해주세요!");
+        }
+    }
+
+    public void deleteUserReview() {
+
+        List<Review> reviews = reviewRepository.findAll();
+
+        if(!reviews.isEmpty()) {
+
+            for(Review r : reviews) {
+
+                if(!userService.isExistsUser(r.getUserId())) {
+
+                    deleteReview(r.getId(), r.getUserId());
+                }
+            }
+        }
+    }
+
+    public void deleteUserReview(List<Long> userIdList) {
+
+        try {
+
+            reviewRepository.deleteAllByUserIdIn(userIdList);
+        } catch(DataAccessException e) {
+
+            log.warn("탈퇴 회원 리뷰 목록 삭제 실패!");
         }
     }
 }

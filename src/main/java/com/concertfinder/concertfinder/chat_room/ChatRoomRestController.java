@@ -36,9 +36,10 @@ public class ChatRoomRestController {
     @DeleteMapping("/{accompanyId}")
     public ResponseEntity<ApiResponseDTO<Void>> exitChatRoom(@PathVariable long accompanyId
                                                             , @AuthenticationPrincipal PrincipalDetails principal) {
+
         LoginUserDTO loginUserDTO = principal.getLoginUserDTO();
         accompanyAndAccompanyCountLadderService.deleteAccompanyCountAndIsFullCheck(accompanyId, loginUserDTO.getId(), "exit");
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.success("퇴장 성공"));
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.success(null));
     }
 
     // 채팅방 삭제 및 동행 모집 게시글 삭제
@@ -49,7 +50,16 @@ public class ChatRoomRestController {
 
         LoginUserDTO loginUserDTO = principal.getLoginUserDTO();
         postService.postDeleteByAccompanyId(accompanyId, loginUserDTO.getId(), roomId);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.success("삭제 성공"));
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.success(null));
+    }
+
+    // 유저 강퇴
+    @DeleteMapping("/kick/{accompanyId}/{userId}")
+    public ResponseEntity<ApiResponseDTO<Void>> kickAccompany(@PathVariable long accompanyId
+                                                            , @PathVariable long userId) {
+
+        accompanyAndAccompanyCountLadderService.deleteAccompanyCountAndIsFullCheck(accompanyId, userId, "kick");
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.success(null));
     }
 
     // 1:1 채팅방 생성 및 이동
@@ -66,6 +76,6 @@ public class ChatRoomRestController {
     public ResponseEntity<ApiResponseDTO<Void>> deletePrivateChatRoom(@PathVariable long roomId) {
 
         chatRoomAndChatRoomAndUserLadderService.deletePrivateChatRoomAndUser(roomId);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.success("삭제 완료"));
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.success(null));
     }
 }

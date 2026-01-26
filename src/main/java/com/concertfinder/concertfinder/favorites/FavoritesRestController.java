@@ -21,7 +21,7 @@ public class FavoritesRestController {
     private final FavoritesService favoritesService;
     private final ConcertAndFavoritesLadderService concertAndFavoritesLadderService;
 
-
+    // 콘서트 정보 저장 및 즐겨찾기 저장
     @PostMapping("/{concertId}")
     public ResponseEntity<ApiResponseDTO<Void>> addFavorites(@PathVariable @NotBlank(message = "저장 할 콘서트를 찾지 못했습니다!") String concertId
                                                             , @AuthenticationPrincipal PrincipalDetails principal) {
@@ -31,6 +31,7 @@ public class FavoritesRestController {
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.success("즐겨찾기 등록 성공"));
     }
 
+    // 즐겨찾기 삭제
     @DeleteMapping("{concertId}")
     public ResponseEntity<ApiResponseDTO<Void>> removeFavorites(@PathVariable @NotBlank(message = "삭제 할 콘서트를 찾지 못했습니다!") String concertId
                                                                 , @AuthenticationPrincipal PrincipalDetails principal) {
@@ -38,6 +39,6 @@ public class FavoritesRestController {
         LoginUserDTO loginUserDTO = principal.getLoginUserDTO();
         favoritesService.deleteFavorites(concertId, loginUserDTO.getId());
         
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.success("즐겨찾기 삭제 성공"));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.success(null));
     }
 }

@@ -36,7 +36,7 @@ public class ChatMessageRestController {
     }
 
     @GetMapping("/next/{roomId}/{nextId}")
-    public ResponseEntity<?> getNextMessages(@PathVariable long roomId, @PathVariable long nextId) {
+    public ResponseEntity<ApiResponseDTO<Slice<MessageListDTO>>> getNextMessages(@PathVariable long roomId, @PathVariable long nextId) {
 
         Slice<MessageListDTO> nextMessageList = chatMessageService.getNextMessageList(roomId, nextId);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.success("다음 메시지 목록 출력 성공", nextMessageList));

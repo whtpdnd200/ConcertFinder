@@ -5,6 +5,7 @@ import com.concertfinder.concertfinder.chat_room.domain.ChatRoom;
 import com.concertfinder.concertfinder.chat_room.repository.ChatRoomRepository;
 import com.concertfinder.concertfinder.chat_room_and_user.domain.ChatRoomAndUser;
 import com.concertfinder.concertfinder.chat_room_and_user.service.ChatRoomAndUserService;
+import com.concertfinder.concertfinder.exception.custom_exception.NotFoundException;
 import com.concertfinder.concertfinder.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -67,6 +68,7 @@ public class ChatRoomService {
         ChatRoom chatRoom = optionalChatRoom.get();
 
         try {
+
             chatRoomRepository.delete(chatRoom);
         } catch(DataAccessException e) {
 
@@ -80,6 +82,8 @@ public class ChatRoomService {
     }
 
     public ChatRoom getChatRoom(long roomId) {
+
+        log.info("chatRoom id : {}", roomId);
 
         Optional<ChatRoom> optionalChatRoom = chatRoomRepository.findById(roomId);
 
@@ -111,7 +115,7 @@ public class ChatRoomService {
 
         if(!optionalChatRoom.isPresent()) {
 
-            throw new NoSuchElementException("채팅방 정보를 불러오지 못했습니다!");
+            throw new NotFoundException("존재하지 않는 채팅방 입니다!");
         }
 
         ChatRoom chatRoom = optionalChatRoom.get();

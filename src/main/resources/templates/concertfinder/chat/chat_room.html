@@ -336,7 +336,7 @@
 
             $.ajax({
                 type: "delete"
-                , url: "/accompany/" + accompanyId + "/" + userId
+                , url: "/chat/kick/" + accompanyId + "/" + userId
                 , beforeSend: function(xhr) {
                     xhr.setRequestHeader(header, token);
                 }

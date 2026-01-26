@@ -40,6 +40,7 @@ public class ReviewRestController {
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDTO.success("리뷰 작성 성공"));
     }
 
+    // 리뷰 목록 출력 기능
     @GetMapping("/{areaCode}")
     public ResponseEntity<ApiResponseDTO<Page<ReviewListDTO>>> getReviewList(@PathVariable String areaCode
                                                                             , @RequestParam int size
@@ -69,6 +70,6 @@ public class ReviewRestController {
 
         LoginUserDTO loginUserDTO = principal.getLoginUserDTO();
         reviewService.deleteReview(reviewId, loginUserDTO.getId());
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.success("리뷰 삭제 완료"));
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.success(null));
     }
 }

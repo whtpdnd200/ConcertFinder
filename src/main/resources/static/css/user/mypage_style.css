@@ -63,6 +63,16 @@
     align-items: center;
 }
 
+#deleteConfirmModal {
+
+    background-color: rgba(0, 0, 0, 0);
+    backdrop-filter: blur(5px);
+}
+
+#delete-modal-content {
+    padding: 0;
+}
+
 /* 모달 컨텐츠 박스 */
 .modal-content {
     background: #fff;
@@ -75,6 +85,8 @@
     display: flex;
     flex-direction: column;
 }
+
+
 
 .modal-header {
     display: flex;

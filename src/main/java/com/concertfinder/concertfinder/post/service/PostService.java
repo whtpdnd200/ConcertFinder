@@ -4,6 +4,7 @@ import com.concertfinder.concertfinder.accompany.DTO.AccompanyAddDTO;
 import com.concertfinder.concertfinder.accompany.DTO.AccompanyInfoDTO;
 import com.concertfinder.concertfinder.comment.service.CommentService;
 import com.concertfinder.concertfinder.exception.GlobalExceptionHandler;
+import com.concertfinder.concertfinder.exception.custom_exception.NotFoundException;
 import com.concertfinder.concertfinder.exception.custom_exception.UnAuthorizedException;
 import com.concertfinder.concertfinder.ladder.service.AccompanyAndAccompanyCountLadderService;
 import com.concertfinder.concertfinder.post.DTO.PostDetailDTO;
@@ -59,6 +60,7 @@ public class PostService {
                 .title(post.getTitle())
                 .content(post.getContent())
                 .commentCount(commentService.getCommentCount(post.getId()))
+                .isUserDelete(userService.getIsDelete(post.getUserId()))
                 .accompanyInfoDTO(accompanyInfoDTO)
                 .createdAt(post.getCreatedAt())
                 .updatedAt(post.getUpdatedAt())
@@ -107,12 +109,13 @@ public class PostService {
 
         Optional<Post> optionalPost = postRepository.findById(postId);
 
-        if(optionalPost.isPresent()) {
-            PostDetailDTO postDetailDTO = addDto(optionalPost.get(), userId);
-            return postDetailDTO;
+        if(!optionalPost.isPresent()) {
+
+            throw new NotFoundException("존재하지 않는 게시글 입니다!");
         }
 
-        return null;
+        PostDetailDTO postDetailDTO = addDto(optionalPost.get(), userId);
+        return postDetailDTO;
     }
 
     // 게시글 수정 메서드
@@ -134,8 +137,10 @@ public class PostService {
                     .build();
 
             try {
+
                 postRepository.save(post);
             } catch(DataAccessException e) {
+
                 throw new RuntimeException("서버 에러로 게시글을 수정 하지 못했습니다 잠시 후 다시 시도 해주세요!");
             }
         }
@@ -162,6 +167,7 @@ public class PostService {
                     accompanyAndAccompanyCountLadderService.deleteAccompanyAndAccompanyCount(postId);
                 }
             } catch(DataAccessException e) {
+
                 throw new RuntimeException("서버 에러로 인해 게시글 삭제가 실패 하였습니다 잠시 후 다시 시도해주세요!");
             }
         }
@@ -180,15 +186,22 @@ public class PostService {
         if(optionalPost.isPresent()) {
             Post post = optionalPost.get();
             if(!userId.equals(post.getUserId())) {
+
                 throw new UnAuthorizedException("다른 사람의 게시글은 삭제 할 수 없습니다!");
             }
+
             try {
+
                 postRepository.delete(post);
+                commentService.deleteAllComment(postId);
+
                 if(post.getCategory().equals('R')) {
 
                     accompanyAndAccompanyCountLadderService.deleteAccompanyAndAccompanyCountByAccompanyId(accompanyId, roomId, userId);
                 }
+
             } catch(DataAccessException e) {
+
                 throw new RuntimeException("서버 에러로 인해 게시글 삭제가 실패 하였습니다 잠시 후 다시 시도해주세요!");
             }
         }
@@ -213,7 +226,7 @@ public class PostService {
         }
 
         if(posts == null) {
-            throw new NoSuchElementException("게시글 목록 조회에 실패 했습니다! 나중에 다시 시도 해주세요");
+            throw new NoSuchElementException("게시글 목록 조회에 실패 했습니다! 나중에 다시 시도 해주세요!");
         }
 
         List<PostListDTO> postList = new ArrayList<>();
@@ -234,5 +247,22 @@ public class PostService {
         Page<PostListDTO> postPageList = new PageImpl<>(postList, pageable, count);
 
         return postPageList;
+    }
+
+    // 탈퇴한 사용자의 게시글 삭제
+    public void deleteUserPost(List<Long> userIdList) {
+
+        List<Post> posts = postRepository.findAllByUserIdIn(userIdList);
+
+        if(!posts.isEmpty()) {
+
+            for(Post p : posts) {
+
+                if(userService.getIsDelete(p.getUserId())) {
+
+                    postDelete(p.getId(), p.getUserId());
+                }
+            }
+        }
     }
 }

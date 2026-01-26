@@ -140,7 +140,7 @@ public class ChatMessageService {
                         .type(entity.getMessageType())
                         .userNickname(userService.getNickname(entity.getUserId()))
                         .content(entity.getContent())
-                        .reverse(lastId == 0L) // 처음 들어올 때만 아래서 위로 출력
+                        .reverse(lastId == null) // 처음 들어올 때만 아래서 위로 출력
                         .createdAt(entity.getCreatedAt())
                         .build())
                 .toList();

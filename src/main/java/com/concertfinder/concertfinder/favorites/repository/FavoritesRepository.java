@@ -11,11 +11,13 @@ import java.util.Optional;
 @Repository
 public interface FavoritesRepository extends JpaRepository<Favorites, FavoritesId> {
 
-    public boolean existsByUserIdAndConcertId(long userId, String concertId);
+    boolean existsByUserIdAndConcertId(long userId, String concertId);
 
-    public boolean existsByConcertId(String concertId);
+    boolean existsByConcertId(String concertId);
 
-    public Optional<Favorites> findByUserIdAndConcertId(long userId, String concertId);
+    Optional<Favorites> findByUserIdAndConcertId(long userId, String concertId);
 
-    public List<Favorites> findAllByUserId(long userId);
+    List<Favorites> findAllByUserId(long userId);
+
+    void deleteAllByUserIdIn(List<Long> userIdList);
 }

@@ -38,15 +38,8 @@ public class AccompanyCountRestController {
 
         LoginUserDTO loginUserDTO = principal.getLoginUserDTO();
         accompanyAndAccompanyCountLadderService.deleteAccompanyCountAndIsFullCheck(accompanyId, loginUserDTO.getId(), "exit");
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.success("동행 취소 성공"));
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.success(null));
     }
 
-    // 유저 강퇴
-    @DeleteMapping("/{accompanyId}/{userId}")
-    public ResponseEntity<ApiResponseDTO<Void>> kickAccompany(@PathVariable long accompanyId
-                                                             , @PathVariable long userId) {
 
-        accompanyAndAccompanyCountLadderService.deleteAccompanyCountAndIsFullCheck(accompanyId, userId, "kick");
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.success("동행 강퇴 성공"));
-    }
 }
