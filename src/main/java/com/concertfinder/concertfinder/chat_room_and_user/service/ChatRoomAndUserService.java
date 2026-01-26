@@ -96,6 +96,7 @@ public class ChatRoomAndUserService {
     }
 
 
+    // 사용자가 채팅방의 관리자인지 확인하는 메서드
     public boolean isHost(long userId, long roomId) {
 
         Optional<ChatRoomAndUser> optionalChatRoomAndUser = chatRoomAndUserRepository.findByUserIdAndRoomId(userId, roomId);
@@ -108,11 +109,13 @@ public class ChatRoomAndUserService {
         return optionalChatRoomAndUser.get().isHost();
     }
 
+    // 현재 채팅방의 인원을 반환하는 메서드
     public int getCurrentCount(long roomId) {
 
         return chatRoomAndUserRepository.countByRoomId(roomId);
     }
 
+    // 채팅방의 유저 정보를 반환하는 메서드
     public List<ChatUserInfoDTO> getUserInfoList(Long roomId) {
 
         if(roomId == null) {
@@ -138,6 +141,7 @@ public class ChatRoomAndUserService {
         return userInfoList;
     }
 
+    // 마이페이지에 띄워지는 채팅방 3개 정보를 반환하는 메서드
     public List<Long> getTop3ChatRoomIdList(long userId) {
 
         List<ChatRoomAndUser> chatRoomAndUsers = chatRoomAndUserRepository.findTop3ByUserIdOrderByCreatedAtDesc(userId);
@@ -152,6 +156,7 @@ public class ChatRoomAndUserService {
         return chatRoomIdList;
     }
 
+    // 채팅방 모달창에 띄워주는 전체 채팅방 목록 반환 메서드
     public List<Long> getChatRoomIdList(long userId) {
 
         List<ChatRoomAndUser> chatRoomAndUsers = chatRoomAndUserRepository.findAllByUserIdOrderByCreatedAtDesc(userId);
