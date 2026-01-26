@@ -12,4 +12,5 @@ public class FavoritesId {
     private long userId;
 
     private String concertId;
+    
 }
