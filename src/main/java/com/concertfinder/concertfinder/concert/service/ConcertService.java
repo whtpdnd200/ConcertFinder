@@ -23,6 +23,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -38,13 +39,15 @@ public class ConcertService {
     // 즐겨찾기 했는지 안했는지를 판별하는 isFavorites 값 추가 메서드
     public ResponsesListDTO addIsFavorites(ResponsesListDTO responsesDTO, long userId) {
 
+        Set<Object> favList = favoritesService.addCacheFavorites(userId);
+
         if(responsesDTO == null || responsesDTO.getLists() == null) {
             throw new NoSuchElementException("콘서트 목록을 불러 올 수 없습니다! 잠시 후 다시 시도 해주세요!");
         }
 
         for(ConcertInfoDTO concertInfoDTO : responsesDTO.getLists()) {
 
-            concertInfoDTO.setFavorites(favoritesService.isFavorites(concertInfoDTO.getConcertId(), userId));
+            concertInfoDTO.setFavorites(favList.contains(concertInfoDTO.getConcertId()));
         }
 
         return responsesDTO;

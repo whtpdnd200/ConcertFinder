@@ -98,6 +98,7 @@ public class CommentService {
 
     // 댓글 목록 갯수 반환 메서드
     public int getCommentCount(long postId) {
+
         return commentRepository.countByPostId(postId);
     }
 

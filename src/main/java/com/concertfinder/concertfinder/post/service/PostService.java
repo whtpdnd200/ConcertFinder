@@ -48,6 +48,7 @@ public class PostService {
         AccompanyInfoDTO accompanyInfoDTO = null;
 
         if(post.getCategory().equals('R')) {
+
             accompanyInfoDTO = accompanyAndAccompanyCountLadderService.getAccompanyInfo(post.getId(), userId);
         }
 

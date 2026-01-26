@@ -31,6 +31,7 @@ public class UserService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final RedisTemplate<String, Object> redisTemplate;
     private static final String NICKNAME_KEY_PREFIX = "user:nickname:";
+    private static final String IS_DELETE_PREFIX = "user:isDelete:";
 
     // LoginUserDTO에 User 정보 담아주는 함수
     public LoginUserDTO addDTO(Optional<User> oUser) {
@@ -162,6 +163,18 @@ public class UserService {
 
     public boolean getIsDelete(long id) {
 
+        String key = IS_DELETE_PREFIX + id;
+
+        Boolean isDelete = (Boolean)redisTemplate.opsForValue().get(key);
+
+        if(isDelete != null) {
+
+            log.info("redis Cache Hit : isDelete : {} ", isDelete);
+            return isDelete;
+        }
+
+        log.info("redis Cache Miss : userId : {} ", id);
+
         Optional<User> optionalUser = userRepository.findById(id);
 
         if(!optionalUser.isPresent()) {
@@ -169,6 +182,11 @@ public class UserService {
             throw new NoSuchElementException("유저 정보를 찾을 수 없습니다!");
         }
         User user = optionalUser.get();
+
+        isDelete = user.isDelete();
+
+        redisTemplate.opsForValue().set(key, isDelete, java.time.Duration.ofMinutes(30));
+
         return user.isDelete();
     }
 
@@ -226,7 +244,7 @@ public class UserService {
         try {
             userRepository.save(user);
             redisTemplate.delete(NICKNAME_KEY_PREFIX + userId);
-
+            redisTemplate.delete(IS_DELETE_PREFIX + userId);
         } catch(DataAccessException e) {
 
             throw new RuntimeException("서버 에러로 인해 탈퇴를 진행 하지 못했습니다 잠시 후 다시 시도해주세요!");
