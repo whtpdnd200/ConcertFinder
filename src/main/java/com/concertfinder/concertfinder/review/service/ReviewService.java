@@ -1,10 +1,10 @@
 package com.concertfinder.concertfinder.review.service;
 
 import com.concertfinder.concertfinder.exception.custom_exception.UnAuthorizedException;
-import com.concertfinder.concertfinder.review.DTO.ReviewInfoDTO;
 import com.concertfinder.concertfinder.review.DTO.ReviewListDTO;
 import com.concertfinder.concertfinder.review.DTO.ReviewModifyDTO;
 import com.concertfinder.concertfinder.review.DTO.ReviewWriteDTO;
+import com.concertfinder.concertfinder.review.DTO.ReviewInfoDTO;
 import com.concertfinder.concertfinder.review.domain.Review;
 import com.concertfinder.concertfinder.review.repository.ReviewRepository;
 import com.concertfinder.concertfinder.user.service.UserService;
@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @lombok.extern.slf4j.Slf4j
 @Service
@@ -63,6 +64,7 @@ public class ReviewService {
         }
     }
 
+    // 리뷰 별점 및 갯수 반환 DTO
     public ReviewInfoDTO getReviewInfo(String areaCode) {
 
         String key = REVIEW_PREFIX + areaCode;
@@ -126,9 +128,11 @@ public class ReviewService {
 
             Page<ReviewListDTO> reviewPageDTO = getReviewList(areaCode, page, size, orderType, pageable);
 
-            List<ReviewListDTO> reviews = new ArrayList<>(reviewPageDTO.getContent());
-
-            //reviews.forEach(dto -> dto.setUserNickname(null));
+            List<ReviewListDTO> reviews = reviewPageDTO.stream()
+                    .map(dto -> dto.toBuilder()
+                            .userNickname(null)
+                            .build())
+                            .collect(Collectors.toList());
 
             redisTemplate.opsForValue().set(key, reviews, java.time.Duration.ofMinutes(10));
 

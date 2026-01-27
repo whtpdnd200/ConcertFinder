@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @lombok.extern.slf4j.Slf4j
 @Slf4j
@@ -117,9 +118,11 @@ public class CommentService {
 
             Page<CommentListDTO> pageComments = getCommentList(postId, page, size, pageable);
 
-            List<CommentListDTO> comments = new ArrayList<>(pageComments.getContent());
-
-            //comments.forEach(dto -> dto.setUserNickname(null));
+            List<CommentListDTO> comments = pageComments.stream()
+                            .map(dto -> dto.toBuilder()
+                                    .userNickname(null)
+                                    .build())
+                                    .collect(Collectors.toList());
 
             redisTemplate.opsForValue().set(key, comments, java.time.Duration.ofMinutes(10));
 

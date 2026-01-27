@@ -5,7 +5,7 @@ import lombok.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-@Builder
+@Builder(toBuilder = true)
 @Getter
 @Setter
 @NoArgsConstructor
