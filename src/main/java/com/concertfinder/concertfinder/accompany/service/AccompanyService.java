@@ -104,7 +104,6 @@ public class AccompanyService {
     // 동행 모집 날짜와 현재 날짜 비교 메서드
     public boolean compareDate(LocalDateTime sDateTime) {
 
-
         return LocalDateTime.now().isBefore(sDateTime);
     }
 
@@ -131,7 +130,6 @@ public class AccompanyService {
 
     // 동행 모집 인원 체크
     public boolean isFull(int headCount, long accompanyId) {
-
 
         return headCount == accompanyCountService.getAccompanyCount(accompanyId);
     }

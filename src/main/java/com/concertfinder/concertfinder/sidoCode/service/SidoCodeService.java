@@ -31,7 +31,7 @@ public class SidoCodeService {
         Object cachedList = redisTemplate.opsForValue().get(SIDO_PREFIX);
 
         if (cachedList != null) {
-            // 꺼내온 데이터(LinkedHashMap의 리스트)를 실제 SidoDTO 리스트로 변환!
+
             log.info("Sido List Cache Hit {} ", cachedList);
             return objectMapper.convertValue(cachedList, new TypeReference<List<SidoDTO>>() {});
         }
