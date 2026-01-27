@@ -11,6 +11,7 @@ import com.concertfinder.concertfinder.concert.domain.Concert;
 import com.concertfinder.concertfinder.concert.repository.ConcertRepository;
 import com.concertfinder.concertfinder.config.properties.KopisProperties;
 import com.concertfinder.concertfinder.favorites.service.FavoritesService;
+import com.concertfinder.concertfinder.review.DTO.ReviewInfoDTO;
 import com.concertfinder.concertfinder.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
@@ -129,8 +130,10 @@ public class ConcertService {
 
         String areaId = responsesInfoDTO.getInfoDTO().getAreaCode();
 
-        responsesInfoDTO.getInfoDTO().setAverageReview(reviewService.getAveragePoint(areaId));
-        responsesInfoDTO.getInfoDTO().setReviewCount(reviewService.getReviewCounts(areaId));
+        ReviewInfoDTO reviewInfoDTO = reviewService.getReviewInfo(areaId);
+
+        responsesInfoDTO.getInfoDTO().setAverageReview(reviewInfoDTO.getReviewAveragePoint());
+        responsesInfoDTO.getInfoDTO().setReviewCount(reviewInfoDTO.getReviewCount());
         responsesInfoDTO.getInfoDTO().setFavorites(favoritesService.isFavorites(concertId, userId));
         responsesInfoDTO.getInfoDTO().setAreaInfo(getAreaInfo(areaId).getAreaInfoDTO());
         return responsesInfoDTO;
