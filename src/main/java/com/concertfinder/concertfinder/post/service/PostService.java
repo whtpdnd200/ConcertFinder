@@ -184,6 +184,7 @@ public class PostService {
         Optional<Post> optionalPost = postRepository.findById(postId);
 
         if(optionalPost.isPresent()) {
+            
             Post post = optionalPost.get();
             if(!userId.equals(post.getUserId())) {
 
