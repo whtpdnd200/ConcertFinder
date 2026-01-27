@@ -111,46 +111,7 @@
 
         window.onload = function() {
 
-            $(".concertUnFavorites").on("click", function(e) {
-                e.preventDefault();
 
-                let concertId = $(this).data("concert-id");
-
-                $.ajax({
-                    type: "delete"
-                    , url: "/favorites/" + concertId
-                    , beforeSend: function(xhr) {
-                        xhr.setRequestHeader(header, token);
-                    }
-                    , success: function() {
-                        location.reload();
-                    }
-                    , error: function(xhr) {
-                        alert(xhr.responseJSON.message);
-                    }
-                });
-            });
-
-            $(".concertFavorites").on("click", function(e) {
-                e.preventDefault();
-
-                let concertId = $(this).data("concert-id");
-
-                $.ajax({
-                    type: "post"
-                    , url: "/favorites/" + concertId
-                    , beforeSend: function(xhr) {
-                        xhr.setRequestHeader(header, token);
-                    }
-                    , success: function() {
-
-                        location.reload();
-                    }
-                    , error: function(xhr) {
-                        alert(xhr.responseJSON.message);
-                    }
-                });
-            });
 
             var url = new URL(location.href).searchParams;
 
@@ -172,6 +133,48 @@
             if(keyword == null) {
                 keyword = '';
             }
+
+            $(".concertUnFavorites").on("click", function(e) {
+                e.preventDefault();
+
+                let concertId = $(this).data("concert-id");
+
+                $.ajax({
+                    type: "delete"
+                    , url: "/favorites/" + concertId
+                    , beforeSend: function(xhr) {
+                        xhr.setRequestHeader(header, token);
+                    }
+                    , success: function() {
+
+                        location.href = "/concert/list?code=" + areaCode + "&keyword=" + keyword + "&page=" + page;
+                    }
+                    , error: function(xhr) {
+                        alert(xhr.responseJSON.message);
+                    }
+                });
+            });
+
+            $(".concertFavorites").on("click", function(e) {
+                e.preventDefault();
+
+                let concertId = $(this).data("concert-id");
+
+                $.ajax({
+                    type: "post"
+                    , url: "/favorites/" + concertId
+                    , beforeSend: function(xhr) {
+                        xhr.setRequestHeader(header, token);
+                    }
+                    , success: function() {
+
+                        location.href = "/concert/list?code=" + areaCode + "&keyword=" + keyword + "&page=" + page;
+                    }
+                    , error: function(xhr) {
+                        alert(xhr.responseJSON.message);
+                    }
+                });
+            });
 
 
             $("#currentPage").text(page);
