@@ -69,7 +69,7 @@ public class PostRestController {
                                     , @RequestParam char category
                                     , Pageable pageable) {
 
-        Page<PostListDTO> posts = postService.getPosts(concertId, page, size, category, pageable);
+        Page<PostListDTO> posts = postService.getFirstPosts(concertId, page, size, category, pageable);
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.success("게시글 목록 조회 성공", posts));
     }
