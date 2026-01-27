@@ -14,5 +14,5 @@ public class ReviewInfoDTO implements Serializable {
 
     private int reviewCount;
 
-    private double reviewAveragePoint;
+    private Double reviewAveragePoint;
 }
