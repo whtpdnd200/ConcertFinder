@@ -112,7 +112,7 @@ public class ReviewService {
 
             if(cacheReviews != null) {
 
-                log.info("redis Cache Hit");
+                log.info("redis Cache Hit ReviewInfo");
                 List<ReviewListDTO> reviewList = objectMapper.convertValue(cacheReviews, new TypeReference<List<ReviewListDTO>>() {});
 
                 reviewList.forEach(dto -> dto.setUserNickname(userService.getNickname(dto.getUserId())));
@@ -122,7 +122,7 @@ public class ReviewService {
                 return pageReviewList;
             }
 
-            log.info("redis Cache Miss");
+            log.info("redis Cache Miss ReviewInfo");
 
             Page<ReviewListDTO> reviewPageDTO = getReviewList(areaCode, page, size, orderType, pageable);
 
@@ -135,7 +135,7 @@ public class ReviewService {
             return reviewPageDTO;
         }
 
-        log.info("redis Cache Miss");
+        log.info("redis Cache Miss Review Page Over");
 
         return getReviewList(areaCode, page, size, orderType, pageable);
     }

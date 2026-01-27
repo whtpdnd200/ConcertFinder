@@ -100,7 +100,7 @@ public class CommentService {
 
             if(cacheComments != null) {
 
-                log.info("redis Cache Hit");
+                log.info("redis Cache Hit Comment");
 
                 List<CommentListDTO> cacheCommentList = objectMapper.convertValue(cacheComments, new TypeReference<List<CommentListDTO>>() {});
 
@@ -113,7 +113,7 @@ public class CommentService {
                 return pageCommentList;
             }
 
-            log.info("redis Cache Miss");
+            log.info("redis Cache Miss Comment");
 
             Page<CommentListDTO> pageComments = getCommentList(postId, page, size, pageable);
 
@@ -125,6 +125,8 @@ public class CommentService {
 
             return pageComments;
         }
+
+        log.info("redis Cache Miss Comment Page Over");
 
         return getCommentList(postId, page, size, pageable);
     }
