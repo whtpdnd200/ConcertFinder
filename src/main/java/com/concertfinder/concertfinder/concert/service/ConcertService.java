@@ -11,6 +11,7 @@ import com.concertfinder.concertfinder.concert.domain.Concert;
 import com.concertfinder.concertfinder.concert.repository.ConcertRepository;
 import com.concertfinder.concertfinder.config.properties.KopisProperties;
 import com.concertfinder.concertfinder.favorites.service.FavoritesService;
+import com.concertfinder.concertfinder.review.DTO.ReviewInfoDTO;
 import com.concertfinder.concertfinder.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
@@ -23,6 +24,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -39,12 +41,15 @@ public class ConcertService {
     public ResponsesListDTO addIsFavorites(ResponsesListDTO responsesDTO, long userId) {
 
         if(responsesDTO == null || responsesDTO.getLists() == null) {
-            throw new NoSuchElementException("콘서트 목록을 불러 올 수 없습니다! 잠시 후 다시 시도 해주세요!");
+
+            return responsesDTO;
         }
+
+        Set<String> favList = favoritesService.addCacheFavorites(userId);
 
         for(ConcertInfoDTO concertInfoDTO : responsesDTO.getLists()) {
 
-            concertInfoDTO.setFavorites(favoritesService.isFavorites(concertInfoDTO.getConcertId(), userId));
+            concertInfoDTO.setFavorites(favList.contains(concertInfoDTO.getConcertId()));
         }
 
         return responsesDTO;
@@ -126,8 +131,10 @@ public class ConcertService {
 
         String areaId = responsesInfoDTO.getInfoDTO().getAreaCode();
 
-        responsesInfoDTO.getInfoDTO().setAverageReview(reviewService.getAveragePoint(areaId));
-        responsesInfoDTO.getInfoDTO().setReviewCount(reviewService.getReviewCounts(areaId));
+        ReviewInfoDTO reviewInfoDTO = reviewService.getReviewInfo(areaId);
+
+        responsesInfoDTO.getInfoDTO().setAverageReview(reviewInfoDTO.getReviewAveragePoint());
+        responsesInfoDTO.getInfoDTO().setReviewCount(reviewInfoDTO.getReviewCount());
         responsesInfoDTO.getInfoDTO().setFavorites(favoritesService.isFavorites(concertId, userId));
         responsesInfoDTO.getInfoDTO().setAreaInfo(getAreaInfo(areaId).getAreaInfoDTO());
         return responsesInfoDTO;

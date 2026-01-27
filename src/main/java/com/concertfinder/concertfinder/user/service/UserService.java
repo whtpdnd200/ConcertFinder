@@ -13,8 +13,10 @@ import com.concertfinder.concertfinder.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -28,7 +30,9 @@ public class UserService {
     private final UserRepository userRepository;
     private final SidoCodeService sidoCodeService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-
+    private final RedisTemplate<String, Object> redisTemplate;
+    private static final String NICKNAME_KEY_PREFIX = "user:nickname:";
+    private static final String IS_DELETE_PREFIX = "user:isDelete:";
 
     // LoginUserDTO에 User 정보 담아주는 함수
     public LoginUserDTO addDTO(Optional<User> oUser) {
@@ -111,8 +115,8 @@ public class UserService {
     }
 
     // 회원 정보 수정 메서드
+    @Transactional
     public void userModify(Long id, ModifyUserDTO modifyUserDTO) {
-
 
         Optional<User> optionalUser = userRepository.findById(id);
 
@@ -139,6 +143,8 @@ public class UserService {
 
             try {
                 userRepository.save(user);
+                redisTemplate.delete(NICKNAME_KEY_PREFIX + id);
+
             } catch(DataAccessException e) {
                 throw new RuntimeException("서버에러로 회원 정보 수정이 실패 했습니다 잠시후 다시 시도해주세요!");
             }
@@ -158,6 +164,18 @@ public class UserService {
 
     public boolean getIsDelete(long id) {
 
+        String key = IS_DELETE_PREFIX + id;
+
+        Boolean isDelete = (Boolean)redisTemplate.opsForValue().get(key);
+
+        if(isDelete != null) {
+
+            log.info("redis Cache Hit : isDelete : {} ", isDelete);
+            return isDelete;
+        }
+
+        log.info("redis Cache Miss : userId : {} ", id);
+
         Optional<User> optionalUser = userRepository.findById(id);
 
         if(!optionalUser.isPresent()) {
@@ -165,11 +183,29 @@ public class UserService {
             throw new NoSuchElementException("유저 정보를 찾을 수 없습니다!");
         }
         User user = optionalUser.get();
+
+        isDelete = user.isDelete();
+
+        redisTemplate.opsForValue().set(key, isDelete, java.time.Duration.ofMinutes(30));
+
         return user.isDelete();
     }
 
     // 유저 이름 얻어오는 메서드
     public String getNickname(long id) {
+
+        String key = NICKNAME_KEY_PREFIX + id;
+
+        // redis에서 조회
+        String nickname = (String)redisTemplate.opsForValue().get(key);
+
+        if(nickname != null) {
+
+            log.info("redis Cache Hit : userId : {}, nickname : {}", id, nickname);
+            return nickname;
+        }
+
+        log.info("Redis Cache Miss: userId : {}", id);
 
         Optional<User> optionalUser = userRepository.findById(id);
 
@@ -178,7 +214,12 @@ public class UserService {
             return "탈퇴한 유저";
         }
 
-        return optionalUser.get().getNickname();
+        User user = optionalUser.get();
+        nickname = user.isDelete() ? "탈퇴한 유저" : user.getNickname();
+
+        redisTemplate.opsForValue().set(key, nickname, java.time.Duration.ofMinutes(30));
+
+        return nickname;
     }
 
     public boolean isExistsUser(long id) {
@@ -187,6 +228,7 @@ public class UserService {
     }
 
     // 회원 탈퇴 처리 메서드
+    @Transactional
     public void updateDeleteUser(long userId) {
 
         Optional<User> optionalUser = userRepository.findById(userId);
@@ -204,7 +246,8 @@ public class UserService {
 
         try {
             userRepository.save(user);
-
+            redisTemplate.delete(NICKNAME_KEY_PREFIX + userId);
+            redisTemplate.delete(IS_DELETE_PREFIX + userId);
         } catch(DataAccessException e) {
 
             throw new RuntimeException("서버 에러로 인해 탈퇴를 진행 하지 못했습니다 잠시 후 다시 시도해주세요!");
