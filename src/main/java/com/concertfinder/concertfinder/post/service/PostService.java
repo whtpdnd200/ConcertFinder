@@ -14,18 +14,17 @@ import com.concertfinder.concertfinder.post.DTO.PostWriteDTO;
 import com.concertfinder.concertfinder.post.domain.Post;
 import com.concertfinder.concertfinder.post.repository.PostRepository;
 import com.concertfinder.concertfinder.user.service.UserService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import groovy.util.logging.Slf4j;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.*;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
 
 @lombok.extern.slf4j.Slf4j
 @Service
@@ -40,6 +39,12 @@ public class PostService {
     private final CommentService commentService;
 
     private final AccompanyAndAccompanyCountLadderService accompanyAndAccompanyCountLadderService;
+
+    private final RedisTemplate<String, Object> redisTemplate;
+
+    private final ObjectMapper objectMapper;
+
+    private final String POST_PREFIX = "post:info";
 
     // 게시글 DTO에 담기
     @Transactional
@@ -210,6 +215,8 @@ public class PostService {
 
     // 게시글 목록 조회 메서드
     public Page<PostListDTO> getPosts(String concertId, int page, int size, char category, Pageable pageable) {
+
+        log.info("카테고리 : {} ", category);
 
         Page<Post> posts = null;
         Long count = null;

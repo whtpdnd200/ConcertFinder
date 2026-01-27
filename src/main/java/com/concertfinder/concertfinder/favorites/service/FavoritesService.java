@@ -22,7 +22,7 @@ public class FavoritesService{
 
     private final FavoritesRepository favoritesRepository;
     private final UserService userService;
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final RedisTemplate<String, String> redisTemplate;
     private final String FAVS_PREFIX = "user:favs:";
 
 
@@ -82,15 +82,16 @@ public class FavoritesService{
     }
 
     public boolean isFavorites(String concertId) {
+
         return favoritesRepository.existsByConcertId(concertId);
     }
 
     // 유저의 즐겨찾기 정보 캐싱
-    public Set<Object> addCacheFavorites(long userId) {
+    public Set<String> addCacheFavorites(long userId) {
 
         String key = FAVS_PREFIX + userId;
 
-        Set<Object> favs = redisTemplate.opsForSet().members(key);
+        Set<String> favs = redisTemplate.opsForSet().members(key);
 
         if(favs == null || favs.isEmpty()) {
 
@@ -98,11 +99,13 @@ public class FavoritesService{
 
             if(!favsList.isEmpty()) {
 
-                redisTemplate.opsForSet().add(key, favsList.toArray());
+                redisTemplate.opsForSet().add(key, favsList.toArray(String[]::new));
                 redisTemplate.expire(key, java.time.Duration.ofHours(1));
                 return new HashSet<>(favsList);
             }
         }
+
+        log.info("redis Cache Hit : favorites : {} ", favs);
 
         return favs;
     }

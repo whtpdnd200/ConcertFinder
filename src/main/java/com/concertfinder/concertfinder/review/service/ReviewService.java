@@ -8,6 +8,7 @@ import com.concertfinder.concertfinder.review.DTO.ReviewWriteDTO;
 import com.concertfinder.concertfinder.review.domain.Review;
 import com.concertfinder.concertfinder.review.repository.ReviewRepository;
 import com.concertfinder.concertfinder.user.service.UserService;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import groovy.util.logging.Slf4j;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,7 @@ public class ReviewService {
     private final RedisTemplate<String, Object> redisTemplate;
     private final ObjectMapper objectMapper;
     private static final String REVIEW_PREFIX = "area:review:";
+    private static final String REVIEW_LIST_PREFIX = "area:review:list";
 
     // 리뷰 저장 메서드
     @Transactional
@@ -41,6 +43,7 @@ public class ReviewService {
                             , ReviewWriteDTO reviewWriteDTO) {
 
         String key = REVIEW_PREFIX + areaCode;
+        String reviewInfoKey = REVIEW_LIST_PREFIX + areaCode;
 
         Review review = Review.builder()
                 .areaCode(areaCode)
@@ -53,6 +56,7 @@ public class ReviewService {
             reviewRepository.save(review);
 
             redisTemplate.delete(key);
+            redisTemplate.delete(reviewInfoKey);
 
         } catch(DataAccessException e) {
             throw new RuntimeException("서버 에러로 리뷰 정보를 저장하지 못했습니다! 잠시 후 다시 시도해주세요!");
@@ -97,8 +101,51 @@ public class ReviewService {
         return reviewRepository.getAveragePointByAreaCode(areaCode);
     }
 
+    // 리뷰 첫 페이지 목록 출력
+    public Page<ReviewListDTO> getFirstReviewList(String areaCode, int page, int size, String orderType, Pageable pageable) {
+
+        if(page == 0 && orderType.equals("desc")) {
+
+            String key = REVIEW_LIST_PREFIX + areaCode;
+
+            Object cacheReviews = redisTemplate.opsForValue().get(key);
+
+            if(cacheReviews != null) {
+
+                log.info("redis Cache Hit");
+                List<ReviewListDTO> reviewList = objectMapper.convertValue(cacheReviews, new TypeReference<List<ReviewListDTO>>() {});
+
+                reviewList.forEach(dto -> dto.setUserNickname(userService.getNickname(dto.getUserId())));
+
+                Page<ReviewListDTO> pageReviewList = new PageImpl<>(reviewList, pageable, reviewRepository.countByAreaCode(areaCode));
+
+                return pageReviewList;
+            }
+
+            log.info("redis Cache Miss");
+
+            Page<ReviewListDTO> reviewPageDTO = getReviewList(areaCode, page, size, orderType, pageable);
+
+            List<ReviewListDTO> reviews = new ArrayList<>(reviewPageDTO.getContent());
+
+            //reviews.forEach(dto -> dto.setUserNickname(null));
+
+            redisTemplate.opsForValue().set(key, reviews, java.time.Duration.ofMinutes(10));
+
+            return reviewPageDTO;
+        }
+
+        log.info("redis Cache Miss");
+
+        return getReviewList(areaCode, page, size, orderType, pageable);
+    }
+
     // 리뷰 목록 출력
     public Page<ReviewListDTO> getReviewList(String areaCode, int page, int size, String orderType, Pageable pageable) {
+
+        log.info("페이지 : {} ", page);
+
+        log.info("정렬 기준 : {} ", orderType);
 
         Page<Review> reviews = null;
 
@@ -153,6 +200,7 @@ public class ReviewService {
         }
 
         String key = REVIEW_PREFIX + review.getAreaCode();
+        String reviewInfoKey = REVIEW_LIST_PREFIX + review.getAreaCode();
 
         review = review.toBuilder()
                 .review(reviewModifyDTO.getReview())
@@ -163,6 +211,7 @@ public class ReviewService {
             reviewRepository.save(review);
 
             redisTemplate.delete(key);
+            redisTemplate.delete(reviewInfoKey);
 
         } catch(DataAccessException e) {
             throw new RuntimeException("서버 에러로 리뷰 정보를 수정 하지 못했습니다! 잠시 후 다시 시도해주세요!");
@@ -186,11 +235,13 @@ public class ReviewService {
         }
 
         String key = REVIEW_PREFIX + review.getAreaCode();
+        String reviewInfoKey = REVIEW_LIST_PREFIX + review.getAreaCode();
 
         try {
             reviewRepository.delete(review);
 
             redisTemplate.delete(key);
+            redisTemplate.delete(reviewInfoKey);
 
         } catch(DataAccessException e) {
             throw new RuntimeException("서버 에러로 리뷰 정보를 삭제 하지 못했습니다! 잠시 후 다시 시도해주세요!");

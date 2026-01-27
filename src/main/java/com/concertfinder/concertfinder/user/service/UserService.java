@@ -16,6 +16,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -114,8 +115,8 @@ public class UserService {
     }
 
     // 회원 정보 수정 메서드
+    @Transactional
     public void userModify(Long id, ModifyUserDTO modifyUserDTO) {
-
 
         Optional<User> optionalUser = userRepository.findById(id);
 
@@ -227,6 +228,7 @@ public class UserService {
     }
 
     // 회원 탈퇴 처리 메서드
+    @Transactional
     public void updateDeleteUser(long userId) {
 
         Optional<User> optionalUser = userRepository.findById(userId);

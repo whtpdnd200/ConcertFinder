@@ -40,7 +40,7 @@ public class RedisConfig {
         ObjectMapper objectMapper = new ObjectMapper();
         // 날짜 모듈 등록
         objectMapper.registerModule(new JavaTimeModule());
-        // 날짜를 숫자 배열이 아닌 문자열(ISO-8601)로 저장
+        // 날짜를 숫자 배열이 아닌 문자열로 저장
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         // objectMapper.activateDefaultTyping(LaissezFaireSubTypeValidator.instance, ObjectMapper.DefaultTyping.NON_FINAL);
         GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer(objectMapper);
