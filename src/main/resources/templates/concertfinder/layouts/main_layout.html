@@ -28,6 +28,23 @@
             </a>
 
             <div class="ml-auto d-flex align-items-center">
+
+                <div class="dropdown mr-2">
+                    <a href="javascript:void(0)" class="nav-link text-dark position-relative p-2" id="notificationBtn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="bi bi-bell" style="font-size: 1.3rem;"></i>
+
+                        <span id="notificationBadge" class="badge badge-danger position-absolute d-none"
+                              style="top: 5px; right: 3px; font-size: 0.65rem; border-radius: 50%; padding: 0.2em 0.45em;">0</span>
+                    </a>
+
+                    <div class="dropdown-menu dropdown-menu-right shadow border-0 mt-2" id="notificationMenu" style="width: 300px; max-height: 400px; overflow-y: auto;">
+                        <h6 class="dropdown-header border-bottom pb-2">새로운 알림</h6>
+                        <div id="notificationList">
+                            <a class="dropdown-item text-center small text-muted py-3">새로운 알림이 없습니다.</a>
+                        </div>
+                    </div>
+                </div>
+
                 <a href="/user/mypage" class="nav-link text-dark small font-weight-bold">
                     <i class="far fa-user-circle"></i> 마이페이지
                 </a>
