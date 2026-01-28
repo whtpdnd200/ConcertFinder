@@ -6,6 +6,8 @@ import com.concertfinder.concertfinder.comment.domain.Comment;
 import com.concertfinder.concertfinder.comment.repository.CommentRepository;
 import com.concertfinder.concertfinder.exception.GlobalExceptionHandler;
 import com.concertfinder.concertfinder.exception.custom_exception.UnAuthorizedException;
+import com.concertfinder.concertfinder.kafka.DTO.NoticeDTO;
+import com.concertfinder.concertfinder.kafka.service.ProducerService;
 import com.concertfinder.concertfinder.user.service.UserService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,6 +17,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.*;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,12 +37,15 @@ public class CommentService {
 
     private final RedisTemplate<String, Object> redisTemplate;
 
+    private final ProducerService producerService;
+
     private final ObjectMapper objectMapper;
 
     private static final String COMMENT_LIST_PREFIX = "comment:list:";
 
     // 댓글 저장 메서드
-    public void insertComment(long postId, String comment, Long userId) {
+    @Transactional
+    public void insertComment(long postId, String comment, Long userId, long receiverId) {
 
         GlobalExceptionHandler.loginException(userId);
 
@@ -51,8 +57,16 @@ public class CommentService {
                 .comment(comment)
                 .build();
 
+        NoticeDTO noticeDTO = NoticeDTO.builder()
+                .receiverId(receiverId)
+                .message("회원님의 게시글에 새로운 댓글이 달렸습니다!")
+                .noticeType("notice")
+                .url("/post/" + postId)
+                .build();
+
         try {
             commentRepository.save(commentEntity);
+            producerService.create(noticeDTO);
             redisTemplate.delete(key);
         } catch(DataAccessException e) {
             throw new RuntimeException("서버 에러로 인해 댓글 작성이 실패 했습니다 잠시 후 다시 시도해주세요!");
@@ -60,6 +74,7 @@ public class CommentService {
     }
 
     // 댓글 수정 메서드
+    @Transactional
     public void updateComment(long commentId, Long userId, CommentModifyDTO commentModifyDTO) {
 
         GlobalExceptionHandler.loginException(userId);
@@ -210,6 +225,7 @@ public class CommentService {
     }
 
     // 댓글 삭제 메서드
+    @Transactional
     public void deleteComment(long commentId, Long userId) {
 
         GlobalExceptionHandler.loginException(userId);

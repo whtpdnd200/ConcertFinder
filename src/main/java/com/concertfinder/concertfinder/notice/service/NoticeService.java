@@ -27,10 +27,16 @@ public class NoticeService {
 
         // sseEmitter complete 처리
         sseEmitter.onCompletion(() -> sseEmitterMap.remove(userId));
-        // sseEmitter timeout 발생
-        sseEmitter.onTimeout(sseEmitter::complete);
-        // sseEmitter error 발생
-        sseEmitter.onError(throwable -> sseEmitter.complete());
+
+        sseEmitter.onTimeout(() -> {
+            sseEmitter.complete();
+            sseEmitterMap.remove(userId);
+        });
+
+        sseEmitter.onError((e) -> {
+            sseEmitter.complete();
+            sseEmitterMap.remove(userId);
+        });
 
         // connect event로 message 발생
         sendToClient(userId, "connect", "sse connect");
@@ -40,19 +46,26 @@ public class NoticeService {
 
     // 클라이언트에 메시지 전송
     public void sendToClient(Long userId, String eventName, Object data) {
+
+        String eventId = userId + "_" + System.currentTimeMillis();
+
         SseEmitter sseEmitter = sseEmitterMap.get(userId);
-        try {
 
-            sseEmitter.send(SseEmitter
-                            .event()
-                            .id(String.valueOf(userId))
-                            .name(eventName)
-                            .data(data));
+        if(sseEmitter != null) {
 
-        } catch (IOException e) {
+            try {
 
-            sseEmitterMap.remove(userId);
-            sseEmitter.completeWithError(e);
+                sseEmitter.send(SseEmitter
+                        .event()
+                        .id(eventId)
+                        .name(eventName)
+                        .data(data));
+
+            } catch (IOException e) {
+
+                sseEmitterMap.remove(userId);
+                sseEmitter.completeWithError(e);
+            }
         }
     }
 }

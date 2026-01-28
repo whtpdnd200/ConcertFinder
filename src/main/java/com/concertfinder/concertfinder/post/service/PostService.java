@@ -134,8 +134,6 @@ public class PostService {
 
         GlobalExceptionHandler.loginException(userId);
 
-
-
         Optional<Post> optionalPost = postRepository.findById(postId);
 
         if(optionalPost.isPresent()) {
@@ -227,6 +225,12 @@ public class PostService {
         }
     }
 
+    // postId로 작성자 id 반환
+    public Long getUserIdByPost(long postId) {
+
+        return postRepository.findById(postId).get().getUserId();
+    }
+
     // 게시글 목록 첫 페이지 조회 메서드
     public Page<PostListDTO> getFirstPosts(String concertId, int page, int size, char category, Pageable pageable) {
 
@@ -289,6 +293,7 @@ public class PostService {
         }
 
         if(posts == null) {
+
             throw new NoSuchElementException("게시글 목록 조회에 실패 했습니다! 나중에 다시 시도 해주세요!");
         }
 

@@ -26,11 +26,12 @@ public class CommentRestController {
     @PostMapping("/{postId}")
     public ResponseEntity<ApiResponseDTO<Void>> createComment(@PathVariable @NotNull(message = "작성 할 게시글이 존재 하지 않습니다!") Long postId
                                              , @RequestParam String comment
+                                             , @RequestParam long receiverId
                                              , @AuthenticationPrincipal PrincipalDetails principal) {
 
         LoginUserDTO loginUserDTO = principal.getLoginUserDTO();
 
-        commentService.insertComment(postId, comment, loginUserDTO.getId());
+        commentService.insertComment(postId, comment, loginUserDTO.getId(), receiverId);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDTO.success("댓글 작성 성공"));
     }
