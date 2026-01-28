@@ -7,16 +7,23 @@ import com.concertfinder.concertfinder.comment.repository.CommentRepository;
 import com.concertfinder.concertfinder.exception.GlobalExceptionHandler;
 import com.concertfinder.concertfinder.exception.custom_exception.UnAuthorizedException;
 import com.concertfinder.concertfinder.user.service.UserService;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import groovy.util.logging.Slf4j;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.*;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+@lombok.extern.slf4j.Slf4j
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CommentService {
@@ -25,10 +32,18 @@ public class CommentService {
 
     private final UserService userService;
 
+    private final RedisTemplate<String, Object> redisTemplate;
+
+    private final ObjectMapper objectMapper;
+
+    private static final String COMMENT_LIST_PREFIX = "comment:list:";
+
     // 댓글 저장 메서드
     public void insertComment(long postId, String comment, Long userId) {
 
         GlobalExceptionHandler.loginException(userId);
+
+        String key = COMMENT_LIST_PREFIX + postId;
 
         Comment commentEntity = Comment.builder()
                 .postId(postId)
@@ -38,6 +53,7 @@ public class CommentService {
 
         try {
             commentRepository.save(commentEntity);
+            redisTemplate.delete(key);
         } catch(DataAccessException e) {
             throw new RuntimeException("서버 에러로 인해 댓글 작성이 실패 했습니다 잠시 후 다시 시도해주세요!");
         }
@@ -50,27 +66,76 @@ public class CommentService {
 
         Optional<Comment> optionalComment = commentRepository.findById(commentId);
 
+
+
         if(optionalComment.isPresent()) {
             Comment comment = optionalComment.get();
 
             if(!userId.equals(comment.getUserId())) {
                 throw new UnAuthorizedException("타인의 댓글은 수정 할 수 없습니다!");
             }
+
+            String key = COMMENT_LIST_PREFIX + comment.getPostId();
+
             comment = comment.toBuilder()
                     .comment(commentModifyDTO.getComment())
                     .build();
 
             try {
                 commentRepository.save(comment);
+                redisTemplate.delete(key);
             } catch(DataAccessException e) {
                 throw new RuntimeException("서버 에러로 인해 댓글 수정이 실패 했습니다 잠시 후 다시 시도해주세요!");
             }
         }
     }
 
+    // 댓글 목록 첫 페이지 출력 메서드
+    public Page<CommentListDTO> getFirstCommentList(long postId, int page, int size, Pageable pageable) {
+
+        if(page == 0) {
+
+            String key = COMMENT_LIST_PREFIX + postId;
+
+            Object cacheComments = redisTemplate.opsForValue().get(key);
+
+            if(cacheComments != null) {
+
+                log.info("redis Cache Hit Comment");
+
+                List<CommentListDTO> cacheCommentList = objectMapper.convertValue(cacheComments, new TypeReference<List<CommentListDTO>>() {});
+
+                cacheCommentList.forEach(dto -> dto.setUserNickname(userService.getNickname(dto.getUserId())));
+
+                log.info("댓글 목록 : {} ", cacheCommentList);
+
+                Page<CommentListDTO> pageCommentList = new PageImpl<>(cacheCommentList, pageable, commentRepository.countByPostId(postId));
+
+                return pageCommentList;
+            }
+
+            log.info("redis Cache Miss Comment");
+
+            Page<CommentListDTO> pageComments = getCommentList(postId, page, size, pageable);
+
+            List<CommentListDTO> comments = pageComments.stream()
+                            .map(dto -> dto.toBuilder()
+                                    .userNickname(null)
+                                    .build())
+                                    .collect(Collectors.toList());
+
+            redisTemplate.opsForValue().set(key, comments, java.time.Duration.ofMinutes(10));
+
+            return pageComments;
+        }
+
+        log.info("redis Cache Miss Comment Page Over");
+
+        return getCommentList(postId, page, size, pageable);
+    }
+
     // 댓글 목록 출력 메서드
     public Page<CommentListDTO> getCommentList(long postId, int page, int size, Pageable pageable) {
-
 
         Page<Comment> comments = commentRepository.findAllByPostId(postId, PageRequest.of(page, size, Sort.by("id").descending()));
 
@@ -98,6 +163,7 @@ public class CommentService {
 
     // 댓글 목록 갯수 반환 메서드
     public int getCommentCount(long postId) {
+
         return commentRepository.countByPostId(postId);
     }
 
@@ -152,12 +218,16 @@ public class CommentService {
 
         if(optionalComment.isPresent()) {
             Comment comment = optionalComment.get();
+
+            String key = COMMENT_LIST_PREFIX + comment.getPostId();
+
             if(!userId.equals(comment.getUserId())) {
                 throw new UnAuthorizedException("타인의 댓글은 삭제 할 수 없습니다!");
             }
 
             try {
                 commentRepository.delete(comment);
+                redisTemplate.delete(key);
             } catch(DataAccessException e) {
                 throw new RuntimeException("서버 에러로 인해 댓글 삭제가 실패 했습니다 잠시 후 다시 시도 해주세요!");
             }

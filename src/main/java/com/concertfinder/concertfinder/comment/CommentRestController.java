@@ -41,7 +41,7 @@ public class CommentRestController {
                                                                            , @RequestParam int page
                                                                            , @RequestParam int size
                                                                            , Pageable pageable) {
-        Page<CommentListDTO> commentList = commentService.getCommentList(postId, page, size, pageable);
+        Page<CommentListDTO> commentList = commentService.getFirstCommentList(postId, page, size, pageable);
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.success("댓글 목록 출력 성공", commentList));
     }

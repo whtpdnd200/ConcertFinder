@@ -2,14 +2,15 @@ package com.concertfinder.concertfinder.review.DTO;
 
 import lombok.*;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
-@Builder
+@Builder(toBuilder = true)
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReviewListDTO {
+public class ReviewListDTO implements Serializable {
 
     private long id;
 

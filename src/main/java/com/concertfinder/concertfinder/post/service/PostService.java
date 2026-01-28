@@ -14,18 +14,19 @@ import com.concertfinder.concertfinder.post.DTO.PostWriteDTO;
 import com.concertfinder.concertfinder.post.domain.Post;
 import com.concertfinder.concertfinder.post.repository.PostRepository;
 import com.concertfinder.concertfinder.user.service.UserService;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import groovy.util.logging.Slf4j;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.*;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @lombok.extern.slf4j.Slf4j
 @Service
@@ -41,6 +42,12 @@ public class PostService {
 
     private final AccompanyAndAccompanyCountLadderService accompanyAndAccompanyCountLadderService;
 
+    private final RedisTemplate<String, Object> redisTemplate;
+
+    private final ObjectMapper objectMapper;
+
+    private final String POST_PREFIX = "post:info";
+
     // 게시글 DTO에 담기
     @Transactional
     public PostDetailDTO addDto(Post post, long userId) {
@@ -48,6 +55,7 @@ public class PostService {
         AccompanyInfoDTO accompanyInfoDTO = null;
 
         if(post.getCategory().equals('R')) {
+
             accompanyInfoDTO = accompanyAndAccompanyCountLadderService.getAccompanyInfo(post.getId(), userId);
         }
 
@@ -77,6 +85,8 @@ public class PostService {
 
         GlobalExceptionHandler.loginException(userId);
 
+        String key = POST_PREFIX + concertId;
+
         Post post = Post.builder()
                 .concertId(concertId)
                 .userId(userId)
@@ -87,6 +97,7 @@ public class PostService {
 
         try {
             Post postEntity = postRepository.save(post);
+            redisTemplate.delete(key);
             if(postEntity.getCategory().equals('R')) {
                 AccompanyAddDTO accompanyAddDTO = AccompanyAddDTO.builder()
                         .postId(postEntity.getId())
@@ -123,6 +134,8 @@ public class PostService {
 
         GlobalExceptionHandler.loginException(userId);
 
+
+
         Optional<Post> optionalPost = postRepository.findById(postId);
 
         if(optionalPost.isPresent()) {
@@ -130,6 +143,8 @@ public class PostService {
             if(!userId.equals(post.getUserId())) {
                 throw new UnAuthorizedException("다른 사람의 게시글은 수정 할 수 없습니다!");
             }
+
+            String key = POST_PREFIX + post.getConcertId();
             post = post.toBuilder()
                     .category(postModifyDTO.getCategory())
                     .title(postModifyDTO.getTitle())
@@ -139,6 +154,7 @@ public class PostService {
             try {
 
                 postRepository.save(post);
+                redisTemplate.delete(key);
             } catch(DataAccessException e) {
 
                 throw new RuntimeException("서버 에러로 게시글을 수정 하지 못했습니다 잠시 후 다시 시도 해주세요!");
@@ -159,9 +175,11 @@ public class PostService {
             if(!userId.equals(post.getUserId())) {
                 throw new UnAuthorizedException("다른 사람의 게시글은 삭제 할 수 없습니다!");
             }
+            String key = POST_PREFIX + post.getConcertId();
             try {
                 postRepository.delete(post);
                 commentService.deleteAllComment(postId);
+                redisTemplate.delete(key);
                 if(post.getCategory().equals('R')) {
 
                     accompanyAndAccompanyCountLadderService.deleteAccompanyAndAccompanyCount(postId);
@@ -191,11 +209,12 @@ public class PostService {
                 throw new UnAuthorizedException("다른 사람의 게시글은 삭제 할 수 없습니다!");
             }
 
+            String key = POST_PREFIX + post.getConcertId();
             try {
 
                 postRepository.delete(post);
                 commentService.deleteAllComment(postId);
-
+                redisTemplate.delete(key);
                 if(post.getCategory().equals('R')) {
 
                     accompanyAndAccompanyCountLadderService.deleteAccompanyAndAccompanyCountByAccompanyId(accompanyId, roomId, userId);
@@ -208,8 +227,51 @@ public class PostService {
         }
     }
 
+    // 게시글 목록 첫 페이지 조회 메서드
+    public Page<PostListDTO> getFirstPosts(String concertId, int page, int size, char category, Pageable pageable) {
+
+        if(page == 0 && category == 'A') {
+
+            String key = POST_PREFIX + concertId;
+
+            Object cachePosts = redisTemplate.opsForValue().get(key);
+
+            if(cachePosts != null) {
+
+                log.info("redis Cache Hit post");
+
+                List<PostListDTO> cachePostList = objectMapper.convertValue(cachePosts, new TypeReference<List<PostListDTO>>() {});
+
+                cachePostList.forEach(dto -> dto.setUserNickname(userService.getNickname(dto.getUserId())));
+
+                Page<PostListDTO> pagePostList = new PageImpl<>(cachePostList, pageable, postRepository.countByConcertId(concertId));
+
+                return pagePostList;
+            }
+
+            log.info("redis Cache Miss post");
+
+            Page<PostListDTO> pageList = getPosts(concertId, page, size, category, pageable);
+
+            List<PostListDTO> lists = pageList.stream()
+                            .map(dto -> dto.toBuilder()
+                                    .userNickname(null)
+                                    .build())
+                                    .collect(Collectors.toList());
+
+            redisTemplate.opsForValue().set(key, lists, java.time.Duration.ofMinutes(10));
+
+            return pageList;
+        }
+
+        log.info("redis Cache Miss post Page Over");
+        return getPosts(concertId, page, size, category, pageable);
+    }
+
     // 게시글 목록 조회 메서드
     public Page<PostListDTO> getPosts(String concertId, int page, int size, char category, Pageable pageable) {
+
+        log.info("카테고리 : {} ", category);
 
         Page<Post> posts = null;
         Long count = null;

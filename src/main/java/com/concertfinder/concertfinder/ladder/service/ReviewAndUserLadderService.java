@@ -15,12 +15,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReviewAndUserLadderService {
 
-
     private final ReviewService reviewService;
 
     public Page<ReviewListDTO> getReviewList(String areaCode, int page, int size, String orderType, Pageable pageable) {
 
-        Page<ReviewListDTO> reviewList = reviewService.getReviewList(areaCode, page, size, orderType, pageable);
+        Page<ReviewListDTO> reviewList = reviewService.getFirstReviewList(areaCode, page, size, orderType, pageable);
 
         return reviewList;
     }
