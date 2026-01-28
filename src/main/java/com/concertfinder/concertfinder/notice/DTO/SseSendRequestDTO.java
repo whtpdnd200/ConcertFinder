@@ -1,4 +1,4 @@
-package com.concertfinder.concertfinder.sse.DTO;
+package com.concertfinder.concertfinder.notice.DTO;
 
 import lombok.*;
 

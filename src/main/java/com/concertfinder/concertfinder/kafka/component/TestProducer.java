@@ -11,6 +11,7 @@ public class TestProducer {
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
     public void create() {
-        kafkaTemplate.send("topic", "hello Kafka!!");
+
+        kafkaTemplate.send("notice", "hello Kafka!!");
     }
 }

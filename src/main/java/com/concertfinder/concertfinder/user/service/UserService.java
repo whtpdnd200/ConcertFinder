@@ -1,10 +1,7 @@
 package com.concertfinder.concertfinder.user.service;
 
 import com.concertfinder.concertfinder.exception.custom_exception.DuplicateException;
-import com.concertfinder.concertfinder.ladder.service.UserDeleteLadderService;
 import com.concertfinder.concertfinder.sidoCode.service.SidoCodeService;
-import com.concertfinder.concertfinder.concert.DTO.ConcertFavoritesListDTO;
-import com.concertfinder.concertfinder.concert.service.ConcertService;
 import com.concertfinder.concertfinder.user.DTO.JoinUserDTO;
 import com.concertfinder.concertfinder.user.DTO.LoginUserDTO;
 import com.concertfinder.concertfinder.user.DTO.ModifyUserDTO;

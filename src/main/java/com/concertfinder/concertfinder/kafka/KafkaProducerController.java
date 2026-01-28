@@ -15,6 +15,7 @@ public class KafkaProducerController {
 
     @PostMapping("/sending")
     public void create() {
+
         testProducer.create();
     }
 }

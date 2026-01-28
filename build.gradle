@@ -73,6 +73,9 @@ dependencies {
     // 웹소켓 의존성
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
+    // 레디스 의존성
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
     // 카프카 의존성
     implementation 'org.springframework.kafka:spring-kafka'
 }
