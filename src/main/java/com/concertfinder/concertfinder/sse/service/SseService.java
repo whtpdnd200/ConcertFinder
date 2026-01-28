@@ -39,12 +39,11 @@ public class SseService {
         SseEmitter sseEmitter = sseEmitterMap.get(id);
         try {
 
-            sseEmitter.send(
-                        SseEmitter
-                        .event()
-                        .id(id)
-                        .name(eventName)
-                        .data(data));
+            sseEmitter.send(SseEmitter
+                            .event()
+                            .id(id)
+                            .name(eventName)
+                            .data(data));
 
         } catch (IOException e) {
             throw new RuntimeException(e);

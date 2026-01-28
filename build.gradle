@@ -72,6 +72,9 @@ dependencies {
 
     // 웹소켓 의존성
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+    // 카프카 의존성
+    implementation 'org.springframework.kafka:spring-kafka'
 }
 
 tasks.named('test') {
