@@ -25,6 +25,5 @@ public class ConsumerService {
         noticeService.sendToClient(noticeDTO.getReceiverId()
                                   , noticeDTO.getNoticeType()
                                   , noticeDTO);
-
     }
 }
