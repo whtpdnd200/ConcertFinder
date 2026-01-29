@@ -32,3 +32,7 @@ spring:
     url: jdbc:mysql://localhost:3306/concert_finder?serverTimezone=Asia/Seoul
     username: root
     password: ${mysql.password}
+server:
+  servlet:
+    session:
+      persistent: false

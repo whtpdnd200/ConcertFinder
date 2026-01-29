@@ -9,7 +9,7 @@
     <meta charset="UTF-8">
     <title>글 상세</title>
     <link layout:fragment="css" rel="stylesheet" th:href="@{/css/post/post_detail_style.css}">
-    <script layout:fragment="alpine" defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
     <script layout:fragment="functionScript" th:src="@{/js/comment/comment_main.js}"></script>
 </head>
     <section id="postIdTag" th:data-user-id="${postInfo.userId}" th:data-id="${postInfo.id}" th:data-user-delete="${postInfo.userDelete}" layout:fragment="contents" class="post-view-wrapper">
