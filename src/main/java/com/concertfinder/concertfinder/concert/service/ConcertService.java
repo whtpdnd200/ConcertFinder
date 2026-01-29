@@ -14,6 +14,7 @@ import com.concertfinder.concertfinder.favorites.service.FavoritesService;
 import com.concertfinder.concertfinder.review.DTO.ReviewInfoDTO;
 import com.concertfinder.concertfinder.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ConcertService {
@@ -165,6 +167,8 @@ public class ConcertService {
                 .bodyToMono(ResponsesAddDTO.class)
                 .block();
 
+        log.info("콘서트 정보 : {} ", responsesAddDTO.getAddConcertInfoDTO().getConcertDate());
+
         if(responsesAddDTO == null || responsesAddDTO.getAddConcertInfoDTO() == null) {
 
             throw new NoSuchElementException("콘서트 정보가 없습니다! 잠시 후 다시 시도 해주세요!");
@@ -186,6 +190,7 @@ public class ConcertService {
                 .concertId(addConcertInfoDTO.getConcertId())
                 .concertName(addConcertInfoDTO.getConcertName())
                 .posterPath(addConcertInfoDTO.getPosterPath())
+                .concertDate(addConcertInfoDTO.getConcertDate())
                 .areaCode(addConcertInfoDTO.getAreaCode())
                 .areaName(addConcertInfoDTO.getAreaName())
                 .state(addConcertInfoDTO.getState())

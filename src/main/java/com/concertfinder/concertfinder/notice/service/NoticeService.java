@@ -8,6 +8,7 @@ import groovy.util.logging.Slf4j;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
@@ -158,7 +159,11 @@ public class NoticeService {
     public void updateReadAll(long userId) {
 
         noticeRepository.updatedAllByUserId(userId);
+    }
 
+    @Transactional
+    public void deleteIsRead() {
 
+        noticeRepository.deleteByIsReadTrue();
     }
 }

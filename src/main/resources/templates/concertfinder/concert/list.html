@@ -7,7 +7,7 @@
     <title>콘서트 목록 탐색</title>
     <link layout:fragment="css" rel="stylesheet" th:href="@{/css/concert/concert_list_style.css}">
 </head>
-    <section th:data-next="${concertList.hasNext}" id="contentsHeader" layout:fragment="contents">
+    <section th:data-next="${concertList.hasNext}" th:data-area-code="${#authentication.principal.loginUserDTO.attentionAreaCode}" id="contentsHeader" layout:fragment="contents">
         <div class="container py-5">
             <div class="mb-5 text-center">
                 <h2 class="font-weight-bold">놓치지 말아야 할 <span class="text-primary">콘서트</span></h2>
@@ -123,8 +123,11 @@
             var areaCode = url.get("code");
 
             if(areaCode == null) {
-                areaCode = '';
+
+                areaCode = $("#contentsHeader").data("area-code");
             }
+
+            console.log(areaCode);
 
             var keyword = url.get("keyword");
 

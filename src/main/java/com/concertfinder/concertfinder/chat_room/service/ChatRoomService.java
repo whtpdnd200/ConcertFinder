@@ -81,6 +81,11 @@ public class ChatRoomService {
         return chatRoomRepository.findRoomIdByNativeQuery(userId, otherUserId).orElse(null);
     }
 
+    public long getChatRoomIdByAccompanyId(long accompanyId) {
+
+        return chatRoomRepository.findByAccompanyId(accompanyId).get().getId();
+    }
+
     public ChatRoom getChatRoom(long roomId) {
 
         log.info("chatRoom id : {}", roomId);

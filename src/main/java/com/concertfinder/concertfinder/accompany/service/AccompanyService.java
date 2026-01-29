@@ -12,7 +12,9 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -172,5 +174,13 @@ public class AccompanyService {
         }
 
         return optionalAccompany.get().getPostId();
+    }
+
+    public List<Long> getAccompanyListByStartDate(LocalDate tomorrow) {
+
+        return accompanyRepository.selectAllByStartDate(tomorrow)
+                .stream()
+                .map(Accompany::getId)
+                .toList();
     }
 }

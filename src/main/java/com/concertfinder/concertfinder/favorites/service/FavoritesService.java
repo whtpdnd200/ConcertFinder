@@ -13,6 +13,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.*;
 
 @Slf4j
@@ -148,6 +149,11 @@ public class FavoritesService{
 
             log.warn("탈퇴 회원 즐겨찾기 삭제 실패");
         }
+    }
 
+    // 전체 유저의 즐겨찾기 목록의 콘서트 아이디 목록 반환
+    public List<Favorites> getConcertFavoretisList(LocalDate tomorrow) {
+
+        return favoritesRepository.selectByConcertJoin(tomorrow);
     }
 }

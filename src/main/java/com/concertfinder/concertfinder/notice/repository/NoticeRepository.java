@@ -16,6 +16,8 @@ public interface NoticeRepository extends JpaRepository<Notice, Long> {
 
     @Modifying
     @Transactional
-    @Query(value = "UPDATE `notice` SET `is_read` = true WHERE `receiver_id` = :userId", nativeQuery = true)
+    @Query(value = "UPDATE `notice` SET `is_read` = true WHERE `receiver_id` = :userId AND `is_read` = false", nativeQuery = true)
     void updatedAllByUserId(long userId);
+
+    void deleteByIsReadTrue();
 }

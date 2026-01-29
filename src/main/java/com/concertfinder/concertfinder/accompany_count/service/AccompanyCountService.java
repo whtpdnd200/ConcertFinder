@@ -101,4 +101,9 @@ public class AccompanyCountService {
 
         return accompanyAllIdList;
     }
+
+    public List<AccompanyCount> getAccompanyCountList(List<Long> accompanyIdList) {
+
+        return accompanyCountRepository.findAllByAccompanyIdIn(accompanyIdList);
+    }
 }

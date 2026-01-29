@@ -23,4 +23,5 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
             "LIMIT 1", nativeQuery = true)
     Optional<Long> findRoomIdByNativeQuery(long userId, long otherUserId);
 
+
 }

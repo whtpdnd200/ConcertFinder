@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -25,6 +26,8 @@ public class Concert {
     private String concertName;
 
     private String posterPath;
+
+    private LocalDate concertDate;
 
     private String areaCode;
 

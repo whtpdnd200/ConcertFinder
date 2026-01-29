@@ -23,4 +23,6 @@ public interface AccompanyCountRepository extends JpaRepository<AccompanyCount, 
     List<AccompanyCount> findAllTop3ByUserId(long userId);
 
     List<AccompanyCount> findAllByUserId(long userId);
+
+    List<AccompanyCount> findAllByAccompanyIdIn(List<Long> accompanyIdList);
 }
