@@ -82,12 +82,10 @@
             console.log("sse 연결 성공");
         };
 
-        eventSource.onmessage = (event) => {
+        eventSource.addEventListener("notice", (event) => {
 
             console.log(event);
-            let data = JSON.parse(event.data);
-            console.log(data);
-        };
+        });
 
         eventSource.onerror = (error) => {
             console.error("SSE 연결 중 에러 발생:", error);
