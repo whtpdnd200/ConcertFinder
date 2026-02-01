@@ -48,6 +48,8 @@ public class PostService {
 
     private final String POST_PREFIX = "post:info";
 
+    private final String POST_USER_PREFIX ="post:userId:";
+
     // 게시글 DTO에 담기
     @Transactional
     public PostDetailDTO addDto(Post post, long userId) {
@@ -87,6 +89,8 @@ public class PostService {
 
         String key = POST_PREFIX + concertId;
 
+        String userIdKey = POST_USER_PREFIX + userId;
+
         Post post = Post.builder()
                 .concertId(concertId)
                 .userId(userId)
@@ -96,8 +100,11 @@ public class PostService {
                 .build();
 
         try {
+
             Post postEntity = postRepository.save(post);
             redisTemplate.delete(key);
+            redisTemplate.delete(userIdKey);
+
             if(postEntity.getCategory().equals('R')) {
                 AccompanyAddDTO accompanyAddDTO = AccompanyAddDTO.builder()
                         .postId(postEntity.getId())
@@ -228,7 +235,24 @@ public class PostService {
     // postId로 작성자 id 반환
     public Long getUserIdByPost(long postId) {
 
-        return postRepository.findById(postId).get().getUserId();
+        String key = POST_USER_PREFIX + postId;
+
+        Long redisUserId = (Long)redisTemplate.opsForValue().get(key);
+
+        if(redisUserId != null) {
+
+            log.info("redis Cache Hit Post UserId");
+
+            return redisUserId;
+        }
+
+        log.info("redis Cache Miss Post UserId");
+
+        long userId = postRepository.findById(postId).get().getUserId();
+
+        redisTemplate.opsForValue().set(key, userId);
+
+        return userId;
     }
 
     // 게시글 목록 첫 페이지 조회 메서드

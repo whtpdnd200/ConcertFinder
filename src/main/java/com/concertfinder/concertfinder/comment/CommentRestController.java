@@ -4,6 +4,7 @@ import com.concertfinder.concertfinder.comment.DTO.CommentListDTO;
 import com.concertfinder.concertfinder.comment.DTO.CommentModifyDTO;
 import com.concertfinder.concertfinder.comment.service.CommentService;
 import com.concertfinder.concertfinder.common.DTO.ApiResponseDTO;
+import com.concertfinder.concertfinder.ladder.service.CommentLadderService;
 import com.concertfinder.concertfinder.user.DTO.LoginUserDTO;
 import com.concertfinder.concertfinder.user.DTO.PrincipalDetails;
 import jakarta.validation.constraints.NotNull;
@@ -22,16 +23,19 @@ public class CommentRestController {
 
     private final CommentService commentService;
 
+    private final CommentLadderService commentLadderService;
+
     // 댓글 작성 API
     @PostMapping("/{postId}")
     public ResponseEntity<ApiResponseDTO<Void>> createComment(@PathVariable @NotNull(message = "작성 할 게시글이 존재 하지 않습니다!") Long postId
                                              , @RequestParam String comment
-                                             , @RequestParam long receiverId
                                              , @AuthenticationPrincipal PrincipalDetails principal) {
 
         LoginUserDTO loginUserDTO = principal.getLoginUserDTO();
 
-        commentService.insertComment(postId, comment, loginUserDTO.getId(), receiverId);
+
+        commentLadderService.insertComment(postId, loginUserDTO.getId(), comment);
+        //commentService.insertComment(postId, comment, loginUserDTO.getId(), receiverId);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDTO.success("댓글 작성 성공"));
     }

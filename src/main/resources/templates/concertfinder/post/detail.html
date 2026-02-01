@@ -12,7 +12,7 @@
 
     <script layout:fragment="functionScript" th:src="@{/js/comment/comment_main.js}"></script>
 </head>
-    <section id="postIdTag" th:data-user-id="${postInfo.userId}" th:data-id="${postInfo.id}" th:data-user-delete="${postInfo.userDelete}" layout:fragment="contents" class="post-view-wrapper">
+    <section id="postIdTag" th:data-id="${postInfo.id}" th:data-user-delete="${postInfo.userDelete}" layout:fragment="contents" class="post-view-wrapper">
 
         <div class="container py-5">
             <div class="row justify-content-center">
@@ -258,8 +258,6 @@
 
         var isUserDelete = $("#postIdTag").data("user-delete");
 
-        var receiverId = $("#postIdTag").data("user-id");
-
 
         if(isUserDelete) {
 
@@ -429,8 +427,7 @@
                 , beforeSend: function(xhr) {
                     xhr.setRequestHeader(header, token);
                 }
-                , data: {"comment" : comment
-                        , "receiverId" : receiverId}
+                , data: {"comment" : comment}
 
                 , success: function(response) {
 
