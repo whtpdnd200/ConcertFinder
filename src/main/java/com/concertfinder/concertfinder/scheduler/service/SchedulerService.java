@@ -78,7 +78,7 @@ public class SchedulerService {
     }
 
     @Transactional
-    @Scheduled(cron = "* * 9 * * *")
+    @Scheduled(cron = "* * 9 * * *", zone = "Asia/Seoul")
     public void startNoticeByConcert() {
 
         LocalDate tomorrow = LocalDate.now().plusDays(1);
@@ -99,7 +99,7 @@ public class SchedulerService {
     }
 
     @Transactional
-    @Scheduled(cron = "* * 9 * * *")
+    @Scheduled(cron = "* * 9 * * *", zone = "Asia/Seoul")
     public void startNoticeByAccompany() {
 
         LocalDate tomorrow = LocalDate.now().plusDays(1);
@@ -124,7 +124,7 @@ public class SchedulerService {
     }
 
     @Transactional
-    @Scheduled(cron = "0 0 3 * * *")
+    @Scheduled(cron = "0 0 3 * * *", zone = "Asia/Seoul")
     public void deleteNoticeIsRead() {
 
         noticeService.deleteIsRead();

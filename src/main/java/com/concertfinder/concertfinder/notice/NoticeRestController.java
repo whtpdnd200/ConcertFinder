@@ -28,12 +28,12 @@ public class NoticeRestController {
         return noticeService.subscribe(loginUserDTO.getId());
     }
 
-    @PostMapping("/send")
-    public void sendNotice(@RequestBody NoticeDTO noticeDTO) {
-
-
-        noticeService.sendToClient(noticeDTO.getReceiverId(), noticeDTO.getNoticeType(), noticeDTO);
-    }
+//    @PostMapping("/send")
+//    public void sendNotice(@RequestBody NoticeDTO noticeDTO) {
+//
+//
+//        noticeService.sendToClient(noticeDTO.getReceiverId(), noticeDTO.getNoticeType(), noticeDTO);
+//    }
 
     @PatchMapping("/modify/{id}")
     public ResponseEntity<ApiResponseDTO<Void>> isReadModify(@PathVariable long id) {
