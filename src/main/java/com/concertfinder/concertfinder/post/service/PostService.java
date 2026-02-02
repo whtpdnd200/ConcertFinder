@@ -50,6 +50,8 @@ public class PostService {
 
     private final String POST_USER_PREFIX ="post:userId:";
 
+    private final String POST_TITLE_PREFIX = "post:title:";
+
     // 게시글 DTO에 담기
     @Transactional
     public PostDetailDTO addDto(Post post, long userId) {
@@ -89,8 +91,6 @@ public class PostService {
 
         String key = POST_PREFIX + concertId;
 
-        String userIdKey = POST_USER_PREFIX + userId;
-
         Post post = Post.builder()
                 .concertId(concertId)
                 .userId(userId)
@@ -103,7 +103,6 @@ public class PostService {
 
             Post postEntity = postRepository.save(post);
             redisTemplate.delete(key);
-            redisTemplate.delete(userIdKey);
 
             if(postEntity.getCategory().equals('R')) {
                 AccompanyAddDTO accompanyAddDTO = AccompanyAddDTO.builder()
@@ -150,6 +149,7 @@ public class PostService {
             }
 
             String key = POST_PREFIX + post.getConcertId();
+            String titleKey = POST_TITLE_PREFIX + post.getId();
             post = post.toBuilder()
                     .category(postModifyDTO.getCategory())
                     .title(postModifyDTO.getTitle())
@@ -160,6 +160,7 @@ public class PostService {
 
                 postRepository.save(post);
                 redisTemplate.delete(key);
+                redisTemplate.delete(titleKey);
             } catch(DataAccessException e) {
 
                 throw new RuntimeException("서버 에러로 게시글을 수정 하지 못했습니다 잠시 후 다시 시도 해주세요!");
@@ -181,10 +182,17 @@ public class PostService {
                 throw new UnAuthorizedException("다른 사람의 게시글은 삭제 할 수 없습니다!");
             }
             String key = POST_PREFIX + post.getConcertId();
+
+            String userIdKey = POST_USER_PREFIX + post.getId();
+
+            String titleKey = POST_TITLE_PREFIX + post.getId();
+
             try {
                 postRepository.delete(post);
                 commentService.deleteAllComment(postId);
                 redisTemplate.delete(key);
+                redisTemplate.delete(userIdKey);
+                redisTemplate.delete(titleKey);
                 if(post.getCategory().equals('R')) {
 
                     accompanyAndAccompanyCountLadderService.deleteAccompanyAndAccompanyCount(postId);
@@ -215,11 +223,17 @@ public class PostService {
             }
 
             String key = POST_PREFIX + post.getConcertId();
+
+            String userIdKey = POST_USER_PREFIX + post.getId();
+
+            String titleKey = POST_TITLE_PREFIX + post.getId();
             try {
 
                 postRepository.delete(post);
                 commentService.deleteAllComment(postId);
                 redisTemplate.delete(key);
+                redisTemplate.delete(userIdKey);
+                redisTemplate.delete(titleKey);
                 if(post.getCategory().equals('R')) {
 
                     accompanyAndAccompanyCountLadderService.deleteAccompanyAndAccompanyCountByAccompanyId(accompanyId, roomId, userId);
@@ -250,9 +264,31 @@ public class PostService {
 
         long userId = postRepository.findById(postId).get().getUserId();
 
-        redisTemplate.opsForValue().set(key, userId);
+        redisTemplate.opsForValue().set(key, userId, java.time.Duration.ofDays(1));
 
         return userId;
+    }
+
+    public String getPostTitle(long postId) {
+
+        String key = POST_TITLE_PREFIX + postId;
+
+        String cachePostTitle = (String)redisTemplate.opsForValue().get(key);
+
+        if(cachePostTitle != null) {
+
+            log.info("redis Cache Hit Post Title");
+
+            return cachePostTitle;
+        }
+
+        log.info("redis Cache Miss Post Title");
+
+        String postTitle = postRepository.findById(postId).get().getTitle();
+
+        redisTemplate.opsForValue().set(key, postTitle, java.time.Duration.ofDays(1));
+
+        return postTitle;
     }
 
     // 게시글 목록 첫 페이지 조회 메서드

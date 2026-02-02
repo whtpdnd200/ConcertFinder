@@ -45,7 +45,7 @@ public class CommentService {
 
     // 댓글 저장 메서드
     @Transactional
-    public void insertComment(long postId, String comment, Long userId, long receiverId) {
+    public void insertComment(long postId, String comment, Long userId, long receiverId, String title) {
 
         GlobalExceptionHandler.loginException(userId);
 
@@ -59,7 +59,7 @@ public class CommentService {
 
         NoticeDTO noticeDTO = NoticeDTO.builder()
                 .receiverId(receiverId)
-                .message("회원님의 게시글에 새로운 댓글이 달렸습니다!")
+                .message("[댓글] '" + title + "' 게시글에 새로운 댓글이 달렸습니다!")
                 .noticeType("notice")
                 .url("/post/" + postId)
                 .build();

@@ -28,6 +28,6 @@ public interface FavoritesRepository extends JpaRepository<Favorites, FavoritesI
     @Query(value = "SELECT f.* FROM `favorites` AS f" +
             " JOIN `concert` AS c" +
             " ON f.concert_id = c.concert_id" +
-            " WHERE c.concert_date = :tomorrow", nativeQuery = true)
+            " WHERE DATE(c.concert_date) = :tomorrow", nativeQuery = true)
     List<Favorites> selectByConcertJoin(@Param("tomorrow")LocalDate tomorrow);
 }

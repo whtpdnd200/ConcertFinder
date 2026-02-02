@@ -78,7 +78,7 @@ public class SchedulerService {
     }
 
     @Transactional
-    @Scheduled(cron = "0 0 9 * * *")
+    @Scheduled(cron = "* * * * * *")
     public void startNoticeByConcert() {
 
         LocalDate tomorrow = LocalDate.now().plusDays(1);
@@ -90,7 +90,7 @@ public class SchedulerService {
             NoticeDTO noticeDTO = NoticeDTO.builder()
                     .receiverId(favorites.getUserId())
                     .noticeType("notice")
-                    .message("회원님이 즐겨찾기 하신 콘서트가 내일 시작합니다!")
+                    .message("[콘서트] '" + concertService.getConcertName(favorites.getConcertId()) + "' 가 내일 시작합니다!")
                     .url("/concert/" + favorites.getConcertId())
                     .build();
 
@@ -99,7 +99,7 @@ public class SchedulerService {
     }
 
     @Transactional
-    @Scheduled(cron = "0 0 9 * * *")
+    @Scheduled(cron = "* * * * * *")
     public void startNoticeByAccompany() {
 
         LocalDate tomorrow = LocalDate.now().plusDays(1);
@@ -110,10 +110,12 @@ public class SchedulerService {
 
         for(AccompanyCount accompanyCount : accompanyCounts) {
 
+            long postId = accompanyService.getPostId(accompanyCount.getAccompanyId());
+
             NoticeDTO noticeDTO = NoticeDTO.builder()
                     .receiverId(accompanyCount.getUserId())
                     .noticeType("notice")
-                    .message("회원님이 신청하신 동행모임이 내일 출발 예정입니다!")
+                    .message("[동행] '" + postService.getPostTitle(postId) + "' 동행모임이 내일 출발 예정입니다!")
                     .url("/chat/room/" + chatRoomService.getChatRoomIdByAccompanyId(accompanyCount.getAccompanyId()))
                     .build();
 

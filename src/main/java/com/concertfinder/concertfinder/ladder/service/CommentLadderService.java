@@ -14,8 +14,10 @@ public class CommentLadderService {
 
     public void insertComment(long postId,long userId, String comment) {
 
+        String title = postService.getPostTitle(postId);
+
         long receiverId = postService.getUserIdByPost(postId);
 
-        commentService.insertComment(postId, comment, userId, receiverId);
+        commentService.insertComment(postId, comment, userId, receiverId, title);
     }
 }

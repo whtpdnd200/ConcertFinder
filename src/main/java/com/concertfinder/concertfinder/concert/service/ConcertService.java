@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -37,7 +38,8 @@ public class ConcertService {
     private final ConcertRepository concertRepository;
     private final FavoritesService favoritesService;
     private final ReviewService reviewService;
-
+    private final String CONCERT_TITLE_PREFIX = "concert:title:";
+    private final RedisTemplate<String, Object> redisTemplate;
 
     // 즐겨찾기 했는지 안했는지를 판별하는 isFavorites 값 추가 메서드
     public ResponsesListDTO addIsFavorites(ResponsesListDTO responsesDTO, long userId) {
@@ -251,6 +253,28 @@ public class ConcertService {
             concertList.add(concertFavoritesListDTO);
         }
         return concertList;
+    }
+
+    public String getConcertName(String concertId) {
+
+        String key = CONCERT_TITLE_PREFIX + concertId;
+
+        String cacheConcertName = (String)redisTemplate.opsForValue().get(key);
+
+        if(cacheConcertName != null) {
+
+            log.info("redis Cache Hit Concert Name");
+
+            return cacheConcertName;
+        }
+
+        log.info("redis Cache Miss Concert Name");
+
+        String concertName = concertRepository.findById(concertId).get().getConcertName();
+
+        redisTemplate.opsForValue().set(key, concertName, java.time.Duration.ofDays(7));
+
+        return concertName;
     }
 
     // 콘서트 아이디 리스트 반환
