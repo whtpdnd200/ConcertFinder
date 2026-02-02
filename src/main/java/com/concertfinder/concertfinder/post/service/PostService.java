@@ -251,13 +251,17 @@ public class PostService {
 
         String key = POST_USER_PREFIX + postId;
 
-        Long redisUserId = (Long)redisTemplate.opsForValue().get(key);
+        Object redisUserId = redisTemplate.opsForValue().get(key);
 
         if(redisUserId != null) {
 
             log.info("redis Cache Hit Post UserId");
 
-            return redisUserId;
+            if(redisUserId instanceof Number) {
+
+                return ((Number)redisUserId).longValue();
+            }
+
         }
 
         log.info("redis Cache Miss Post UserId");

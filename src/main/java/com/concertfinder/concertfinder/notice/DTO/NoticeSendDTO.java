@@ -2,6 +2,8 @@ package com.concertfinder.concertfinder.notice.DTO;
 
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Builder
 @Setter
@@ -14,4 +16,5 @@ public class NoticeSendDTO {
     private String message;
     private String noticeType;
     private String url;
+    private LocalDateTime createdAt;
 }

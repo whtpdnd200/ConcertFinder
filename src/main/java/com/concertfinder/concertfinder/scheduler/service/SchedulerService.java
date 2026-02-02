@@ -78,7 +78,7 @@ public class SchedulerService {
     }
 
     @Transactional
-    @Scheduled(cron = "* * * * * *")
+    @Scheduled(cron = "* * 9 * * *")
     public void startNoticeByConcert() {
 
         LocalDate tomorrow = LocalDate.now().plusDays(1);
@@ -99,7 +99,7 @@ public class SchedulerService {
     }
 
     @Transactional
-    @Scheduled(cron = "* * * * * *")
+    @Scheduled(cron = "* * 9 * * *")
     public void startNoticeByAccompany() {
 
         LocalDate tomorrow = LocalDate.now().plusDays(1);

@@ -127,6 +127,7 @@ public class NoticeService {
                         .noticeType(entity.getNoticeType())
                         .message(entity.getMessage())
                         .url(entity.getUrl())
+                        .createdAt(entity.getCreatedAt())
                         .build())
                 .toList();
     }

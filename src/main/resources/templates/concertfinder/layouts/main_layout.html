@@ -56,7 +56,7 @@
                             </template>
 
                             <template x-for="notice in notifications" :key="notice.id">
-                                <a :href="notice.url" @click="readOne(notice.id)" class="dropdown-item noticeList">
+                                <a :title="notice.content" :href="notice.url" @click="readOne(notice.id)" class="dropdown-item noticeList">
                                     <div class="notice-content" x-text="notice.content"></div>
                                     <div class="notice-time">
                                         <i class="bi bi-clock"></i>
@@ -125,6 +125,20 @@
                         }
                     });
                 },
+                formatTime(dateString) {
+
+                    const date = new Date(dateString);
+                    const now = new Date();
+                    const isToday = date.toDateString() === now.toDateString();
+
+                    const timeString = date.toLocaleTimeString('ko-KR', {
+                        hour: 'numeric',
+                        minute: '2-digit',
+                        hour12: true // '오후' 표시를 위해 true 설정
+                    });
+
+                    return isToday ? timeString : `${date.getMonth() + 1}월 ${date.getDate()}일`;
+                },
                 readAll() {
 
                     let token = $("meta[name='_csrf']").attr("content");
@@ -169,7 +183,7 @@
                             id: data.id,
                             content: data.message, // Java DTO 필드명에 맞춰 수정
                             url: data.url || '#',
-                            time: new Date().toLocaleTimeString()
+                            time: this.formatTime(data.createdAt || new Date())
                         });
                     });
 

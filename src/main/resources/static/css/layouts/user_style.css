@@ -129,6 +129,13 @@ body {
     line-height: 1.4;
     color: #334155;
     margin-bottom: 4px;
+    display: -webkit-box;           /* 유연한 박스 모델 사용 */
+    -webkit-box-orient: vertical;   /* 박스의 방향을 수직으로 설정 */
+    -webkit-line-clamp: 2;          /* 보여줄 줄 수 (2줄로 제한) */
+    overflow: hidden;               /* 넘치는 부분 숨김 */
+    text-overflow: ellipsis;        /* 넘치는 부분 ... 처리 */
+    max-height: 2.8em;              /* line-height * 줄 수 (안전장치) */
+    white-space: normal;            /* 한 줄 처리를 해제하여 자동 줄바꿈 허용 */
 }
 
 .notice-time {
