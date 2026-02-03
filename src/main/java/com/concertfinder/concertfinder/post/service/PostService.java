@@ -16,8 +16,8 @@ import com.concertfinder.concertfinder.post.repository.PostRepository;
 import com.concertfinder.concertfinder.user.service.UserService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import groovy.util.logging.Slf4j;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.*;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -28,7 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@lombok.extern.slf4j.Slf4j
 @Service
 @RequiredArgsConstructor
 @Slf4j
