@@ -95,10 +95,6 @@
 
         var id = $("#dataValue").data("id");
 
-        var token = $("meta[name='_csrf']").attr("content");
-
-        var header = $("meta[name='_csrf_header']").attr("content");
-
         $("#emailSelect").on("change", function() {
 
             let value = $("#emailSelect").val();
@@ -182,16 +178,13 @@
                         , "attentionAreaCode" : attentionAreaCode
             }
 
-            let token = $("meta[name='_csrf']").attr("content");
-            let header = $("meta[name='_csrf_header']").attr("content");
-
             $.ajax({
                 type : "put"
                 , url : `/user`
                 , contentType: 'application/json'
                 , data : JSON.stringify(data)
                 , beforeSend: function(xhr) {
-                    xhr.setRequestHeader(header, token);
+                    xhr.setRequestHeader("X-XSRF-TOKEN", getCsrfTokenFromCookie());
                 }
                 , success : function(response) {
 

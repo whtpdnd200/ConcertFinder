@@ -252,10 +252,6 @@
     </section>
     <script layout:fragment="script">
 
-        var token = $("meta[name='_csrf']").attr("content");
-
-        var header = $("meta[name='_csrf_header']").attr("content");
-
         var isUserDelete = $("#postIdTag").data("user-delete");
 
 
@@ -273,7 +269,7 @@
                 type: "post"
                 , url: "/chat/" + userId
                 , beforeSend: function(xhr) {
-                    xhr.setRequestHeader(header, token);
+                    xhr.setRequestHeader("X-XSRF-TOKEN", getCsrfTokenFromCookie());
                 }
                 , success: function(response) {
 
@@ -294,7 +290,7 @@
                 type: "delete"
                 , url: "/accompany/" + accompanyId
                 , beforeSend: function(xhr) {
-                    xhr.setRequestHeader(header, token);
+                    xhr.setRequestHeader("X-XSRF-TOKEN", getCsrfTokenFromCookie());
                 }
                 , success: function() {
                     location.reload();
@@ -313,7 +309,7 @@
                 type: "post"
                 , url: "/accompany/" + accompanyId
                 , beforeSend: function(xhr) {
-                    xhr.setRequestHeader(header, token);
+                    xhr.setRequestHeader("X-XSRF-TOKEN", getCsrfTokenFromCookie());
                 }
                 , success: function(response) {
 
@@ -349,7 +345,7 @@
                 , url: "/comment/" + commentId
                 , contentType: 'application/json'
                 , beforeSend: function(xhr) {
-                    xhr.setRequestHeader(header, token);
+                    xhr.setRequestHeader("X-XSRF-TOKEN", getCsrfTokenFromCookie());
                 }
                 , data: JSON.stringify(data)
                 , success: function(response) {
@@ -380,7 +376,7 @@
                 type: "delete"
                 , url: "/comment/" + commentId
                 , beforeSend: function(xhr) {
-                    xhr.setRequestHeader(header, token);
+                    xhr.setRequestHeader("X-XSRF-TOKEN", getCsrfTokenFromCookie());
                 }
                 , success: function(response) {
 
@@ -425,7 +421,7 @@
                 type: "post"
                 , url: "/comment/" + postId
                 , beforeSend: function(xhr) {
-                    xhr.setRequestHeader(header, token);
+                    xhr.setRequestHeader("X-XSRF-TOKEN", getCsrfTokenFromCookie());
                 }
                 , data: {"comment" : comment}
 
@@ -446,7 +442,7 @@
                 type : "delete"
                 , url : "/post/" + postId
                 , beforeSend: function(xhr) {
-                    xhr.setRequestHeader(header, token);
+                    xhr.setRequestHeader("X-XSRF-TOKEN", getCsrfTokenFromCookie());
                 }
                 , success : function() {
 

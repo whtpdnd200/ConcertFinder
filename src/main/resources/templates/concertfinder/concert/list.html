@@ -105,10 +105,6 @@
     </section>
     <script layout:fragment="script">
 
-        var token = $("meta[name='_csrf']").attr("content");
-
-        var header = $("meta[name='_csrf_header']").attr("content");
-
         window.onload = function() {
 
             var url = new URL(location.href).searchParams;
@@ -144,7 +140,7 @@
                     type: "delete"
                     , url: "/favorites/" + concertId
                     , beforeSend: function(xhr) {
-                        xhr.setRequestHeader(header, token);
+                        xhr.setRequestHeader("X-XSRF-TOKEN", getCsrfTokenFromCookie());
                     }
                     , success: function() {
 
@@ -165,7 +161,7 @@
                     type: "post"
                     , url: "/favorites/" + concertId
                     , beforeSend: function(xhr) {
-                        xhr.setRequestHeader(header, token);
+                        xhr.setRequestHeader("X-XSRF-TOKEN", getCsrfTokenFromCookie());
                     }
                     , success: function() {
 

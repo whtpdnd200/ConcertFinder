@@ -9,12 +9,23 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
-@RequiredArgsConstructor
 @Getter
 public class PrincipalDetails implements UserDetails {
 
     private final LoginUserDTO loginUserDTO;
     private final String password;
+
+
+    public PrincipalDetails(LoginUserDTO loginUserDTO, String password) {
+        this.loginUserDTO = loginUserDTO;
+        this.password = password;
+    }
+
+
+    public PrincipalDetails(LoginUserDTO loginUserDTO) {
+        this.loginUserDTO = loginUserDTO;
+        this.password = null;
+    }
 
     // 유저의 권한 정보를 담는 리스트를 리턴
     @Override

@@ -1,19 +1,26 @@
 package com.concertfinder.concertfinder.user;
 
 import com.concertfinder.concertfinder.concert.service.ConcertService;
+import com.concertfinder.concertfinder.jwt.CookieUtil;
+import com.concertfinder.concertfinder.jwt.JwtProvider;
 import com.concertfinder.concertfinder.ladder.service.AccompanyAndAccompanyCountLadderService;
 import com.concertfinder.concertfinder.sidoCode.service.SidoCodeService;
 import com.concertfinder.concertfinder.user.DTO.LoginUserDTO;
 import com.concertfinder.concertfinder.user.DTO.PrincipalDetails;
 import com.concertfinder.concertfinder.user.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.UUID;
 
 @Controller
 @RequestMapping("/user")
@@ -21,19 +28,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class UserController {
 
     private final SidoCodeService sidoCodeService;
-    private final UserService userService;
     private final ConcertService concertService;
     private final AccompanyAndAccompanyCountLadderService accompanyAndAccompanyCountLadderService;
 
     // 회원가입 페이지
     @GetMapping("/join")
     public String join(Authentication authentication
-            , Model model) {
+                       , Model model) {
 
         // 유저 인증 정보 객체가 있고 인증된 유저라면 페이지 강제 이동
         if(authentication != null && authentication.isAuthenticated()) {
             return "redirect:/concert/list";
         }
+
+
         model.addAttribute("sidoList", sidoCodeService.getAllCode());
         return "concertfinder/user/join";
     }
@@ -46,6 +54,7 @@ public class UserController {
         if(authentication != null && authentication.isAuthenticated()) {
             return "redirect:/concert/list";
         }
+
         return "concertfinder/user/login";
     }
 
@@ -62,12 +71,18 @@ public class UserController {
     }
 
     // 로그아웃 기능
-//    @GetMapping("/logout")
-//    public String logout() {
-//        // session.invalidate();
-//
-//        return "redirect:/user/login";
-//    }
+    @GetMapping("/logout")
+    public String logout(HttpServletRequest request
+                        , HttpServletResponse response) {
+
+        CookieUtil.deleteCookie(request, response, "ACCESS_TOKEN");
+        CookieUtil.deleteCookie(request, response, "REFRESH_TOKEN");
+        CookieUtil.deleteCookie(request, response, "XSRF_TOKEN");
+
+        SecurityContextHolder.clearContext();
+
+        return "redirect:/user/login";
+    }
 
     // 회원정보 수정 페이지
     @GetMapping("/modify")

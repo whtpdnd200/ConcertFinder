@@ -68,11 +68,15 @@ public class JwtProvider {
     // 토큰에서 유저 아이디 추출
     public String getUserId(String token) {
 
-        return Jwts.parserBuilder().setSigningKey(SECRET_KEY).build()
-                .parseClaimsJws(token).getBody().getSubject();
+        try {
+            return Jwts.parserBuilder().setSigningKey(SECRET_KEY).build()
+                    .parseClaimsJws(token).getBody().getSubject();
+        } catch(ExpiredJwtException e) {
+            return e.getClaims().getSubject();
+        }
     }
 
-    // 4. 토큰 유효성 검사
+    // 토큰 유효성 검사
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(SECRET_KEY).build().parseClaimsJws(token);

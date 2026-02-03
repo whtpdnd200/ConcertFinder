@@ -9,30 +9,26 @@ import org.springframework.http.ResponseCookie;
 public class CookieUtil {
 
     // JWT 토큰 쿠키 저장 메서드
-    public static void addSecureCookie(HttpServletResponse response, String name, String value, long maxAgeMillis) {
-
-        int maxAgeSeconds = (int) (maxAgeMillis / 1000);
+    public static void addSecureCookie(HttpServletResponse response, String name, String value, int maxAge) {
 
         ResponseCookie cookie = ResponseCookie.from(name, value)
                 .path("/")
                 .httpOnly(true)
                 .secure(false)
-                .maxAge(maxAgeSeconds)
+                .maxAge(maxAge)
                 .build();
 
         response.addHeader("Set-Cookie", cookie.toString());
     }
 
     // CSRF 토큰 쿠키 저장 메서드
-    public static void addCsrfCookie(HttpServletResponse response, String name, String value, long maxAgeMillis) {
-
-        int maxAgeSeconds = (int) (maxAgeMillis / 1000);
+    public static void addCsrfCookie(HttpServletResponse response, String name, String value, int maxAge) {
 
         ResponseCookie cookie = ResponseCookie.from(name, value)
                 .path("/")
                 .httpOnly(false)
                 .secure(false)
-                .maxAge(maxAgeSeconds)
+                .maxAge(maxAge)
                 .build();
 
         response.addHeader("Set-Cookie", cookie.toString());

@@ -62,8 +62,10 @@
 
         var isLengthOver = false;
 
-        var token = $("meta[name='_csrf']").attr("content");
-        var header = $("meta[name='_csrf_header']").attr("content");
+
+
+        // var token = $("meta[name='_csrf']").attr("content");
+        // var header = $("meta[name='_csrf_header']").attr("content");
 
         $("#nicknameInput").on("input", function() {
             let nickname = $(this).val();
@@ -170,7 +172,7 @@
                             , "attentionAreaCode" : attentionAreaCode
                          }
                 , beforeSend: function(xhr) {
-                    xhr.setRequestHeader(header, token);
+                    xhr.setRequestHeader("X-XSRF-TOKEN", getCsrfTokenFromCookie());
                 }
                 , success : function(response) {
 
@@ -229,7 +231,7 @@
                 type : "get"
                 , url : "/user/id-check"
                 , beforeSend: function(xhr) {
-                    xhr.setRequestHeader(header, token);
+                    xhr.setRequestHeader("X-XSRF-TOKEN", getCsrfTokenFromCookie());
                 }
                 , data : {"userId" : userId}
                 , success : function(response) {

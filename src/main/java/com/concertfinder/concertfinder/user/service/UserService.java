@@ -1,16 +1,21 @@
 package com.concertfinder.concertfinder.user.service;
 
 import com.concertfinder.concertfinder.exception.custom_exception.DuplicateException;
+import com.concertfinder.concertfinder.exception.custom_exception.UnAuthorizedException;
+import com.concertfinder.concertfinder.jwt.CookieUtil;
+import com.concertfinder.concertfinder.jwt.JwtProvider;
 import com.concertfinder.concertfinder.sidoCode.service.SidoCodeService;
 import com.concertfinder.concertfinder.user.DTO.JoinUserDTO;
 import com.concertfinder.concertfinder.user.DTO.LoginUserDTO;
 import com.concertfinder.concertfinder.user.DTO.ModifyUserDTO;
 import com.concertfinder.concertfinder.user.domain.User;
 import com.concertfinder.concertfinder.user.repository.UserRepository;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -27,6 +33,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final SidoCodeService sidoCodeService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final JwtProvider jwtProvider;
     private final RedisTemplate<String, Object> redisTemplate;
     private static final String NICKNAME_KEY_PREFIX = "user:nickname:";
     private static final String IS_DELETE_PREFIX = "user:isDelete:";
@@ -80,36 +87,52 @@ public class UserService {
     }
 
     // 로그인 : 로그인 시도 유저 정보 조회 메서드
-//    public LoginUserDTO loginUser(String userId, String password) {
-//
-//        String salt = getSalt(userId);
-//
-//        if(salt == null) {
-//            throw new NoSuchElementException("일치하는 아이디가 존재하지 않습니다!");
-//        }
-//
-//        Optional<User> optionalUser = userRepository.findByUserIdAndPassword(userId, SHA256HashingEncoder.encode(password, salt));
-//        if(!optionalUser.isPresent()) {
-//
-//            throw new NoSuchElementException("비밀번호가 일치하지 않습니다!");
-//        }
-//
-//        return addDTO(optionalUser);
-//    }
+    @Transactional
+    public void loginUser(String userId, String password, HttpServletResponse response) {
 
-    // 로그인 : id를 통해 salt를 얻어오는 메서드
-    public String getSalt(String userId) {
+        User user = userRepository.findByUserId(userId).orElseThrow(() -> new UnAuthorizedException("아이디 혹은 비밀번호가 일치하지 않습니다!"));
 
-        // Optional<User> optionalUser = userRepository.findByUserId(userId);
+        if(user.isDelete()) {
 
+            throw new DisabledException("탈퇴 처리된 회원 입니다!");
+        }
+
+        if(!bCryptPasswordEncoder.matches(password, user.getPassword())) {
+
+            throw new UnAuthorizedException("아이디 혹은 비밀번호가 일치하지 않습니다!");
+        }
+
+        String accessToken = jwtProvider.createAccessToken(userId, user.getRole());
+
+        String refreshToken = jwtProvider.createRefreshToken(userId);
+
+        String csrfToken = UUID.randomUUID().toString();
+
+        String key = "Token:" + user.getUserId();
+
+        redisTemplate.opsForValue().set(key, refreshToken, java.time.Duration.ofSeconds(2592000));
+
+        CookieUtil.addSecureCookie(response, "ACCESS_TOKEN", accessToken, 1800);
+
+        CookieUtil.addSecureCookie(response, "REFRESH_TOKEN", refreshToken, 2592000);
+
+        CookieUtil.addCsrfCookie(response, "XSRF-TOKEN", csrfToken, 1800);
+
+    }
+
+//    // 로그인 : id를 통해 salt를 얻어오는 메서드
+//    public String getSalt(String userId) {
+//
+//         Optional<User> optionalUser = userRepository.findByUserId(userId);
+//
 //        if(optionalUser.isPresent()) {
 //            User user = optionalUser.get();
 //
 //            return user.getSalt();
 //        }
-
-        return null;
-    }
+//
+//        return null;
+//    }
 
     // 회원 정보 수정 메서드
     @Transactional

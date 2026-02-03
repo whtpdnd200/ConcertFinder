@@ -8,6 +8,7 @@ import com.concertfinder.concertfinder.user.DTO.PrincipalDetails;
 import com.concertfinder.concertfinder.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -51,16 +52,15 @@ public class UserRestController {
     }
 
     // 로그인 : 로그인 기능
-//    @PostMapping("/login")
-//    public ResponseEntity<ApiResponseDTO<Void>> login(@RequestParam String userId
-//                                    , @RequestParam String password
-//                                    , HttpSession session) {
-//
-//        LoginUserDTO loginUserDTO = userService.loginUser(userId, password);
-//
-//        session.setAttribute("userInfo", loginUserDTO);
-//        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.success("로그인 성공"));
-//    }
+    @PostMapping("/login")
+    public ResponseEntity<ApiResponseDTO<Void>> login(@RequestParam String userId
+                                    , @RequestParam String password
+                                    , HttpServletResponse response) {
+
+        userService.loginUser(userId, password, response);
+
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.success("로그인 성공"));
+    }
 
     // 회원정보 수정 기능
     @PutMapping

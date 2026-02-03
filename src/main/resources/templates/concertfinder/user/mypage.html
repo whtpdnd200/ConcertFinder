@@ -200,17 +200,13 @@
 
         var userId = $("#dataValue").data("id");
 
-        var token = $("meta[name='_csrf']").attr("content");
-
-        var header = $("meta[name='_csrf_header']").attr("content");
-
         $("#userDeleteBtn").on("click", function() {
 
             $.ajax({
                 type: "delete"
                 , url: "/user"
                 , beforeSend: function(xhr) {
-                    xhr.setRequestHeader(header, token);
+                    xhr.setRequestHeader("X-XSRF-TOKEN", getCsrfTokenFromCookie());
                 }
                 , success: function() {
 
