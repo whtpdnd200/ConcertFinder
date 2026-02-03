@@ -1,4 +1,8 @@
 spring:
+  jwt:
+    secret: ${JWT.password}
+    access-token-expiration: 1800000
+    refresh-token-expiration: 2592000000
   kafka:
     template:
       default-topic: notice
