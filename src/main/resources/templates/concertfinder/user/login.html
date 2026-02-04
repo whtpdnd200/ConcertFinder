@@ -52,6 +52,7 @@
 
             let userId = $("#idInput").val();
             let password = $("#passwordInput").val();
+            let autoLogin = $("#autoLogin").is(':checked');
 
             if(userId == '') {
                 alert("아이디를 입력 해주세요!");
@@ -71,7 +72,7 @@
             $.ajax({
                 type : "post"
                 , url : "/user/login"
-                , data : {"userId" : userId, "password" : password}
+                , data : {"userId" : userId, "password" : password, "autoLogin" : autoLogin}
                 , beforeSend: function(xhr) {
                     xhr.setRequestHeader(header, token);
                 }

@@ -64,8 +64,6 @@ public class NoticeService {
             }
         }
 
-
-
         return sseEmitter;
     }
 
@@ -162,6 +160,7 @@ public class NoticeService {
         noticeRepository.updatedAllByUserId(userId);
     }
 
+    // 읽음 처리 된 알림 삭제
     @Transactional
     public void deleteIsRead() {
 

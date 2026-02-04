@@ -8,14 +8,12 @@ import com.concertfinder.concertfinder.user.DTO.PrincipalDetails;
 import com.concertfinder.concertfinder.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,6 +22,7 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.web.bind.annotation.*;
 
 
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/user")
@@ -55,9 +54,11 @@ public class UserRestController {
     @PostMapping("/login")
     public ResponseEntity<ApiResponseDTO<Void>> login(@RequestParam String userId
                                     , @RequestParam String password
+                                    , @RequestParam boolean autoLogin
                                     , HttpServletResponse response) {
 
-        userService.loginUser(userId, password, response);
+        log.info("자동 로그인 값 : {}", autoLogin);
+        userService.loginUser(userId, password, autoLogin, response);
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.success("로그인 성공"));
     }

@@ -79,7 +79,7 @@ public class ReviewService {
             return cacheReview;
         }
 
-        log.info("redis Cache Miss... areaCode : {} ", areaCode);
+        log.info("redis Cache Miss areaCode : {} ", areaCode);
 
         ReviewInfoDTO reviewInfoDTO = ReviewInfoDTO.builder()
                 .reviewCount(getReviewCounts(areaCode))
@@ -252,21 +252,21 @@ public class ReviewService {
         }
     }
 
-    public void deleteUserReview() {
-
-        List<Review> reviews = reviewRepository.findAll();
-
-        if(!reviews.isEmpty()) {
-
-            for(Review r : reviews) {
-
-                if(!userService.isExistsUser(r.getUserId())) {
-
-                    deleteReview(r.getId(), r.getUserId());
-                }
-            }
-        }
-    }
+//    public void deleteUserReview() {
+//
+//        List<Review> reviews = reviewRepository.findAll();
+//
+//        if(!reviews.isEmpty()) {
+//
+//            for(Review r : reviews) {
+//
+//                if(!userService.isExistsUser(r.getUserId())) {
+//
+//                    deleteReview(r.getId(), r.getUserId());
+//                }
+//            }
+//        }
+//    }
 
     public void deleteUserReview(List<Long> userIdList) {
 

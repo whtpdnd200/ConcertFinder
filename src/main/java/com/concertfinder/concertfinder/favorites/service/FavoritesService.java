@@ -124,21 +124,21 @@ public class FavoritesService{
         return favoritesConcertIdList;
     }
 
-    public void deleteUserFavorites() {
-
-        List<Favorites> favorites = favoritesRepository.findAll();
-
-        if(!favorites.isEmpty()) {
-
-            for(Favorites f : favorites) {
-
-                if(!userService.isExistsUser(f.getUserId())) {
-
-                    deleteFavorites(f.getConcertId(), f.getUserId());
-                }
-            }
-        }
-    }
+//    public void deleteUserFavorites() {
+//
+//        List<Favorites> favorites = favoritesRepository.findAll();
+//
+//        if(!favorites.isEmpty()) {
+//
+//            for(Favorites f : favorites) {
+//
+//                if(!userService.isExistsUser(f.getUserId())) {
+//
+//                    deleteFavorites(f.getConcertId(), f.getUserId());
+//                }
+//            }
+//        }
+//    }
 
     public void deleteUserFavorites(List<Long> userIdList) {
 

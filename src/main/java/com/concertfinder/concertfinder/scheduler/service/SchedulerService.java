@@ -1,12 +1,9 @@
 package com.concertfinder.concertfinder.scheduler.service;
 
-import com.concertfinder.concertfinder.accompany.domain.Accompany;
 import com.concertfinder.concertfinder.accompany.service.AccompanyService;
 import com.concertfinder.concertfinder.accompany_count.domain.AccompanyCount;
 import com.concertfinder.concertfinder.accompany_count.service.AccompanyCountService;
 import com.concertfinder.concertfinder.chat_room.service.ChatRoomService;
-import com.concertfinder.concertfinder.chat_room_and_user.domain.ChatRoomAndUser;
-import com.concertfinder.concertfinder.chat_room_and_user.service.ChatRoomAndUserService;
 import com.concertfinder.concertfinder.comment.service.CommentService;
 import com.concertfinder.concertfinder.concert.domain.Concert;
 import com.concertfinder.concertfinder.concert.service.ConcertService;
@@ -46,6 +43,7 @@ public class SchedulerService {
     private final ChatRoomService chatRoomService;
     private final NoticeService noticeService;
 
+    // 즐겨찾기 목록에 없는 콘서트 정보 삭제
     @Transactional
     @Scheduled(cron = "0 0 5 * * *", zone = "Asia/Seoul")
     public void concertDeleteByCron() {
@@ -63,6 +61,7 @@ public class SchedulerService {
         }
     }
 
+    // 유저 정보 삭제시 관련 정보 전부 삭제
     @Transactional
     @Scheduled(cron = "0 0 4 * * *", zone = "Asia/Seoul")
     public void userRelationDelete() {
@@ -77,6 +76,7 @@ public class SchedulerService {
         userService.deleteUsers(userIdList);
     }
 
+    // 콘서트 시작 전 알림 전송
     @Transactional
     @Scheduled(cron = "* * 9 * * *", zone = "Asia/Seoul")
     public void startNoticeByConcert() {
@@ -98,6 +98,7 @@ public class SchedulerService {
         }
     }
 
+    // 동행 출발 시작 전 알림 전송
     @Transactional
     @Scheduled(cron = "* * 9 * * *", zone = "Asia/Seoul")
     public void startNoticeByAccompany() {
@@ -123,6 +124,7 @@ public class SchedulerService {
         }
     }
 
+    // 읽은 알림 삭제
     @Transactional
     @Scheduled(cron = "0 0 3 * * *", zone = "Asia/Seoul")
     public void deleteNoticeIsRead() {

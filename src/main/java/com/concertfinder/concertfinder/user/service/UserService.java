@@ -23,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -89,7 +88,18 @@ public class UserService {
 
     // 로그인 : 로그인 시도 유저 정보 조회 메서드
     @Transactional
-    public void loginUser(String userId, String password, HttpServletResponse response) {
+    public void loginUser(String userId, String password, boolean autoLogin, HttpServletResponse response) {
+
+        log.info("자동 로그인 값 : {}", autoLogin);
+
+        int accessMaxAge = -1;
+        int refreshMaxAge = -1;
+
+        if(autoLogin) {
+
+            accessMaxAge = 1800;
+            refreshMaxAge = 2592000;
+        }
 
         User user = userRepository.findByUserId(userId).orElseThrow(() -> new UnAuthorizedException("아이디 혹은 비밀번호가 일치하지 않습니다!"));
 
@@ -107,33 +117,19 @@ public class UserService {
 
         String refreshToken = jwtProvider.createRefreshToken(userId);
 
-        String csrfToken = UUID.randomUUID().toString();
+        // String csrfToken = UUID.randomUUID().toString();
 
         String key = "refreshToken:" + user.getUserId();
 
         redisTemplate.opsForValue().set(key, refreshToken, java.time.Duration.ofSeconds(2592000));
 
-        CookieUtil.addSecureCookie(response, "ACCESS_TOKEN", accessToken, 1800);
+        CookieUtil.addSecureCookie(response, "ACCESS_TOKEN", accessToken, accessMaxAge);
 
-        CookieUtil.addSecureCookie(response, "REFRESH_TOKEN", refreshToken, 2592000);
+        CookieUtil.addSecureCookie(response, "REFRESH_TOKEN", refreshToken, refreshMaxAge);
 
         // CookieUtil.addCsrfCookie(response, "XSRF-TOKEN", csrfToken, 1800);
 
     }
-
-//    // 로그인 : id를 통해 salt를 얻어오는 메서드
-//    public String getSalt(String userId) {
-//
-//         Optional<User> optionalUser = userRepository.findByUserId(userId);
-//
-//        if(optionalUser.isPresent()) {
-//            User user = optionalUser.get();
-//
-//            return user.getSalt();
-//        }
-//
-//        return null;
-//    }
 
     // 회원 정보 수정 메서드
     @Transactional
@@ -184,6 +180,7 @@ public class UserService {
         return null;
     }
 
+    // 탈퇴한 유저인지 확인
     public boolean getIsDelete(long id) {
 
         String key = IS_DELETE_PREFIX + id;
@@ -244,10 +241,11 @@ public class UserService {
         return nickname;
     }
 
-    public boolean isExistsUser(long id) {
-
-        return userRepository.existsById(id);
-    }
+    // 해당 유저가 있는지 확인
+//    public boolean isExistsUser(long id) {
+//
+//        return userRepository.existsById(id);
+//    }
 
     // 회원 탈퇴 처리 메서드
     @Transactional
@@ -278,33 +276,35 @@ public class UserService {
     }
 
 
+    // 탈퇴한 유저 아이디 목록 반환
     public List<Long> getDeleteUserIdList() {
 
         return userRepository.findAllByIsDelete(true).stream().map(User::getId).toList();
     }
 
+    // 탈퇴 유저 한번에 삭제
     public void deleteUsers(List<Long> userIdList) {
 
         userRepository.deleteAllByIdIn(userIdList);
     }
 
     // 회원 탈퇴 메서드
-    public void deleteUser(long userId) {
-
-        Optional<User> optionalUser = userRepository.findById(userId);
-
-        if(!optionalUser.isPresent()) {
-
-            log.warn("사용자 정보가 없음!");
-        }
-
-        try {
-
-            User user = optionalUser.get();
-            userRepository.delete(user);
-        } catch(DataAccessException e) {
-
-            log.warn("탈퇴 처리 에러!");
-        }
-    }
+//    public void deleteUser(long userId) {
+//
+//        Optional<User> optionalUser = userRepository.findById(userId);
+//
+//        if(!optionalUser.isPresent()) {
+//
+//            log.warn("사용자 정보가 없음!");
+//        }
+//
+//        try {
+//
+//            User user = optionalUser.get();
+//            userRepository.delete(user);
+//        } catch(DataAccessException e) {
+//
+//            log.warn("탈퇴 처리 에러!");
+//        }
+//    }
 }

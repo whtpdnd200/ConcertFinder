@@ -5,7 +5,6 @@ import com.concertfinder.concertfinder.favorites.service.FavoritesService;
 import com.concertfinder.concertfinder.ladder.service.ConcertAndFavoritesLadderService;
 import com.concertfinder.concertfinder.user.DTO.LoginUserDTO;
 import com.concertfinder.concertfinder.user.DTO.PrincipalDetails;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

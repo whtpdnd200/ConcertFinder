@@ -272,6 +272,7 @@ public class PostService {
         return userId;
     }
 
+    // 게시글 제목 반환
     public String getPostTitle(long postId) {
 
         String key = POST_TITLE_PREFIX + postId;

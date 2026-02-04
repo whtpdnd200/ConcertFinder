@@ -2,15 +2,12 @@ package com.concertfinder.concertfinder.user;
 
 import com.concertfinder.concertfinder.concert.service.ConcertService;
 import com.concertfinder.concertfinder.jwt.CookieUtil;
-import com.concertfinder.concertfinder.jwt.JwtProvider;
 import com.concertfinder.concertfinder.ladder.service.AccompanyAndAccompanyCountLadderService;
 import com.concertfinder.concertfinder.sidoCode.service.SidoCodeService;
 import com.concertfinder.concertfinder.user.DTO.LoginUserDTO;
 import com.concertfinder.concertfinder.user.DTO.PrincipalDetails;
-import com.concertfinder.concertfinder.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
@@ -21,7 +18,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.UUID;
 
 @Controller
 @RequestMapping("/user")
@@ -38,7 +34,6 @@ public class UserController {
     public String join(Authentication authentication
                        , Model model) {
 
-        // 유저 인증 정보 객체가 있고 인증된 유저라면 페이지 강제 이동
         if(authentication != null && authentication.isAuthenticated()) {
             return "redirect:/concert/list";
         }

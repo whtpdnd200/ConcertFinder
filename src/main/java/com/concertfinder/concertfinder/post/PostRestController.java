@@ -7,7 +7,6 @@ import com.concertfinder.concertfinder.post.DTO.PostWriteDTO;
 import com.concertfinder.concertfinder.post.service.PostService;
 import com.concertfinder.concertfinder.user.DTO.LoginUserDTO;
 import com.concertfinder.concertfinder.user.DTO.PrincipalDetails;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;

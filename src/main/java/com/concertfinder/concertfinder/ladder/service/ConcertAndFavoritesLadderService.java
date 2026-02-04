@@ -13,6 +13,7 @@ public class ConcertAndFavoritesLadderService {
     private final ConcertService concertService;
     private final FavoritesService favoritesService;
 
+    // 즐겨찾기 저장시 콘서트 정보 같이 저장
     @Transactional
     public void insertFavoritesAndConcert(String concertId, long userId) {
 

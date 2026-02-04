@@ -1,6 +1,5 @@
 package com.concertfinder.concertfinder.last_chat.domain;
 
-import com.concertfinder.concertfinder.favorites.domain.FavoritesId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;

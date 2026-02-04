@@ -15,7 +15,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     List<User> findAllByIsDelete(boolean isDelete);
 
-    // 로그인 메서드 : 아이디로 salt값 확인
+    // 로그인 메서드 : 아이디 확인
     Optional<User> findByUserId(String userId);
 
     // 로그인 메서드 : 아이디와 비밀번호로 회원 조회

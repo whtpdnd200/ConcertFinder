@@ -4,10 +4,7 @@ import com.concertfinder.concertfinder.common.DTO.ApiResponseDTO;
 import com.concertfinder.concertfinder.exception.custom_exception.DuplicateException;
 import com.concertfinder.concertfinder.exception.custom_exception.NotFoundException;
 import com.concertfinder.concertfinder.exception.custom_exception.UnAuthorizedException;
-import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -21,15 +18,10 @@ import java.util.NoSuchElementException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    public static String loginExceptionMessage() {
-
-        return "로그인 후 이용 가능한 서비스 입니다!";
-    }
-
     // 중복되는 로그인 세션 관련 핸들러 처리 메서드
     public static void loginException(Long userId) {
         if(userId == null) {
-            throw new IllegalStateException(loginExceptionMessage());
+            throw new IllegalStateException("로그인 후 이용 가능한 서비스 입니다!");
         }
     }
 
@@ -40,7 +32,6 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ApiResponseDTO.fail(e.getMessage()));
     }
-
 
 
     // 파라미터 값이 비어있거나 유효하지 않은 형식
@@ -117,6 +108,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponseDTO.fail(e.getMessage()));
     }
 
+    // 삭제된 데이터에 접근 할 때
+    // 404로 반환
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<String> NotFoundException(NotFoundException e) {
 

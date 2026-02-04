@@ -8,8 +8,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -19,6 +17,7 @@ public class LastChatService {
     private final LastChatRepository lastChatRepository;
 
 
+    // 채팅방에서 마지막으로 읽은 메시지 아이디 업데이트
     public void updateLastMessage(long roomId, long userId, long lastChatId) {
 
         LastChat lastChat = lastChatRepository.findByRoomIdAndUserId(roomId, userId).orElse(new LastChat(roomId, userId));
@@ -36,6 +35,7 @@ public class LastChatService {
         }
     }
 
+    // 사용자의 모든 마지막으로 읽은 채팅 삭제
     public void deleteLastChatUser(long userId) {
 
         List<LastChat> lastChats = lastChatRepository.findAllByUserId(userId);
@@ -51,6 +51,7 @@ public class LastChatService {
         }
     }
 
+    // 단일 채팅방의 마지막으로 읽은 메시지 삭제
     public void deleteLastChat(long roomId) {
 
         List<LastChat> lastChatList = lastChatRepository.findAllByRoomId(roomId);
@@ -66,6 +67,7 @@ public class LastChatService {
         }
     }
 
+    // 단일 채팅방의 마지막으로 읽은 메시지 아이디 반환
     public Long getLastChatId(long roomId, long userId) {
 
         return lastChatRepository.findByRoomIdAndUserId(roomId, userId).map(LastChat::getChatId).orElse(null);

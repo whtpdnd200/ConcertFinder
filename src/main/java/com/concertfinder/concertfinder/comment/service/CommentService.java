@@ -250,20 +250,20 @@ public class CommentService {
         }
     }
 
-    public void deleteUserComment() {
-
-        List<Comment> comments = commentRepository.findAll();
-
-        if(!comments.isEmpty()) {
-            for(Comment c : comments) {
-
-                if(!userService.isExistsUser(c.getUserId())) {
-
-                    deleteComment(c.getId());
-                }
-            }
-        }
-    }
+//    public void deleteUserComment() {
+//
+//        List<Comment> comments = commentRepository.findAll();
+//
+//        if(!comments.isEmpty()) {
+//            for(Comment c : comments) {
+//
+//                if(!userService.isExistsUser(c.getUserId())) {
+//
+//                    deleteComment(c.getId());
+//                }
+//            }
+//        }
+//    }
 
     public void deleteUserComment(List<Long> userIdList) {
 

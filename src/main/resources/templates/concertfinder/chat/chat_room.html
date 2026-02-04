@@ -266,6 +266,7 @@
 
                 // 유효한 메시지들만 필터링 (ID가 -1인 시스템 라인 제외)하여 ID 할당
                 const validMessages = messageList.filter(m => m.id !== -1);
+
                 if (validMessages.length > 0) {
                     lastId = validMessages[0].id;
                     nextLastId = validMessages[validMessages.length - 1].id;

@@ -9,7 +9,5 @@ import java.util.List;
 @Repository
 public interface SidoCodeRepository extends JpaRepository<SidoCode, Byte> {
 
-    public List<SidoCode> findAll();
-
-    public SidoCode findBySidoCode(String sidoCode);
+    SidoCode findBySidoCode(String sidoCode);
 }
