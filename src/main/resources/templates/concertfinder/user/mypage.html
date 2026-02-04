@@ -202,11 +202,14 @@
 
         $("#userDeleteBtn").on("click", function() {
 
+            let token = $("meta[name='_csrf']").attr("content");
+            let header = $("meta[name='_csrf_header']").attr("content");
+
             $.ajax({
                 type: "delete"
                 , url: "/user"
                 , beforeSend: function(xhr) {
-                    xhr.setRequestHeader("X-XSRF-TOKEN", getCsrfTokenFromCookie());
+                    xhr.setRequestHeader(header, token);
                 }
                 , success: function() {
 

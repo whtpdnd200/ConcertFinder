@@ -95,6 +95,9 @@
 
         var id = $("#dataValue").data("id");
 
+        var token = $("meta[name='_csrf']").attr("content");
+        var header = $("meta[name='_csrf_header']").attr("content");
+
         $("#emailSelect").on("change", function() {
 
             let value = $("#emailSelect").val();
@@ -184,7 +187,7 @@
                 , contentType: 'application/json'
                 , data : JSON.stringify(data)
                 , beforeSend: function(xhr) {
-                    xhr.setRequestHeader("X-XSRF-TOKEN", getCsrfTokenFromCookie());
+                    xhr.setRequestHeader(header, token);
                 }
                 , success : function(response) {
 

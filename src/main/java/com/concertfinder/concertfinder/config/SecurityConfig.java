@@ -1,5 +1,6 @@
 package com.concertfinder.concertfinder.config;
 
+import com.concertfinder.concertfinder.filter.CsrfCookieFilter;
 import com.concertfinder.concertfinder.jwt.CookieUtil;
 import com.concertfinder.concertfinder.jwt.JwtAuthenticationFilter;
 import com.concertfinder.concertfinder.jwt.JwtProvider;
@@ -13,6 +14,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -28,7 +32,10 @@ public class SecurityConfig {
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity security) throws Exception {
 
          return security
-                 .csrf(csrf -> csrf.disable())
+                 .csrf(csrf -> csrf
+                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                         .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler()))
+                 .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
                  .sessionManagement(session -> session.disable())
                  .formLogin(form -> form.disable())
                  .httpBasic(basic -> basic.disable())

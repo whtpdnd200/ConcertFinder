@@ -63,10 +63,6 @@
         var isLengthOver = false;
 
 
-
-        // var token = $("meta[name='_csrf']").attr("content");
-        // var header = $("meta[name='_csrf_header']").attr("content");
-
         $("#nicknameInput").on("input", function() {
             let nickname = $(this).val();
 
@@ -159,7 +155,8 @@
 
             let email = frontEmail + '@' + backEmail;
 
-
+            let token = $("meta[name='_csrf']").attr("content");
+            let header = $("meta[name='_csrf_header']").attr("content");
 
             $.ajax({
                 type : "post"
@@ -172,7 +169,7 @@
                             , "attentionAreaCode" : attentionAreaCode
                          }
                 , beforeSend: function(xhr) {
-                    xhr.setRequestHeader("X-XSRF-TOKEN", getCsrfTokenFromCookie());
+                    xhr.setRequestHeader(header, token);
                 }
                 , success : function(response) {
 
@@ -230,9 +227,6 @@
             $.ajax({
                 type : "get"
                 , url : "/user/id-check"
-                , beforeSend: function(xhr) {
-                    xhr.setRequestHeader("X-XSRF-TOKEN", getCsrfTokenFromCookie());
-                }
                 , data : {"userId" : userId}
                 , success : function(response) {
 

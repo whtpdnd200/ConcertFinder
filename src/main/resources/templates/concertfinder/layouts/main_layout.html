@@ -6,14 +6,13 @@
       xmlns:x-bind="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
-    <meta name="_csrf" th:content="${_csrfToken}"/>
-    <meta name="_csrf_header" th:content="X-XSRF-TOKEN"/>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <title layout:title-pattern="$LAYOUT_TITLE : $CONTENT_TITLE">ConcertFinder</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" th:href="@{/css/layouts/user_style.css}">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <script th:src="@{/js/default/default_main.js}"></script>
     <th:block layout:fragment="kakao"></th:block>
     <th:block layout:fragment="css"></th:block>
     <th:block layout:fragment="postFunctionScript"></th:block>
@@ -105,6 +104,7 @@
 
                     let token = $("meta[name='_csrf']").attr("content");
                     let header = $("meta[name='_csrf_header']").attr("content");
+
                     const self = this;
                     $.ajax({
                         type: "patch"
@@ -200,9 +200,6 @@
             $.ajax({
                 type: "get"
                 , url: "/user/logout"
-                , beforeSend: function(xhr) {
-                    xhr.setRequestHeader("X-XSRF-TOKEN", getCsrfTokenFromCookie());
-                }
                 , success : function() {
 
                     location.href = "/user/login";

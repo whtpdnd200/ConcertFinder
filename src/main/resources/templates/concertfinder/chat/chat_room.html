@@ -92,11 +92,12 @@
         var lastId = 0;
         var nextLastId = null;
 
+        var token = $("meta[name='_csrf']").attr("content");
+        var header = $("meta[name='_csrf_header']").attr("content");
+
         const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
         const host = window.location.host;
         const socket = new WebSocket(protocol + host + "/ws/chat/" + roomId);
-
-        //const socket = new WebSocket("ws://localhost:8080/ws/chat/" + roomId);
 
 
         socket.onopen = () => {
@@ -176,9 +177,6 @@
                     $.ajax({
                         type: "get"
                         , url: "/message/before/" + roomId + "/" + lastId
-                        , beforeSend: function(xhr) {
-                            xhr.setRequestHeader(header, token);
-                        }
                         , success: function(response) {
 
                             if (response.data.content.length > 0) {
@@ -228,9 +226,6 @@
                 $.ajax({
                     type: "get"
                     , url: "/message/next/" + roomId + "/" + nextLastId
-                    , beforeSend: function(xhr) {
-                        xhr.setRequestHeader(header, token);
-                    }
                     , success: function(response) {
 
                         let messageList = response.data.content;
@@ -258,12 +253,9 @@
         });
 
         $.ajax({
-            type: "get",
-            url: "/message/" + roomId,
-            beforeSend: function(xhr) {
-                xhr.setRequestHeader("X-XSRF-TOKEN", getCsrfTokenFromCookie());
-            },
-            success: function(response) {
+            type: "get"
+            , url: "/message/" + roomId
+            , success: function(response) {
 
                 console.log(response);
                 let messageList = response.data.content;
@@ -286,8 +278,8 @@
                 $.each(messageList, function(index, msg) {
                     appendMessageToArea(msg.type, msg.userNickname, msg.content, msg.createdAt, false, true, msg.id);
                 });
-            },
-            complete: function() {
+            }
+            , complete: function() {
                 let chatArea = $("#chatMessageArea");
                 let marker = $("#last-read-marker");
 
@@ -313,7 +305,7 @@
                 type: "delete"
                 , url: "/chat/private/" + roomId
                 , beforeSend: function(xhr) {
-                    xhr.setRequestHeader("X-XSRF-TOKEN", getCsrfTokenFromCookie());
+                    xhr.setRequestHeader(header, token);
                 }
                 , success: function() {
 
@@ -335,7 +327,7 @@
                 type: "delete"
                 , url: "/chat/kick/" + accompanyId + "/" + userId
                 , beforeSend: function(xhr) {
-                    xhr.setRequestHeader("X-XSRF-TOKEN", getCsrfTokenFromCookie());
+                    xhr.setRequestHeader(header, token);
                 }
                 , success: function() {
                     let kickMessage = roomId + "|KICK|" + nickname + "|";
@@ -356,9 +348,6 @@
             $.ajax({
                 type: "get"
                 , url: "/room/users/" + roomId
-                , beforeSend: function(xhr) {
-                    xhr.setRequestHeader("X-XSRF-TOKEN", getCsrfTokenFromCookie());
-                }
                 , success: function(response) {
                     console.log(response);
 
@@ -425,7 +414,7 @@
                     type: "delete"
                     , url: "/chat/" + accompanyId + "/" + roomId
                     , beforeSend: function(xhr) {
-                        xhr.setRequestHeader("X-XSRF-TOKEN", getCsrfTokenFromCookie());
+                        xhr.setRequestHeader(header, token);
                     }
                     , success: function() {
                         location.href = "/user/mypage";
@@ -448,7 +437,7 @@
                 , url: "/chat/" + accompanyId
                 , beforeSend: function(xhr) {
 
-                    xhr.setRequestHeader("X-XSRF-TOKEN", getCsrfTokenFromCookie());
+                    xhr.setRequestHeader(header, token);
                 }
                 , success: function() {
                     let exitMessage = roomId + "|DISCONNECT|" + userNickname + "|";

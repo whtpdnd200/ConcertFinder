@@ -65,15 +65,15 @@
                 return;
             }
 
-            // let token = $("meta[name='_csrf']").attr("content");
-            // let header = $("meta[name='_csrf_header']").attr("content");
+            let token = $("meta[name='_csrf']").attr("content");
+            let header = $("meta[name='_csrf_header']").attr("content");
 
             $.ajax({
                 type : "post"
                 , url : "/user/login"
                 , data : {"userId" : userId, "password" : password}
                 , beforeSend: function(xhr) {
-                    xhr.setRequestHeader("X-XSRF-TOKEN", getCsrfTokenFromCookie());
+                    xhr.setRequestHeader(header, token);
                 }
                 , success : function() {
                     location.href = "/concert/list";

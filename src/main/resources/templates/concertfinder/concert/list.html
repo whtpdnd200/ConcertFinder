@@ -107,6 +107,9 @@
 
         window.onload = function() {
 
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+
             var url = new URL(location.href).searchParams;
 
 
@@ -140,7 +143,7 @@
                     type: "delete"
                     , url: "/favorites/" + concertId
                     , beforeSend: function(xhr) {
-                        xhr.setRequestHeader("X-XSRF-TOKEN", getCsrfTokenFromCookie());
+                        xhr.setRequestHeader(header, token);
                     }
                     , success: function() {
 
@@ -161,7 +164,7 @@
                     type: "post"
                     , url: "/favorites/" + concertId
                     , beforeSend: function(xhr) {
-                        xhr.setRequestHeader("X-XSRF-TOKEN", getCsrfTokenFromCookie());
+                        xhr.setRequestHeader(header, token);
                     }
                     , success: function() {
 

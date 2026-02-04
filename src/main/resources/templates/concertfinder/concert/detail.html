@@ -397,9 +397,10 @@
 
     <script layout:fragment="script">
 
+        var token = $("meta[name='_csrf']").attr("content");
+        var header = $("meta[name='_csrf_header']").attr("content");
+
         $(document).ready(function() {
-
-
 
             var latitude = $("#map").data("la");
 
@@ -484,7 +485,7 @@
                 , url: "/review/" + areaCode
                 , data: {"review" : review, "point" : reviewPoint}
                 , beforeSend: function(xhr) {
-                    xhr.setRequestHeader("X-XSRF-TOKEN", getCsrfTokenFromCookie());
+                    xhr.setRequestHeader(header, token);
                 }
                 , success: function() {
                     location.reload();
@@ -503,7 +504,7 @@
                 type: "delete"
                 , url: "/review/" + reviewId
                 , beforeSend: function(xhr) {
-                    xhr.setRequestHeader("X-XSRF-TOKEN", getCsrfTokenFromCookie());
+                    xhr.setRequestHeader(header, token);
                 }
                 , success: function() {
                     location.reload();
@@ -535,7 +536,7 @@
                 , url: "/review/" + reviewId
                 , contentType: 'application/json'
                 , beforeSend: function(xhr) {
-                    xhr.setRequestHeader("X-XSRF-TOKEN", getCsrfTokenFromCookie());
+                    xhr.setRequestHeader(header, token);
                 }
                 , data: JSON.stringify(data)
                 , success: function() {
@@ -569,7 +570,7 @@
                 type: "delete"
                 , url: "/favorites/" + concertId
                 , beforeSend: function(xhr) {
-                    xhr.setRequestHeader("X-XSRF-TOKEN", getCsrfTokenFromCookie());
+                    xhr.setRequestHeader(header, token);
                 }
                 , success: function() {
                     location.reload();
@@ -589,7 +590,7 @@
                 type: "post"
                 , url: "/favorites/" + concertId
                 , beforeSend: function(xhr) {
-                    xhr.setRequestHeader("X-XSRF-TOKEN", getCsrfTokenFromCookie());
+                    xhr.setRequestHeader(header, token);
                 }
                 ,success: function() {
 
