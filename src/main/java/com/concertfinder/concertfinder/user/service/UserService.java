@@ -37,6 +37,7 @@ public class UserService {
     private final RedisTemplate<String, Object> redisTemplate;
     private static final String NICKNAME_KEY_PREFIX = "user:nickname:";
     private static final String IS_DELETE_PREFIX = "user:isDelete:";
+    private final String USER_DTO_PREFIX = "user:info:";
 
     // LoginUserDTO에 User 정보 담아주는 함수
     public LoginUserDTO addDTO(Optional<User> oUser) {
@@ -108,7 +109,7 @@ public class UserService {
 
         String csrfToken = UUID.randomUUID().toString();
 
-        String key = "Token:" + user.getUserId();
+        String key = "refreshToken:" + user.getUserId();
 
         redisTemplate.opsForValue().set(key, refreshToken, java.time.Duration.ofSeconds(2592000));
 
@@ -138,6 +139,7 @@ public class UserService {
     @Transactional
     public void userModify(Long id, ModifyUserDTO modifyUserDTO) {
 
+
         Optional<User> optionalUser = userRepository.findById(id);
 
         String password = null;
@@ -146,7 +148,6 @@ public class UserService {
         if(optionalUser.isPresent()) {
             User user = optionalUser.get();
             password = user.getPassword();
-            // salt = user.getSalt();
 
             if(modifyUserDTO.getPassword() != null && !modifyUserDTO.getPassword().equals("")) {
 
@@ -164,6 +165,7 @@ public class UserService {
             try {
                 userRepository.save(user);
                 redisTemplate.delete(NICKNAME_KEY_PREFIX + id);
+                redisTemplate.delete(USER_DTO_PREFIX + user.getUserId());
 
             } catch(DataAccessException e) {
                 throw new RuntimeException("서버에러로 회원 정보 수정이 실패 했습니다 잠시후 다시 시도해주세요!");

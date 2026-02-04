@@ -92,4 +92,18 @@ public class JwtProvider {
         }
         return false;
     }
+
+    // 오염된 토큰인지 확인
+    public boolean isExpired(String token) {
+
+        try {
+            Jwts.parserBuilder().setSigningKey(SECRET_KEY).build().parseClaimsJws(token);
+            return false; // 만료 안 됐으면 false
+        } catch (ExpiredJwtException e) {
+            return true; // 만료되었을 때만 true
+        } catch (Exception e) {
+            // 서명 오류, 형식 오류 등은 만료가 아니라 오염이므로 false
+            return false;
+        }
+    }
 }

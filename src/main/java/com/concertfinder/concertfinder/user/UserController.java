@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -30,6 +31,7 @@ public class UserController {
     private final SidoCodeService sidoCodeService;
     private final ConcertService concertService;
     private final AccompanyAndAccompanyCountLadderService accompanyAndAccompanyCountLadderService;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     // 회원가입 페이지
     @GetMapping("/join")
@@ -73,13 +75,19 @@ public class UserController {
     // 로그아웃 기능
     @GetMapping("/logout")
     public String logout(HttpServletRequest request
-                        , HttpServletResponse response) {
+                        , HttpServletResponse response
+                        , @AuthenticationPrincipal PrincipalDetails principal) {
 
         CookieUtil.deleteCookie(request, response, "ACCESS_TOKEN");
         CookieUtil.deleteCookie(request, response, "REFRESH_TOKEN");
         CookieUtil.deleteCookie(request, response, "XSRF_TOKEN");
 
         SecurityContextHolder.clearContext();
+
+        LoginUserDTO loginUserDTO = principal.getLoginUserDTO();
+
+        redisTemplate.delete("user:info:" + loginUserDTO.getUserId());
+        redisTemplate.delete("refreshToken:" + loginUserDTO.getUserId());
 
         return "redirect:/user/login";
     }

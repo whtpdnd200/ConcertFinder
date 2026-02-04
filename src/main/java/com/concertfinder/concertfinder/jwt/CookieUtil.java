@@ -34,6 +34,25 @@ public class CookieUtil {
         response.addHeader("Set-Cookie", cookie.toString());
     }
 
+    // 쿠키에서 토큰 반환 메서드
+    public static String getCookieToken(HttpServletRequest request, String name) {
+
+        Cookie[] cookies = request.getCookies();
+
+        if(cookies != null) {
+
+            for(Cookie cookie : cookies) {
+
+                if(name.equals(cookie.getName())) {
+
+                    return cookie.getValue();
+                }
+            }
+        }
+
+        return null;
+    }
+
     // 쿠키 삭제 메서드
     public static void deleteCookie(HttpServletRequest request, HttpServletResponse response, String name) {
 

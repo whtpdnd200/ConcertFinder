@@ -33,6 +33,16 @@ public class GlobalExceptionHandler {
         }
     }
 
+    // 탈퇴 처리회원 관련 핸들러 처리 메서드
+    // 403으로 반환
+    @ExceptionHandler(DisabledException.class)
+    public ResponseEntity<ApiResponseDTO<Void>> DisabledException(DisabledException e) {
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ApiResponseDTO.fail(e.getMessage()));
+    }
+
+
+
     // 파라미터 값이 비어있거나 유효하지 않은 형식
     // http 400으로 반환
     @ExceptionHandler(IllegalArgumentException.class)

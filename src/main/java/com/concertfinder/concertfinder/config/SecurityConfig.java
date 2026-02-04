@@ -1,5 +1,6 @@
 package com.concertfinder.concertfinder.config;
 
+import com.concertfinder.concertfinder.jwt.CookieUtil;
 import com.concertfinder.concertfinder.jwt.JwtAuthenticationFilter;
 import com.concertfinder.concertfinder.jwt.JwtProvider;
 import com.concertfinder.concertfinder.user.service.PrincipalDetailsService;
@@ -8,8 +9,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -23,6 +22,7 @@ public class SecurityConfig {
     private final JwtProvider jwtProvider;
     private final PrincipalDetailsService principalDetailsService;
     private final RedisTemplate<String, Object> redisTemplate;
+
 
     @Bean
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity security) throws Exception {

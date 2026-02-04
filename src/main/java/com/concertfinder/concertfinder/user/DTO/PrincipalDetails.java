@@ -1,7 +1,6 @@
 package com.concertfinder.concertfinder.user.DTO;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,6 +24,11 @@ public class PrincipalDetails implements UserDetails {
     public PrincipalDetails(LoginUserDTO loginUserDTO) {
         this.loginUserDTO = loginUserDTO;
         this.password = null;
+    }
+
+    public String getRole() {
+
+        return this.loginUserDTO.getRole();
     }
 
     // 유저의 권한 정보를 담는 리스트를 리턴
