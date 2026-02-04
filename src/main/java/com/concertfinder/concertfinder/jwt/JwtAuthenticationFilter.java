@@ -69,7 +69,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 log.warn("토큰 변조됨 토큰 제거 로직 실행");
 
-                forceLogout(response, jwtProvider.getUserId(refreshToken));
+                forceLogout(response, jwtProvider.getUserId(accessToken));
                 return;
             }
         }
