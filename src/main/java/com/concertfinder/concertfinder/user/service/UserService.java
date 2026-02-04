@@ -270,6 +270,7 @@ public class UserService {
             userRepository.save(user);
             redisTemplate.delete(NICKNAME_KEY_PREFIX + userId);
             redisTemplate.delete(IS_DELETE_PREFIX + userId);
+            redisTemplate.delete(USER_DTO_PREFIX + getNickname(userId));
         } catch(DataAccessException e) {
 
             throw new RuntimeException("서버 에러로 인해 탈퇴를 진행 하지 못했습니다 잠시 후 다시 시도해주세요!");

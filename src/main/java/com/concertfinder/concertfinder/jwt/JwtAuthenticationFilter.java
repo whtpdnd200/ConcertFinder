@@ -50,7 +50,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         log.info("Access Token 재발급");
 
                         String role = setAuthentication(refreshToken);
-                        
+
                         String newAccessToken = jwtProvider.createAccessToken(userId, role);
                         String newRefreshToken = jwtProvider.createRefreshToken(userId);
 
