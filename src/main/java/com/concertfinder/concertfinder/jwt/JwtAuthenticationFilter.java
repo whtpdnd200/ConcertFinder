@@ -50,16 +50,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         log.info("Access Token 재발급");
 
                         String role = setAuthentication(refreshToken);
+                        
+                        String newAccessToken = jwtProvider.createAccessToken(userId, role);
+                        String newRefreshToken = jwtProvider.createRefreshToken(userId);
 
-                        if (role != null) {
+                        redisTemplate.opsForValue().set("refreshToken:" + userId, newRefreshToken, java.time.Duration.ofSeconds(2592000));
+                        CookieUtil.addSecureCookie(response, "ACCESS_TOKEN", newAccessToken, 1800);
+                        CookieUtil.addSecureCookie(response, "REFRESH_TOKEN", newRefreshToken, 2592000);
 
-                            String newAccessToken = jwtProvider.createAccessToken(userId, role);
-                            String newRefreshToken = jwtProvider.createRefreshToken(userId);
-
-                            redisTemplate.opsForValue().set("refreshToken:" + userId, newRefreshToken, java.time.Duration.ofSeconds(2592000));
-                            CookieUtil.addSecureCookie(response, "ACCESS_TOKEN", newAccessToken, 1800);
-                            CookieUtil.addSecureCookie(response, "REFRESH_TOKEN", newRefreshToken, 2592000);
-                        }
                     }
                 }
             } else {
