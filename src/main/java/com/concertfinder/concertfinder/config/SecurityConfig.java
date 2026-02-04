@@ -40,7 +40,8 @@ public class SecurityConfig {
                          })))
                  .authorizeHttpRequests(request ->
 
-                         request.requestMatchers("/css/**", "/js/**", "/favicon.ico").permitAll() // 기본 css js도 권한에 상관 없이 실행 되게
+                         request.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/swagger-resources/**", "/favicon.ico", "/error").permitAll()
+                                .requestMatchers("/css/**", "/js/**", "/favicon.ico").permitAll() // 기본 css js도 권한에 상관 없이 실행 되게
                                 .requestMatchers(HttpMethod.POST, "/user").permitAll() // 회원가입 API 메서드는 누구나 실행 되게
                                 .requestMatchers("/user/login", "/user/join", "/user/id-check").permitAll() // 로그인 없이 이동 가능한 페이지 및 API
                                 .anyRequest().authenticated()) // 그외의 모든 기능은 로그인 해야 이용 가능
