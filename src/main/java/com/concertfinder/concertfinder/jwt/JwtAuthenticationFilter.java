@@ -58,28 +58,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         CookieUtil.addSecureCookie(response, "ACCESS_TOKEN", newAccessToken, 1800);
                         CookieUtil.addSecureCookie(response, "REFRESH_TOKEN", newRefreshToken, 2592000);
 
+                    } else {
+
+                        log.warn("리프레시 토큰 불일치 User: {} ", userId);
+                        forceLogout(response, userId);
+                        return;
                     }
                 }
             } else {
 
                 log.warn("토큰 변조됨 토큰 제거 로직 실행");
 
-                try {
-                    String userId = jwtProvider.getUserId(accessToken);
-                    redisTemplate.delete("refreshToken:" + userId);
-                    redisTemplate.delete("user:info:" + userId);
-
-                } catch (Exception e) {
-                    log.error("변조된 토큰에서 userId 추출 실패: {}", e.getMessage());
-                }
-
-                CookieUtil.addSecureCookie(response, "ACCESS_TOKEN", null, 0);
-                CookieUtil.addSecureCookie(response, "REFRESH_TOKEN", null, 0);
-                CookieUtil.addCsrfCookie(response, "XSRF-TOKEN", null, 0);
-
-                SecurityContextHolder.clearContext();
-
-                response.sendRedirect("/user/login");
+                forceLogout(response, jwtProvider.getUserId(refreshToken));
                 return;
             }
         }
@@ -106,5 +96,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         return null;
+    }
+
+    private void forceLogout(HttpServletResponse response, String userId) throws IOException {
+
+        if (userId != null) {
+            try {
+                redisTemplate.delete("refreshToken:" + userId);
+                redisTemplate.delete("user:info:" + userId);
+            } catch (Exception e) {
+                log.error("Redis 삭제 실패: {}", e.getMessage());
+            }
+        }
+
+        CookieUtil.addSecureCookie(response, "ACCESS_TOKEN", null, 0);
+        CookieUtil.addSecureCookie(response, "REFRESH_TOKEN", null, 0);
+        CookieUtil.addCsrfCookie(response, "XSRF-TOKEN", null, 0);
+
+        SecurityContextHolder.clearContext();
+        response.sendRedirect("/user/login");
     }
 }
