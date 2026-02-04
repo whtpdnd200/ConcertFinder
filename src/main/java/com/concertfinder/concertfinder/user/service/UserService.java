@@ -117,7 +117,7 @@ public class UserService {
 
         CookieUtil.addSecureCookie(response, "REFRESH_TOKEN", refreshToken, 2592000);
 
-        CookieUtil.addCsrfCookie(response, "XSRF-TOKEN", csrfToken, 1800);
+        // CookieUtil.addCsrfCookie(response, "XSRF-TOKEN", csrfToken, 1800);
 
     }
 

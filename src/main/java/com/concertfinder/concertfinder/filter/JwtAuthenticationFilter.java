@@ -1,5 +1,7 @@
-package com.concertfinder.concertfinder.jwt;
+package com.concertfinder.concertfinder.filter;
 
+import com.concertfinder.concertfinder.jwt.CookieUtil;
+import com.concertfinder.concertfinder.jwt.JwtProvider;
 import com.concertfinder.concertfinder.user.DTO.PrincipalDetails;
 import com.concertfinder.concertfinder.user.service.PrincipalDetailsService;
 import jakarta.servlet.FilterChain;
@@ -11,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -31,45 +32,53 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String accessToken = CookieUtil.getCookieToken(request, "ACCESS_TOKEN");
         String refreshToken = CookieUtil.getCookieToken(request, "REFRESH_TOKEN");
 
+
         if(accessToken != null) {
 
-            if(jwtProvider.validateToken(accessToken)) {
+            try {
+                if(jwtProvider.validateToken(accessToken)) {
 
-                setAuthentication(accessToken);
+                    setAuthentication(accessToken);
 
-            } else if(jwtProvider.isExpired(accessToken)) {
+                } else if(jwtProvider.isExpired(accessToken)) {
 
-                if(refreshToken != null && jwtProvider.validateToken(refreshToken)) {
+                    if(refreshToken != null && jwtProvider.validateToken(refreshToken)) {
 
-                    String userId = jwtProvider.getUserId(refreshToken);
+                        String userId = jwtProvider.getUserId(refreshToken);
 
-                    String cacheRefreshToken = (String)redisTemplate.opsForValue().get("refreshToken:" + userId);
+                        String cacheRefreshToken = (String)redisTemplate.opsForValue().get("refreshToken:" + userId);
 
-                    if(refreshToken.equals(cacheRefreshToken)) {
+                        if(refreshToken.equals(cacheRefreshToken)) {
 
-                        log.info("Access Token 재발급");
+                            log.info("Access Token 재발급");
 
-                        String role = setAuthentication(refreshToken);
+                            String role = setAuthentication(refreshToken);
 
-                        String newAccessToken = jwtProvider.createAccessToken(userId, role);
-                        String newRefreshToken = jwtProvider.createRefreshToken(userId);
+                            String newAccessToken = jwtProvider.createAccessToken(userId, role);
+                            String newRefreshToken = jwtProvider.createRefreshToken(userId);
 
-                        redisTemplate.opsForValue().set("refreshToken:" + userId, newRefreshToken, java.time.Duration.ofSeconds(2592000));
-                        CookieUtil.addSecureCookie(response, "ACCESS_TOKEN", newAccessToken, 1800);
-                        CookieUtil.addSecureCookie(response, "REFRESH_TOKEN", newRefreshToken, 2592000);
+                            redisTemplate.opsForValue().set("refreshToken:" + userId, newRefreshToken, java.time.Duration.ofSeconds(2592000));
+                            CookieUtil.addSecureCookie(response, "ACCESS_TOKEN", newAccessToken, 1800);
+                            CookieUtil.addSecureCookie(response, "REFRESH_TOKEN", newRefreshToken, 2592000);
 
-                    } else {
+                        } else {
 
-                        log.warn("리프레시 토큰 불일치 User: {} ", userId);
-                        forceLogout(response, userId);
-                        return;
+                            log.warn("리프레시 토큰 불일치 User: {} ", userId);
+                            forceLogout(response, userId);
+                            return;
+                        }
                     }
+                } else {
+
+                    log.warn("토큰 변조 토큰 제거 로직 실행");
+
+                    forceLogout(response, jwtProvider.getUserId(refreshToken));
+                    return;
                 }
-            } else {
+            } catch(Exception e) {
 
-                log.warn("토큰 변조됨 토큰 제거 로직 실행");
-
-                forceLogout(response, jwtProvider.getUserId(accessToken));
+                log.error("토큰 형식 에러");
+                forceLogout(response, jwtProvider.getUserId(refreshToken));
                 return;
             }
         }
@@ -111,7 +120,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         CookieUtil.addSecureCookie(response, "ACCESS_TOKEN", null, 0);
         CookieUtil.addSecureCookie(response, "REFRESH_TOKEN", null, 0);
-        CookieUtil.addCsrfCookie(response, "XSRF-TOKEN", null, 0);
+        // CookieUtil.addCsrfCookie(response, "XSRF-TOKEN", null, 0);
 
         SecurityContextHolder.clearContext();
         response.sendRedirect("/user/login");

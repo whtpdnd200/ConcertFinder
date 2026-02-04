@@ -21,18 +21,18 @@ public class CookieUtil {
         response.addHeader("Set-Cookie", cookie.toString());
     }
 
-    // CSRF 토큰 쿠키 저장 메서드
-    public static void addCsrfCookie(HttpServletResponse response, String name, String value, int maxAge) {
-
-        ResponseCookie cookie = ResponseCookie.from(name, value)
-                .path("/")
-                .httpOnly(false)
-                .secure(false)
-                .maxAge(maxAge)
-                .build();
-
-        response.addHeader("Set-Cookie", cookie.toString());
-    }
+//    // CSRF 토큰 쿠키 저장 메서드
+//    public static void addCsrfCookie(HttpServletResponse response, String name, String value, int maxAge) {
+//
+//        ResponseCookie cookie = ResponseCookie.from(name, value)
+//                .path("/")
+//                .httpOnly(false)
+//                .secure(false)
+//                .maxAge(maxAge)
+//                .build();
+//
+//        response.addHeader("Set-Cookie", cookie.toString());
+//    }
 
     // 쿠키에서 토큰 반환 메서드
     public static String getCookieToken(HttpServletRequest request, String name) {

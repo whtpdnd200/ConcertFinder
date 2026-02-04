@@ -45,7 +45,7 @@ public class PostService {
 
     private final ObjectMapper objectMapper;
 
-    private final String POST_PREFIX = "post:info";
+    private final String POST_PREFIX = "post:info:";
 
     private final String POST_USER_PREFIX ="post:userId:";
 

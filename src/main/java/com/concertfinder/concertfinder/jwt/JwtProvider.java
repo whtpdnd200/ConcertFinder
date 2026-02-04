@@ -72,7 +72,11 @@ public class JwtProvider {
             return Jwts.parserBuilder().setSigningKey(SECRET_KEY).build()
                     .parseClaimsJws(token).getBody().getSubject();
         } catch(ExpiredJwtException e) {
+
             return e.getClaims().getSubject();
+        } catch(Exception e) {
+            log.warn("파싱 할 수 없는 토큰 : {}", e.getMessage());
+            return null;
         }
     }
 
