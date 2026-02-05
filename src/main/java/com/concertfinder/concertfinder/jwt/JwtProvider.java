@@ -42,6 +42,11 @@ public class JwtProvider {
         Claims claims = Jwts.claims().setSubject(userId);
         if (role != null) {
             claims.put("role", role);
+        } else {
+
+            // role가 null인 경우는 리프레시 토큰
+            // 리프레시 토큰에 자동로그인 여부 저장
+            claims.put("isAutoLogin", true);
         }
 
         Date now = new Date();
