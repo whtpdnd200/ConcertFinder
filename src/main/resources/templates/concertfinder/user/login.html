@@ -77,6 +77,9 @@
                     xhr.setRequestHeader(header, token);
                 }
                 , success : function() {
+
+                    // sessionStorage.setItem('isAutoLogin', autoLogin);
+
                     location.href = "/concert/list";
                 }
                 , error : function(xhr) {
