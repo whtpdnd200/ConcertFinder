@@ -28,7 +28,7 @@ spring:
   application:
     name: concertFinder
   config:
-    import: [security-variable.yml, properties/properties.yml]
+    import: [security-variable.yml, properties.yml]
   thymeleaf:
     cache: false
   datasource:
