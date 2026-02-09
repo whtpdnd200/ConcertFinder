@@ -6,11 +6,11 @@ spring:
   application:
     name: concertFinder
   config:
-    import: [security-variable.yml, properties/properties.yml]
+    import: [security-variable.yml, properties.yml]
   thymeleaf:
     cache: false
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://43.200.174.42:3306/concert_finder?serverTimezone=Asia/Seoul
+    url: jdbc:mysql://localhost:3306/concert_finder?serverTimezone=Asia/Seoul
     username: root
     password: ${mysql.password}
