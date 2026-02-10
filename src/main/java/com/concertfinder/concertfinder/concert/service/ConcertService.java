@@ -39,7 +39,7 @@ public class ConcertService {
     public ResponsesListDTO addIsFavorites(ResponsesListDTO responsesDTO, long userId) {
 
         if(responsesDTO == null || responsesDTO.getLists() == null) {
-            throw new NoSuchElementException("콘서트 목록을 불러 올 수 없습니다! 잠시 후 다시 시도 해주세요!");
+            return responsesDTO;
         }
 
         for(ConcertInfoDTO concertInfoDTO : responsesDTO.getLists()) {
