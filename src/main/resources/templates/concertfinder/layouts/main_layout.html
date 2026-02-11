@@ -179,7 +179,7 @@
                         // 데이터를 배열 맨 앞에 추가 (화면에 즉시 반영됨)
                         this.notifications.unshift({
                             id: data.id,
-                            content: data.message, // Java DTO 필드명에 맞춰 수정
+                            content: data.message, // DTO 필드명에 맞춰 수정
                             url: data.url || '#',
                             time: this.formatTime(data.createdAt || new Date())
                         });
