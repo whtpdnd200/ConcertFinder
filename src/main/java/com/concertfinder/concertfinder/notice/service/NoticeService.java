@@ -7,15 +7,16 @@ import com.concertfinder.concertfinder.notice.repository.NoticeRepository;
 import groovy.util.logging.Slf4j;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @lombok.extern.slf4j.Slf4j
@@ -29,7 +30,7 @@ public class NoticeService {
     private final NoticeRepository noticeRepository;
 
     // 구독 기능
-    public SseEmitter subscribe(Long userId) {
+    public SseEmitter subscribe(Long userId, Pageable pageable) {
 
         long timeout = 1000L * 60 * 60; // sse emitter 연결 시간, 1시간
 
@@ -54,11 +55,11 @@ public class NoticeService {
         // connect event로 message 발생
         sendToClient(userId, "connect", "sse connect");
 
-        List<NoticeSendDTO> noticeSendList = getNoticeList(userId);
+        Slice<NoticeSendDTO> noticeSendList = getNoticeList(userId, pageable);
 
-        if(!noticeSendList.isEmpty()) {
+        if(!noticeSendList.getContent().isEmpty()) {
 
-            for(NoticeSendDTO noticeSendDTO : noticeSendList) {
+            for(NoticeSendDTO noticeSendDTO : noticeSendList.getContent()) {
 
                 sendToClient(userId, noticeSendDTO.getNoticeType(), noticeSendDTO);
             }
@@ -116,18 +117,23 @@ public class NoticeService {
     }
 
     // 알림 목록 반환
-    public List<NoticeSendDTO> getNoticeList(long receiverId) {
+    public Slice<NoticeSendDTO> getNoticeList(long receiverId, Pageable pageable) {
 
-        return noticeRepository.findAllByReceiverIdAndIsReadFalseOrderByIdDesc(receiverId).stream()
-                .map(entity -> NoticeSendDTO.builder()
+        Slice<Notice> notices = noticeRepository.findAllByReceiverIdAndIsReadFalseOrderByIdDesc(receiverId, PageRequest.of(0, 3));
+
+        boolean hasNext = notices.hasNext();
+
+        List<NoticeSendDTO> noticeSendList = notices.stream().map(entity ->
+                NoticeSendDTO.builder()
                         .id(entity.getId())
-                        .receiverId(entity.getReceiverId())
                         .noticeType(entity.getNoticeType())
-                        .message(entity.getMessage())
                         .url(entity.getUrl())
+                        .message(entity.getMessage())
                         .createdAt(entity.getCreatedAt())
                         .build())
                 .toList();
+
+        return new SliceImpl<>(noticeSendList, pageable, hasNext);
     }
 
     // 알림 상태 수정

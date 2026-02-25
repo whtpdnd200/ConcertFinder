@@ -170,11 +170,11 @@
 
                     // 2. 이벤트 리스너 등록 (여기서 this는 Alpine의 data를 가리킴)
                     eventSource.addEventListener("notice", (event) => {
-                        //console.log(event);
-                        console.log("새 알림 수신:", event.data);
+                        console.log(event);
+                        // console.log("새 알림 수신:", event.data);
                         const data = JSON.parse(event.data);
 
-                        //console.log(data);
+                        // console.log(data);
 
                         // 데이터를 배열 맨 앞에 추가 (화면에 즉시 반영됨)
                         this.notifications.unshift({

@@ -5,6 +5,7 @@ import com.concertfinder.concertfinder.notice.service.NoticeService;
 import com.concertfinder.concertfinder.user.DTO.LoginUserDTO;
 import com.concertfinder.concertfinder.user.DTO.PrincipalDetails;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,11 +22,12 @@ public class NoticeRestController {
 
     // SSE 연결
     @GetMapping(value = "/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter subscribe(@AuthenticationPrincipal PrincipalDetails principal) {
+    public SseEmitter subscribe(@AuthenticationPrincipal PrincipalDetails principal
+                                , Pageable pageable) {
 
         LoginUserDTO loginUserDTO = principal.getLoginUserDTO();
 
-        return noticeService.subscribe(loginUserDTO.getId());
+        return noticeService.subscribe(loginUserDTO.getId(), pageable);
     }
 
 //    @PostMapping("/send")
