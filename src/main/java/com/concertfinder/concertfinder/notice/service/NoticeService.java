@@ -61,6 +61,7 @@ public class NoticeService {
 
             for(NoticeSendDTO noticeSendDTO : noticeSendList.getContent()) {
 
+                noticeSendDTO.setHasNext(noticeSendList.hasNext());
                 sendToClient(userId, noticeSendDTO.getNoticeType(), noticeSendDTO);
             }
         }
@@ -126,6 +127,7 @@ public class NoticeService {
         List<NoticeSendDTO> noticeSendList = notices.stream().map(entity ->
                 NoticeSendDTO.builder()
                         .id(entity.getId())
+                        .receiverId(entity.getReceiverId())
                         .noticeType(entity.getNoticeType())
                         .url(entity.getUrl())
                         .message(entity.getMessage())

@@ -17,4 +17,6 @@ public class NoticeSendDTO {
     private String noticeType;
     private String url;
     private LocalDateTime createdAt;
+
+    private boolean hasNext;
 }
